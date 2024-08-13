@@ -1,5 +1,13 @@
 {% extends "template.html" %}
 {% block title %}Login{% endblock %}
 {% block main %}
-    <p> Hello World! </p>
+    <div class='log_div'>
+        <form action='post'>
+            <input class='input-box' id='login' type='text' placeholder='Email' name='login_email'>
+            
+            <input class='input-box' id='login' type='text' placeholder='Heslo' name='login_heslo'>
+
+            <button type='submit' name='potvrdit'>Přihlásit</button>
+        </form>
+    </div>
 {% endblock %}

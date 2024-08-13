@@ -1,3 +1,35 @@
 body {
     background-color: #425CC7;
+    font-family: 'Work Sans';
+}
+
+.log_div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    border-radius: 4px;
+    width: 33%;
+    height: 20%;
+    background-color: #C6DAF2;
+}
+
+.log_div form {
+    display: flex;  /* Flexbox for the form elements */
+    flex-direction: column;  /* Stack elements vertically */
+    gap: 20px; /* Space between each form element */
+}
+
+.input-box {
+    margin: auto;
+    border-radius: 4px;
+    width: 33%;
+    height: 20%;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    font-size: 32;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    text-align: center;
 }
