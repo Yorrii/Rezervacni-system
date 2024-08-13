@@ -1,6 +1,38 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
 body {
     background-color: #425CC7;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+main{
+    width: 100%;
+    height: 100%;
+}
+
+.navbar {
+    background-color: #FFFFFF;
+    width: 100%;
+    height: 10%;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+.navbar img{
+    padding: 20px;
+}
+
+.navbar p {
     font-family: 'Work Sans';
+    font-size: 20px;
+    padding-top: 18px;
+    margin: 0;
 }
 
 .log_div {
@@ -8,28 +40,44 @@ body {
     justify-content: center;
     align-items: center;
     margin: auto;
-    border-radius: 4px;
-    width: 33%;
-    height: 20%;
-    background-color: #C6DAF2;
+    margin-top: 10%;
+    width: 100%;
+    height: 40%;
 }
 
 .log_div form {
+    width: 50%;
+    height: 100%;
+    border-radius: 4px;
     display: flex;  /* Flexbox for the form elements */
     flex-direction: column;  /* Stack elements vertically */
-    gap: 20px; /* Space between each form element */
+    align-items: center;
+    background-color: #C6DAF2;
 }
 
 .input-box {
-    margin: auto;
     border-radius: 4px;
-    width: 33%;
-    height: 20%;
+    width: 50%;
+    height: 10%;
+    margin: auto;
+    margin-top: 5%;
+    margin-bottom: 5%;
     background-color: #FFFFFF;
     font-family: 'Work Sans';
-    font-size: 32;
+    font-size: 100%;
     display: flex;
     padding: 5px;
     align-items: center;
     text-align: center;
+}
+
+.log_div button {
+    background-color: #00A541;
+    font-family: 'Work Sans';
+    font-size: 100%;
+    color: #FFFFFF;
+    border-radius: 4px;
+    margin: auto;
+    width: 25%;
+    height: 10%;
 }
