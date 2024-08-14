@@ -1,0 +1,29 @@
+{% extends "template.html" %}
+{% block title %}Calendar{% endblock %}
+{% block nav %}
+    <div class="navbar">
+        <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+        <p>Rezervační<br/>systém Most</p>
+        <p class="logout">Odhlásit se</p>
+    </div>
+{% endblock %}
+{% block main %}
+    <div class="calendar">
+        <div class="header">
+            <button id="prevMonth">&lt;</button>
+            <div id="monthYear"></div>
+            <button id="nextMonth">&gt;</button>
+        </div>
+        <div class="weekdays">
+            <div>Po</div>
+            <div>Út</div>
+            <div>St</div>
+            <div>Čt</div>
+            <div>Pá</div>
+            <div>So</div>
+            <div>Ne</div>
+        </div>
+        <div id="days" class="days"></div>
+    </div>
+    <script src="{{ url_for('static', filename='script_calendar.js') }}"></script>
+{% endblock %}
