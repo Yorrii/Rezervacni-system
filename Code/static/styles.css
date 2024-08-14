@@ -1,102 +1,46 @@
-html {
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    background-color: #425CC7;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-}
-
-main{
-    width: 100%;
-    height: 100%;
-}
-
-.navbar {
-    background-color: #FFFFFF;
-    width: 100%;
-    height: 10%;
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-}
-
-.navbar img{
-    padding: 20px;
-}
-
-.navbar p {
-    font-family: 'Work Sans';
-    font-size: 20px;
-    padding-top: 18px;
-    margin: 0;
-}
-
-
-.log_div {
-    display: flex;
-    justify-content: center;
-    align-items: middle;
-    margin: auto;
-    margin-top: 10%;
-}
-
-.log_div form {
-    
-    
-    border-radius: 10px;
-    display: flex;  /* Flexbox for the form elements */
-    flex-direction: column;  /* Stack elements vertically */
-    align-items: center;
-    background-color: #C6DAF2;
-}
-
-.input-box {
-    border-color: #FFFFFF;
-    border-radius: 10px;
-    width: 384px;
-    height: 40px;
-    margin: 50px;
-    margin-top: 5%;
-    margin-bottom: 1%;
-    background-color: #FFFFFF;
-    font-family: 'Work Sans';
-    font-size: 100%;
-    display: flex;
-    align-items: center;
-    text-align: center;
-}
-
-.log_div button {
-    background-color: #00A541;
-    font-family: 'Work Sans';
-    font-size: 100%;
-    color: #FFFFFF;
-    border-radius: 4px;
-    margin-top: 5%;
-    width: 50%;
-    height: 40px;
-    cursor: pointer;
-}
-
-.log_div .odkaz {
-    font-family: 'Work Sans';
-    font-size: 60%;
-    margin-top: 5%;
-    margin-bottom: 5%;
-    color:#425CC7;
-}
-
 /* Media pro mobilní */
 @media only screen and (max-width:600px) {
+    html {
+        width: 100%;
+        height: 100%;
+    }
+    
+    body {
+        background-color: #425CC7;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+    
+    main{
+        width: 100%;
+        height: 100%;
+    }
+    
+    .navbar {
+        background-color: #FFFFFF;
+        width: 100%;
+        height: 10%;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+    }
+    
+    .navbar img{
+        padding: 20px;
+    }
+    
+    .navbar p {
+        font-family: 'Work Sans';
+        font-size: 20px;
+        padding-top: 18px;
+        margin: 0;
+    }
+    
     .log_div {
         display: flex;
         justify-content: center;
         align-items: middle;
-        margin: auto;
         margin-top: 10%;
         width: 100%;
         height: 100%;
@@ -110,6 +54,7 @@ main{
         flex-direction: column;  /* Stack elements vertically */
         align-items: center;
         background-color: #C6DAF2;
+        margin: 3%;
     }
     
     .input-box {
@@ -135,28 +80,69 @@ main{
         font-size: 100%;
         color: #FFFFFF;
         border-radius: 4px;
-        margin: auto;
         margin-top: 5%;
+        margin-bottom: 5%;
         width: 50%;
         height: 15%;
+    }
+
+    .log_div .odkaz {
+        font-family: 'Work Sans';
+        font-size: 60%;
+        margin-top: 5%;
+        margin-bottom: 5%;
+        color:#425CC7;
     }
 }
 
 /* Media pro tablety a podobná zařízení */
-@media only screen and (max-width:992px) {
+@media only screen and (min-width:601px) {
+    html {
+        width: 100%;
+        height: 100%;
+    }
+    
+    body {
+        background-color: #425CC7;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+    
+    main{
+        width: 100%;
+        height: 100%;
+    }
+    
+    .navbar {
+        background-color: #FFFFFF;
+        width: 100%;
+        height: 10%;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+    }
+    
+    .navbar img{
+        padding: 20px;
+    }
+    
+    .navbar p {
+        font-family: 'Work Sans';
+        font-size: 20px;
+        padding-top: 18px;
+        margin: 0;
+    }
+    
     .log_div {
         display: flex;
         justify-content: center;
         align-items: middle;
         margin: auto;
-        margin-top: 10%;
-        width: 100%;
-        height: 100%;
+        margin-top: 10%;      
     }
     
     .log_div form {
-        width: 100%;
-        height: 40%;
         border-radius: 5px;
         display: flex;  /* Flexbox for the form elements */
         flex-direction: column;  /* Stack elements vertically */
@@ -167,9 +153,9 @@ main{
     .input-box {
         border-color: #FFFFFF;
         border-radius: 5px;
-        width: 75%;
-        height: 10%;
-        margin: auto;
+        width: 400px;
+        height: 40px;
+        margin: 50px;
         margin-top: 5%;
         margin-bottom: 5%;
         background-color: #FFFFFF;
@@ -191,5 +177,108 @@ main{
         margin-top: 5%;
         width: 50%;
         height: 15%;
+    }
+
+    .log_div .odkaz {
+        font-family: 'Work Sans';
+        font-size: 80%;
+        margin-top: 2%;
+        margin-bottom: 2%;
+        color:#425CC7;
+    }
+}
+
+/* Media pro desktopy*/
+@media only screen and (min-width:1024px) {
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        background-color: #425CC7;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+
+    main{
+        width: 100%;
+        height: 100%;
+    }
+
+    .navbar {
+        background-color: #FFFFFF;
+        width: 100%;
+        height: 10%;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .navbar img{
+        padding: 20px;
+    }
+
+    .navbar p {
+        font-family: 'Work Sans';
+        font-size: 20px;
+        padding-top: 18px;
+        margin: 0;
+    }
+
+
+    .log_div {
+        display: flex;
+        justify-content: center;
+        align-items: middle;
+        margin: auto;
+        margin-top: 10%;
+    }
+
+    .log_div form {
+        
+        
+        border-radius: 10px;
+        display: flex;  /* Flexbox for the form elements */
+        flex-direction: column;  /* Stack elements vertically */
+        align-items: center;
+        background-color: #C6DAF2;
+    }
+
+    .input-box {
+        border-color: #FFFFFF;
+        border-radius: 10px;
+        width: 384px;
+        height: 40px;
+        margin: 50px;
+        margin-top: 5%;
+        margin-bottom: 1%;
+        background-color: #FFFFFF;
+        font-family: 'Work Sans';
+        font-size: 100%;
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+
+    .log_div button {
+        background-color: #00A541;
+        font-family: 'Work Sans';
+        font-size: 100%;
+        color: #FFFFFF;
+        border-radius: 4px;
+        margin-top: 5%;
+        width: 50%;
+        height: 40px;
+        cursor: pointer;
+    }
+
+    .log_div .odkaz {
+        font-family: 'Work Sans';
+        font-size: 60%;
+        margin-top: 5%;
+        margin-bottom: 5%;
+        color:#425CC7;
     }
 }
