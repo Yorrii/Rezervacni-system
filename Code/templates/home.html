@@ -12,8 +12,10 @@
             <input class='input-box' id='login_email' type='text' placeholder='Email' name='login_email'>
             
             <input class='input-box' id='login_heslo' type='password' placeholder='Heslo' name='login_heslo'>
-            <a class="zapomenute_heslo_odkaz" href="/zapomenute_heslo">Zapomněl jsem heslo</a>
+            {% include 'messages.html' %}
             <button type='submit' name='potvrdit'>Přihlásit</button>
+            
+            <a class="odkaz" href="/zapomenute_heslo">Zapomenuté heslo</a>
         </form>
     </div>
 {% endblock %}
