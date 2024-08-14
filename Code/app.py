@@ -40,27 +40,27 @@ def home():
             else:
                 flash('Neplatný email nebo heslo', category='mess_error')
         else:
-            flash('Néééé', category='mess_error')
+            cil = Zak.query.filter_by(email=email).first()
+            if cil:
+                if porovnat_hesla(heslo, cil.heslo):
+                    flash('Účet je v databázi', category='mess_success')
+                else:
+                    flash('Neplatný email nebo heslo', category='mess_error')
+            else:
+                flash('Neplatný email nebo heslo', category='mess_error')
 
-    return render_template('home.html')   
+    return render_template('home.html')
+
+@app.route('/calendar', methods=['GET'])
+def calenar():
+    return render_template('main_page.html')
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if request.method == 'GET':
         return render_template('admin.html')
     if request.method == 'POST':
-        pass
-
-@app.route('/new_org')
-def new_org():
-    new_org = Komisar(email='heger.adam@mesto-most.cz', heslo=sha256('heslo123'.encode()).hexdigest(), jmeno='Adam', prijmeni='Heger')
-    
-    db.session.add(new_org)
-
-    db.session.commit()
-
-    return redirect(url_for('home'))
-    
+        pass   
 
 if __name__ == "__main__":
     app.run(debug=True)
