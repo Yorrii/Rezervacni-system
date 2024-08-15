@@ -263,6 +263,16 @@
         margin: 0;
     }
 
+    .navbar .logout {
+        font-family: 'Work Sans';
+        font-size: 20px;
+        color: #000000;
+        margin-top: 30px;
+        margin-right: 2%;
+        text-decoration: underline;
+        margin-left: auto;
+    }
+
     .mess_success {
         font-family: 'Work Sans';
         font-weight: bold;
@@ -290,8 +300,6 @@
     }
 
     .log_div form {
-        
-        
         border-radius: 10px;
         display: flex;  /* Flexbox for the form elements */
         flex-direction: column;  /* Stack elements vertically */
@@ -336,17 +344,17 @@
     }
 }
 
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4;
-    margin: 0;
+.calendar_main {
+    display: inline;
+}
+
+.calendar_menu {
+    background-color: #C6DAF2;
 }
 
 .calendar {
+    width: 48%;
+    height: 40%;
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
