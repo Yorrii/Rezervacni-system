@@ -1,21 +1,25 @@
 {% extends "template.html" %}
 {% block title %}Login{% endblock %}
 {% block nav %}
-    <div class="navbar">
-        <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
-        <p>Rezervační<br/>systém Most</p>
-    </div>
+    <nav>
+        <div class="navbar">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+        </div>
+    </nav>
 {% endblock %}
 {% block main %}
-    <div class='log_div'>
-        <form method='post'>
-            <input class='input-box' id='login_email' type='text' placeholder='Email' name='login_email'>
-            
-            <input class='input-box' id='login_heslo' type='password' placeholder='Heslo' name='login_heslo'>
-            {% include 'message.html' %}
-            <button type='submit' name='potvrdit'>Přihlásit</button>
-            
-            <a class="odkaz" href="/zapomenute_heslo">Zapomenuté heslo</a>
-        </form>
-    </div>
+    <main>
+        <div class='log_div'>
+            <form method='post'>
+                <input class='input-box' id='login_email' type='text' placeholder='Email' name='login_email'>
+                
+                <input class='input-box' id='login_heslo' type='password' placeholder='Heslo' name='login_heslo'>
+                {% include 'message.html' %}
+                <button type='submit' name='potvrdit'>Přihlásit</button>
+                
+                <a class="odkaz" href="/zapomenute_heslo">Zapomenuté heslo</a>
+            </form>
+        </div>
+    </main>
 {% endblock %}
