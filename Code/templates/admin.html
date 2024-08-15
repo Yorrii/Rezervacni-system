@@ -1,5 +1,5 @@
 {% extends "template.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Admin{% endblock %}
 {% block nav %}
     <div class="navbar">
         <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
@@ -7,16 +7,83 @@
     </div>
 {% endblock %}
 {% block main %}
-    {% include 'messages.html' %}
-    <div class='log_div'>
-        <form action='post'>
-            <input class='input-box' id='login_email' type='text' placeholder='Email' name='login_email'>
-            
-            <input class='input-box' id='login_heslo' type='password' placeholder='Heslo' name='login_heslo'>
-            
-            <button type='submit' name='potvrdit'>Přihlásit</button>
-            
-            <a class="odkaz" href="/zapomenute_heslo">Zapomenuté heslo</a>
+{% include 'message.html' %} 
+    <main>
+        <h1>Admin Panel</h1>
+
+        <!-- Form for Autoškola -->
+        <h2>Create Autoškola</h2>
+        <form action="/create_autoskola" method="POST">
+            <label for="nazev">Název:</label>
+            <input type="text" id="nazev" name="nazev" required><br><br>
+
+            <label for="datova_schranka">Datová schránka:</label>
+            <input type="text" id="datova_schranka" name="datova_schranka" required><br><br>
+
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" required><br><br>
+
+            <label for="heslo">Heslo:</label>
+            <input type="text" id="heslo" name="heslo" required><br><br>
+
+            <input type="submit" value="Create Autoškola">
         </form>
-    </div>
+
+        <hr>
+
+        <!-- Form for Komisař -->
+        <h2>Create Komisař</h2>
+        <form action="/create_komisar" method="POST">
+            <label for="email_komisar">Email:</label>
+            <input type="email" id="email_komisar" name="email" required><br><br>
+
+            <label for="heslo_komisar">Heslo:</label>
+            <input type="password" id="heslo_komisar" name="heslo" required><br><br>
+
+            <label for="jmeno">Jméno:</label>
+            <input type="text" id="jmeno" name="jmeno" required><br><br>
+
+            <label for="prijmeni">Příjmení:</label>
+            <input type="text" id="prijmeni" name="prijmeni" required><br><br>
+
+            <input type="submit" value="Create Komisař">
+        </form>
+
+        <hr>
+
+        <!-- Form for Žák -->
+        <h2>Create Žák</h2>
+        <form action="/create_zak" method="POST">
+            <label for="ev_cislo">Evidenční číslo:</label>
+            <input type="text" id="ev_cislo" name="ev_cislo" required><br><br>
+
+            <label for="jmeno_zak">Jméno:</label>
+            <input type="text" id="jmeno_zak" name="jmeno" required><br><br>
+
+            <label for="prijmeni_zak">Příjmení:</label>
+            <input type="text" id="prijmeni_zak" name="prijmeni" required><br><br>
+
+            <label for="narozeni">Datum narození:</label>
+            <input type="date" id="narozeni" name="narozeni" required><br><br>
+
+            <label for="id_autoskoly">ID Autoškoly:</label>
+            <input type="number" id="id_autoskoly" name="id_autoskoly" required><br><br>
+
+            <input type="submit" value="Create Žák">
+        </form>
+
+        <hr>
+
+        <!-- Form for Termín -->
+        <h2>Create Termín</h2>
+        <form action="/create_termin" method="POST">
+            <label for="datum">Datum:</label>
+            <input type="date" id="datum" name="datum" required><br><br>
+
+            <label for="max_ridici">Maximální počet řidičů:</label>
+            <input type="number" id="max_ridici" name="max_ridici" required><br><br>
+
+            <input type="submit" value="Create Termín">
+        </form>
+    </main>
 {% endblock %}
