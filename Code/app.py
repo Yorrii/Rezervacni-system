@@ -41,7 +41,7 @@ def home():
                 if app_logic.porovnat_hesla(heslo, cil.heslo):
                     login_user(app_logic.User(cil.id))
                     flash('Přihlášený komisař', category='mess_success')
-                    return redirect(url_for('calenar'))
+                    return redirect(url_for('calendar'))
                 else:
                     flash('Neplatný email nebo heslo', category='mess_error')
             else:
@@ -52,7 +52,7 @@ def home():
                 if app_logic.porovnat_hesla(heslo, cil.heslo):
                     login_user(app_logic.User(cil.id))
                     flash('Přihlášená Autoškola', category='mess_success')
-                    return redirect(url_for('calenar'))
+                    return redirect(url_for('calendar'))
                 else:
                     flash('Neplatný email nebo heslo', category='mess_error')
             else:
@@ -61,7 +61,8 @@ def home():
     return render_template('home.html')
 
 @app.route('/calendar', methods=['GET'])
-def calenar():
+@login_required
+def calendar():
     return render_template('main_page.html')
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -74,6 +75,9 @@ def admin():
 #API metody
 @app.route('/create_autoskola', methods=['POST'])
 def nova_autoskola():
+    """
+    Vytvoří novou autoškolu
+    """
     nazev = request.form['nazev']
     da_schranka = request.form['datova_schranka']
     email = request.form['email']
@@ -88,7 +92,63 @@ def nova_autoskola():
         flash('Autoškola se přidala!', category='mess_success')
         return redirect(url_for('admin'))
 
-    
+@app.route('/create_komisar', methods=['POST'])
+def novy_komisar():
+    """
+    Vytvoří nového komisaře
+    """
+    email = request.form['email']
+    heslo = sha256(request.form['heslo'].encode('utf-8')).hexdigest()
+    jmeno = request.form['jmeno']
+    prijmeni = request.form['prijmeni']
+    try:
+        komisar = Komisar(email=email, heslo=heslo, jmeno=jmeno, prijmeni=prijmeni)
+        db.session.add(komisar)
+        db.session.commit()
+    except:
+        raise 'Někde je chyba'
+    else:
+        flash('Komisař se přidal!', category='mess_success')
+        return redirect(url_for('admin'))
+
+@app.route('/create_zak', methods=['POST'])
+def novy_zak():
+    """
+    Vytvoří nového žáka
+    """
+    ev_cislo = request.form['ev_cislo']
+    jmeno = request.form['jmeno']
+    prijmeni = request.form['prijmeni']
+    narozeni = request.form['narozeni']
+    id_autoskoly = request.form['id_autoskoly']
+
+    try:
+        zak = Zak(ev_cislo=ev_cislo, jmeno=jmeno, prijmeni=prijmeni, narozeni=narozeni, id_autoskoly=id_autoskoly)
+        db.session.add(zak)
+        db.session.commit()
+    except:
+        raise 'Někde je chyba'
+    else:
+        flash('Žák se přidal!', category='mess_success')
+        return redirect(url_for('admin'))    
+
+@app.route('/create_termin', methods=['POST'])
+def novy_termin():
+    """
+    Vytvoří nový termín žáka
+    """
+    datum = request.form['datum']
+    max_ridici = request.form['max_ridici']
+
+    try:
+        termin = Termin(datum=datum, max_ridici=max_ridici)
+        db.session.add(termin)
+        db.session.commit()
+    except:
+        raise 'Někde je chyba'
+    else:
+        flash('Termín se přidal!', category='mess_success')
+        return redirect(url_for('admin'))
 
 @app.route('/logout')
 def logout():
