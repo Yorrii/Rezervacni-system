@@ -150,6 +150,16 @@ def novy_termin():
         flash('Termín se přidal!', category='mess_success')
         return redirect(url_for('admin'))
 
+@app.route('/calendar_api', methods=['GET'])
+def get_calendar_dates():
+    # Simulace termínů, které máš v databázi
+    events = [
+        {"date": "2024-08-20"},
+        {"date": "2024-08-22"},
+        {"date": "2024-08-29"}
+    ]
+    return jsonify(events)
+
 @app.route('/logout')
 def logout():
     logout_user()
