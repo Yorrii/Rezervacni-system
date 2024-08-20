@@ -110,7 +110,7 @@ def nova_autoskola():
         db.session.add(autoskola)
         db.session.commit()
     except:
-        raise 'Někde je chyba'
+        raise Exception()
     else:
         flash('Autoškola se přidala!', category='mess_success')
         return redirect(url_for('admin'))
@@ -143,6 +143,7 @@ def novy_zak():
     jmeno = request.form['jmeno']
     prijmeni = request.form['prijmeni']
     narozeni = request.form['narozeni']
+    adresa = request.form['adresa']
     id_autoskoly = request.form['id_autoskoly']
 
     try:
@@ -161,10 +162,10 @@ def novy_termin():
     Vytvoří nový termín žáka
     """
     datum = request.form['datum']
-    max_ridici = request.form['max_ridici']
+    max_ridicu = request.form['max_ridicu']
 
     try:
-        termin = Termin(datum=datum, max_ridici=max_ridici)
+        termin = Termin(datum=datum, max_ridicu=max_ridicu)
         db.session.add(termin)
         db.session.commit()
     except:
@@ -182,6 +183,11 @@ def get_calendar_dates():
         {"date": "2024-08-29"}
     ]
     return jsonify(events)
+
+@app.route('/add_drivers', methods=['POST'])
+def add_drivers():
+    print('asi to funguje nevim')
+    return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():

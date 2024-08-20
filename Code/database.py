@@ -10,10 +10,11 @@ class Zak(db.Model):
     __tablename__ = 'zaci'
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    ev_cislo = db.Column('evidencni_cislo', db.String(255), nullable=False)
-    jmeno = db.Column('jmeno', db.String(255), nullable=False)
-    prijmeni = db.Column('prijmeni', db.String(255), nullable=False)
-    narozeni = db.Column('datum_narozeni', db.Date, nullable=False)
+    ev_cislo = db.Column('evidencni_cislo', db.String(30), nullable=False)
+    jmeno = db.Column('jmeno', db.String(30), nullable=False)
+    prijmeni = db.Column('prijmeni', db.String(30), nullable=True)
+    narozeni = db.Column('datum_narozeni', db.Date, nullable=True)
+    adresa = db.Column('adresa', db.String(255), nullable=True)
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)
 
     def __repr__(self):
@@ -28,7 +29,7 @@ class Termin(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     datum = db.Column('datum', db.Date, nullable=False)
-    ac_flag = db.Column('active_flag', db.Enum('Y', 'N'), default='N', nullable=True)
+    ac_flag = db.Column('active_flag', db.Enum('Y', 'N', 'R'), default='N', nullable=True)
     max_ridicu = db.Column('max_ridicu', db.SmallInteger, nullable=True)
 
 
@@ -87,7 +88,7 @@ class Zaznam(db.Model):
     __tablename__ = 'zaznamy'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    druh = db.Column('druh', db.Enum('zápis', 'odpis', 'přidání', 'odebrání'), nullable=True)
+    druh = db.Column('druh', db.Enum('zápis', 'odpis', 'přidání', 'odebrání', 'přihlásil se', 'odhlásil se'), nullable=True)
     kdy = db.Column('kdy', db.DateTime, nullable=True)
     zprava = db.Column('zprava', db.Text, nullable=True)
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=True)
