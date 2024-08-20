@@ -66,7 +66,7 @@ def calendar():
     return render_template('main_page.html')
 
 @app.route('/term/<id>', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def term(id):
     """
     Stránka slouží k zápisu žáků na termín a přehled zapsaných žáků
@@ -186,28 +186,29 @@ def get_calendar_dates():
 
 @app.route('/add_drivers', methods=['POST'])
 def add_drivers():
-    try:
-        # Získání dat ve formátu JSON
-        data = request.get_json()
+    #try:
+    # Získání dat ve formátu JSON
+    data = request.get_json()
+    
+    # Zpracování dat
+    for student in data:
+        evidence_number = student.get('evidence_number')
+        first_name = student.get('first_name')
+        last_name = student.get('last_name')
+        birth_date = student.get('birth_date')
+        license_category = student.get('license_category')
+        exam_type = student.get('exam_type')
         
-        # Zpracování dat
-        for student in data:
-            evidence_number = student.get('evidence_number')
-            first_name = student.get('first_name')
-            last_name = student.get('last_name')
-            birth_date = student.get('birth_date')
-            license_category = student.get('license_category')
-            exam_type = student.get('exam_type')
-            
-            # Zde můžete přidat kód pro uložení nebo další zpracování těchto dat
-            print(f"Student: {evidence_number}, {first_name} {last_name}, {birth_date}, {license_category}, {exam_type}")
+        zak = Zak(ev_cislo=evidence_number, jmeno=first_name, prijmeni=last_name, narozeni=birth_date, id_autoskoly=current_user.id)
+        db.session.add(zak)
+        db.session.commit()
         
         # Odeslání odpovědi o úspěchu
         return jsonify({"message": "Data přijata úspěšně"}), 200
 
-    except Exception as e:
+    #except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
-        return jsonify({"error": str(e)}), 400
+        #return jsonify({"error": str(e)}), 400
 
 @app.route('/logout')
 def logout():
