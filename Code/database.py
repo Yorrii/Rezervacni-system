@@ -29,7 +29,7 @@ class Termin(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     datum = db.Column('datum', db.Date, nullable=False)
     ac_flag = db.Column('active_flag', db.Enum('Y', 'N'), default='N', nullable=True)
-    max_ridici = db.Column('max_ridici', db.SmallInteger, nullable=True)
+    max_ridicu = db.Column('max_ridicu', db.SmallInteger, nullable=True)
 
 
 class Autoskola(db.Model):
