@@ -65,8 +65,26 @@ def home():
 def calendar():
     return render_template('main_page.html')
 
+@app.route('/term/<id>', methods=['GET', 'POST'])
+#@login_required
+def term(id):
+    """
+    Stránka slouží k zápisu žáků na termín a přehled zapsaných žáků
+
+    Parametry:
+        id (str): id místnosti, která se má načíst
+
+    Vrací:
+        #TODO
+    """
+    termin = Termin.query.filter_by(id=id).first()
+    return termin
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    """
+    Endpoint pouze pro testování, v plné verzi odebrat
+    """
     if request.method == 'GET':
         return render_template('admin.html')
     if request.method == 'POST':
