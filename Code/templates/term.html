@@ -1,0 +1,87 @@
+{% extends 'template.html' %}
+{% block title %}{{termin.datum}}{% endblock %}
+
+{% block main %}
+    <div class="term-container">       
+        <h3>{{termin.datum}} {{termin.max_ridicu}}</h3> 
+    </div>
+    <div class="form-container">
+        <div id="form-list">
+            <form class="exam-form">
+                <div class="form-group">
+                    <label for="evidence_number">Evidenční číslo:</label>
+                    <input type="text" id="evidence_number" placeholder="E.č" required>
+                </div>
+                <div class="form-group">
+                    <label for="first_name">Jméno:</label>
+                    <input type="text" id="first_name" placeholder="Jméno" required>
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Příjmení:</label>
+                    <input type="text" id="last_name" placeholder="Příjmení" required>
+                </div>
+                <div class="form-group">
+                    <label for="birth_date">Datum narození:</label>
+                    <input type="date" id="birth_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="license_category">Kategorie řidičského průkazu:</label>
+                    <select id="license_category">
+                        <option value="A">A</option>
+                        <option value="B" selected>B</option>
+                        <option value="B+E">B+E</option>
+                        <option value="C">C</option>
+                        <option value="C+E">C+E</option>
+                        <option value="D">D</option>
+                        <option value="D+E">D+E</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exam_type">Typ zkoušky:</label>
+                    <select id="exam_type">
+                        <option value="řádná_zkouška" selected>Řádná zkouška</option>
+                        <option value="opravná_jízda_test">Opravná zkouška (jízda+test)</option>
+                        <option value="opravná_jízda">Opravná zkouška (jízda)</option>
+                        <option value="opravná_technika">Opravná zkouška (technika)</option>
+                        <option value="opravná_technika_jízda">Opravná zkouška (technika+jízda)</option>
+                        <option value="profesní_způsobilost">Profesní způsobilost</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="buttons">
+            <button type="button" id="add-form">Přidat další formulář</button>
+            <button type="button" id="remove-form">Odebrat poslední formulář</button>
+        </div>
+        <div class="buttons">
+            <button type="submit" id="submit-forms">Odeslat všechny formuláře</button>
+        </div>
+    </div>
+    
+
+    <script>
+        document.getElementById('add-form').addEventListener('click', function() {
+            // Najdeme první formulář
+            const formList = document.getElementById('form-list');
+            const firstForm = formList.querySelector('.exam-form');
+            const newForm = firstForm.cloneNode(true); // Zkopírujeme celý formulář
+            formList.appendChild(newForm); // Přidáme nový formulář
+        });
+
+        document.getElementById('remove-form').addEventListener('click', function() {
+            const formList = document.getElementById('form-list');
+            if (formList.children.length >= 1) { // Odstraníme jen pokud je více než jeden formulář
+                formList.removeChild(formList.lastElementChild);
+            }
+        });
+
+        document.getElementById('submit-forms').addEventListener('click', function() {
+            const forms = document.querySelectorAll('.exam-form');
+            forms.forEach(form => {
+                // Zde můžete zpracovat každý jednotlivý formulář
+                // Například můžete odeslat data na server, nebo provést jinou akci
+                console.log('Odesílám formulář:', form);
+            });
+        });
+    </script>
+{% endblock %}

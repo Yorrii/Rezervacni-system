@@ -14,7 +14,7 @@
     - endpoint pro změnu termínů, přehled zapsaných a přidání komisaře a času, zapsat autoškolu a studenty na termín, přehled logů
     - dodělat kalendář + js
     - css
-
+    - udělat aborter
 
 
 ## Databáze

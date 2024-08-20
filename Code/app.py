@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak
 import app_logic
@@ -78,7 +78,12 @@ def term(id):
         #TODO
     """
     termin = Termin.query.filter_by(id=id).first()
-    return termin
+    if not termin: # podmínka zkontroluje jestli termín existuje
+        abort(404)
+    
+    if request.method=='POST':
+        return redirect(url_for('/'))
+    return render_template('term.html', termin=termin)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
