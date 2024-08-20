@@ -186,8 +186,28 @@ def get_calendar_dates():
 
 @app.route('/add_drivers', methods=['POST'])
 def add_drivers():
-    print('asi to funguje nevim')
-    return redirect(url_for('home'))
+    try:
+        # Získání dat ve formátu JSON
+        data = request.get_json()
+        
+        # Zpracování dat
+        for student in data:
+            evidence_number = student.get('evidence_number')
+            first_name = student.get('first_name')
+            last_name = student.get('last_name')
+            birth_date = student.get('birth_date')
+            license_category = student.get('license_category')
+            exam_type = student.get('exam_type')
+            
+            # Zde můžete přidat kód pro uložení nebo další zpracování těchto dat
+            print(f"Student: {evidence_number}, {first_name} {last_name}, {birth_date}, {license_category}, {exam_type}")
+        
+        # Odeslání odpovědi o úspěchu
+        return jsonify({"message": "Data přijata úspěšně"}), 200
+
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/logout')
 def logout():
