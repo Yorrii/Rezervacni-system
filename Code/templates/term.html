@@ -13,6 +13,18 @@
     <div class="term-container">       
         <h3>{{termin.datum}} {{termin.max_ridicu}}</h3> 
     </div>
+    <div class="students_container" id="students_container">
+        {% for zak in zaci %}
+            <div class="student_line" id="zak">
+                <p>{{ zak['ev_cislo']}}</p>
+                <p>{{ zak['jmeno']}}</p>
+                <p>{{ zak['prijmeni']}}</p>
+                <p>{{ zak['narozeni']}}</p>
+                <p>{{ zak['typ_zkousky']}}</p>
+                <p>{{ zak['druh_zkousky']}}</p>
+            </div> 
+        {% endfor %}
+    </div>
     <div class="form-container">
         <div id="form-list">
             <form class="exam-form">
@@ -37,7 +49,6 @@
                     <select name="license_category">
                         <option value="A">A</option>
                         <option value="B" selected>B</option>
-                        <option value="B+E">B+E</option>
                         <option value="C">C</option>
                         <option value="C+E">C+E</option>
                         <option value="D">D</option>

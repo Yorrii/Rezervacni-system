@@ -78,16 +78,38 @@ def term(id):
         #TODO
     """
     termin = Termin.query.filter_by(id=id).first()
+
     if not termin: # podmínka zkontroluje jestli termín existuje
         abort(404)
+
     if not current_user.isAdmin:
         session['term_id'] = id
+
         match termin.ac_flag:
             case 'N': # pokud je termín neaktivní abort
                 abort(404)
             case 'Y': # pokud je aktivní
                 #TODO natahat si zapsané žáky, ukázat ty z naší autoškoly a nedovolit překročit limit
-                return render_template('term.html', termin=termin)
+
+                zaci = Zapsany_zak.query \
+                    .join(Zak) \
+                    .join(Termin) \
+                    .filter(Zapsany_zak.id_terminu == id, Zak.id_autoskoly == current_user.id) \
+                    .all()
+                
+                zaci_data = []
+
+                for item in zaci:
+                    zaci_data.append({
+                        'typ_zkousky': item.typ_zkousky,
+                        'druh_zkousky': item.druh_zkousky,
+                        'ev_cislo': item.zak.ev_cislo,
+                        'jmeno': item.zak.jmeno,
+                        'prijmeni': item.zak.prijmeni,
+                        'narozeni': item.zak.narozeni
+                    })
+
+                return render_template('term.html', termin=termin, zaci=zaci_data)
             case 'R':
                 pass #TODO
     

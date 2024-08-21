@@ -24,7 +24,6 @@ function createEmptyForm() {
             <select name="license_category">
                 <option value="A">A</option>
                 <option value="B" selected>B</option>
-                <option value="B+E">B+E</option>
                 <option value="C">C</option>
                 <option value="C+E">C+E</option>
                 <option value="D">D</option>
@@ -76,7 +75,7 @@ document.getElementById('submit-forms').addEventListener('click', function() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = '/calendar';
+            window.location.href = '/term/{{ termin.id }}';
         } else {
             alert('Nastala chyba při odesílání formulářů.');
         }
