@@ -17,8 +17,7 @@ class Zak(db.Model):
     adresa = db.Column('adresa', db.String(255), nullable=True)
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)
 
-    def __repr__(self):
-        return f'<Zaci {self.jmeno} {self.prijmeni}>'
+    #autoskola = db.relationship('Autoskola', backref='zaci', lazy=True)
 
 
 class Termin(db.Model):
@@ -32,6 +31,8 @@ class Termin(db.Model):
     ac_flag = db.Column('active_flag', db.Enum('Y', 'N', 'R'), default='N', nullable=True)
     max_ridicu = db.Column('max_ridicu', db.SmallInteger, nullable=True)
 
+    zapsani_zaci = db.relationship('Zapsany_zak', backref='termin', lazy=True)
+
 
 class Autoskola(db.Model):
     """
@@ -44,6 +45,9 @@ class Autoskola(db.Model):
     da_schranka = db.Column('datova_schranka', db.String(100), nullable=True)
     email = db.Column('email', db.String(70), nullable=True)
     heslo = db.Column('heslo', db.String(70), nullable=True)
+
+    zaci = db.relationship('Zak', backref='autoskola', lazy=True)
+    zaznami = db.relationship('Zaznam', backref='autoskoly', lazy=True)
 
 
 class Komisar(db.Model):
@@ -79,6 +83,10 @@ class Zapsany_zak(db.Model):
     __table_args__ = (
         db.PrimaryKeyConstraint('id_terminu', 'id_zaka'),
     )
+
+    zak = db.relationship('Zak', backref='zapsani', lazy=True)
+    komisar = db.relationship('Komisar', backref='zapsani', lazy=True)
+    autoskola = db.relationship('Autoskola', backref='zapsani', lazy=True)
 
 
 class Zaznam(db.Model):
