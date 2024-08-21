@@ -67,7 +67,7 @@ class Zapsany_zak(db.Model):
 
     potvrzeni = db.Column('potvrzeni', db.Enum('Y', 'N', 'W'), default='W', nullable=True)
     typ_zkousky = db.Column('typ_zkousky', db.Enum('A', 'B', 'C', 'C+E', 'D', 'D+E', 'T'), nullable=True)
-    stav_zkousky = db.Column('stav_zkousky', db.Enum('Řádná zkouška', 'Opravná zkouška-test+jízda', 'Opravná zkouška-jízda',
+    druh_zkousky = db.Column('druh_zkousky', db.Enum('Řádná zkouška', 'Opravná zkouška-test+jízda', 'Opravná zkouška-jízda',
                                                      'Opravná zkouška-technika', 'Opravná zkouška-technika+jízda', 'Profesní způsobilost-test'),
                                                      nullable=True)
     zaver = db.Column('zaver', db.Enum('Y', 'N', 'W'), default='W',nullable=True)

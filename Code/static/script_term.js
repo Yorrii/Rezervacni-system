@@ -76,7 +76,7 @@ document.getElementById('submit-forms').addEventListener('click', function() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = '/';
+            window.location.href = '/calendar';
         } else {
             alert('Nastala chyba při odesílání formulářů.');
         }
