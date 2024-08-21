@@ -101,6 +101,7 @@ def term(id):
 
                 for item in zaci:
                     zaci_data.append({
+                        'id': item.zak.id,
                         'typ_zkousky': item.typ_zkousky,
                         'druh_zkousky': item.druh_zkousky,
                         'ev_cislo': item.zak.ev_cislo,
@@ -245,6 +246,23 @@ def add_drivers():
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
+
+@app.route('/api/delete_student', methods=['POST'])
+def delete_student():
+    print('Jsem tu')
+    data = request.get_json()
+    zak_id = data.get('zak_id')
+    termin_id = data.get('termin_id')
+    
+    # Najdi záznam v tabulce Zapsany_zak a smaž ho
+    zapsany = Zapsany_zak.query.filter_by(id_zaka=zak_id, id_terminu=termin_id).first()
+    
+    if zapsany:
+        db.session.delete(zapsany)
+        db.session.commit()
+        return jsonify({'message': 'Student smazán'}), 200
+    else:
+        return jsonify({'error': 'Student nenalezen'}), 404
 
 @app.route('/logout')
 def logout():

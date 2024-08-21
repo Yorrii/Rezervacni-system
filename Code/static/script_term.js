@@ -5,23 +5,23 @@ function createEmptyForm() {
     form.innerHTML = `
         <div class="form-group">
             <label for="evidence_number">Evidenční číslo:</label>
-            <input type="text" name="evidence_number" placeholder="E.č" required>
+            <input type="text" name="evidence_number" id="evidence_number" placeholder="E.č" required>
         </div>
         <div class="form-group">
             <label for="first_name">Jméno:</label>
-            <input type="text" name="first_name" placeholder="Jméno" required>
+            <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
         </div>
         <div class="form-group">
             <label for="last_name">Příjmení:</label>
-            <input type="text" name="last_name" placeholder="Příjmení" required>
+            <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
         </div>
         <div class="form-group">
             <label for="birth_date">Datum narození:</label>
-            <input type="date" name="birth_date" required>
+            <input type="date" name="birth_date" id="birth_date" required>
         </div>
         <div class="form-group">
             <label for="license_category">Kategorie řidičského průkazu:</label>
-            <select name="license_category">
+            <select name="license_category" id="license_category">
                 <option value="A">A</option>
                 <option value="B" selected>B</option>
                 <option value="C">C</option>
@@ -32,7 +32,7 @@ function createEmptyForm() {
         </div>
         <div class="form-group">
             <label for="exam_type">Typ zkoušky:</label>
-            <select name="exam_type">
+            <select name="exam_type" id="exam_type">
                 <option value="řádná_zkouška">Řádná zkouška</option>
                 <option value="opravná_jízda_test">Opravná zkouška (jízda+test)</option>
                 <option value="opravná_jízda">Opravná zkouška (jízda)</option>
