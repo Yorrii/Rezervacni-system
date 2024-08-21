@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak
 import app_logic
@@ -9,7 +9,7 @@ app = Flask(__name__) # Vytvoření instance pro web
 app.config['SECRET_KEY'] = 'Secret'
 
 # Nastavení aplikace pro spoj s databází
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost:3306/resymost' # ://uživatel:heslo@kde_db_běží:port/název_db
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost:3306/resymost2' # ://uživatel:heslo@kde_db_běží:port/název_db
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app) # Spojení s databází
@@ -80,6 +80,16 @@ def term(id):
     termin = Termin.query.filter_by(id=id).first()
     if not termin: # podmínka zkontroluje jestli termín existuje
         abort(404)
+    if not current_user.isAdmin:
+        session['term_id'] = id
+        match termin.ac_flag:
+            case 'N': # pokud je termín neaktivní abort
+                abort(404)
+            case 'Y': # pokud je aktivní
+                #TODO natahat si zapsané žáky, ukázat ty z naší autoškoly a nedovolit překročit limit
+                return render_template('term.html', termin=termin)
+            case 'R':
+                pass #TODO
     
     if request.method=='POST':
         return redirect(url_for('/'))
@@ -147,7 +157,7 @@ def novy_zak():
     id_autoskoly = request.form['id_autoskoly']
 
     try:
-        zak = Zak(ev_cislo=ev_cislo, jmeno=jmeno, prijmeni=prijmeni, narozeni=narozeni, id_autoskoly=id_autoskoly)
+        zak = Zak(ev_cislo=ev_cislo, jmeno=jmeno, prijmeni=prijmeni, narozeni=narozeni, adresa=adresa, id_autoskoly=id_autoskoly)
         db.session.add(zak)
         db.session.commit()
     except:
@@ -186,29 +196,33 @@ def get_calendar_dates():
 
 @app.route('/add_drivers', methods=['POST'])
 def add_drivers():
-    #try:
-    # Získání dat ve formátu JSON
-    data = request.get_json()
+    try:
+        # Získání dat ve formátu JSON
+        data = request.get_json()
     
-    # Zpracování dat
-    for student in data:
-        evidence_number = student.get('evidence_number')
-        first_name = student.get('first_name')
-        last_name = student.get('last_name')
-        birth_date = student.get('birth_date')
-        license_category = student.get('license_category')
-        exam_type = student.get('exam_type')
-        
-        zak = Zak(ev_cislo=evidence_number, jmeno=first_name, prijmeni=last_name, narozeni=birth_date, id_autoskoly=current_user.id)
-        db.session.add(zak)
-        db.session.commit()
-        
-        # Odeslání odpovědi o úspěchu
-        return jsonify({"message": "Data přijata úspěšně"}), 200
-
-    #except Exception as e:
+        # Zpracování dat
+        for student in data:
+            evidence_number = student.get('evidence_number')
+            first_name = student.get('first_name')
+            last_name = student.get('last_name')
+            birth_date = student.get('birth_date')
+            license_category = student.get('license_category')
+            exam_type = student.get('exam_type').replace('_', ' ') # value se vrací ve tvaru něco_něco tak se mění '_' v ' '
+            
+            zak = Zak.query.filter_by(ev_cislo=evidence_number, jmeno=first_name, prijmeni=last_name,
+                                    narozeni=birth_date, id_autoskoly=current_user.id).first()
+            if zak:
+                zapis = Zapsany_zak(typ_zkousky=license_category, druh_zkousky=exam_type,
+                                    id_terminu=session.get('term_id'), id_autoskoly=current_user.id,id_zaka=zak.id)
+                print('zak se zapsal')
+                db.session.add(zapis)
+                db.session.commit()
+                return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu 
+            else:
+                return jsonify({"error": str(e)}), 400   
+    except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
-        #return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/logout')
 def logout():
