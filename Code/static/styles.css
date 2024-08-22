@@ -443,3 +443,52 @@ button:focus {
 button:hover {
     background-color: #0056b3;
 }
+
+/* Zarovnání .column na střed stránky */
+.term-main {
+    display: flex;
+    justify-content: center; /* Horizontální zarovnání na střed */
+    height: 100vh; /* Výška na celou stránku */
+}
+
+/* Box pro .term-info */
+.term-info {
+    display: inline-block; /* Box pro .term-info, jehož elementy jsou inline */
+    padding: 10px;
+    border: 1px solid #000; /* Můžeš přidat border pro zvýraznění */
+    margin-bottom: 20px; /* Odstup od .students-container */
+}
+
+/* Elementy .students-container inline */
+.students-container {
+    display: inline-block;
+    padding: 10px;
+    margin-top: 50px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+}
+
+/* .nazev zarovnaný na střed svého parent elementu */
+.nazev {
+    font-family: 'Work Sans';
+    font-size: 18px;
+    text-align: center; /* Text v .nazev je zarovnán na střed */
+    font-weight: bold; /* Ztučnění textu, pokud je potřeba */
+}
+
+/* Elementy .student-line inline */
+.student-line {
+    font-family: 'Work Sans';
+    display: flex; /* Flexbox pro zarovnání elementů inline */
+    flex-wrap: wrap; /* Zalomení na další řádek, pokud se nevejdou do jednoho řádku */
+    padding: 5px;
+    margin: 2px;
+    gap: auto; /* Mezera mezi jednotlivými elementy */
+}
+
+.student-line > * {
+    flex: 1; /* Každý dětský element zabere stejný podíl prostoru */
+    margin:  3px; /* Přidá mezery mezi elementy */
+    text-align: center; /* Zarovná obsah elementu na střed */
+}
