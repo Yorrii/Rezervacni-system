@@ -75,7 +75,7 @@ document.getElementById('submit-forms').addEventListener('click', function() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = '/term/{{ termin.id }}';
+            location.reload();
         } else {
             alert('Nastala chyba při odesílání formulářů.');
         }
