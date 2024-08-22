@@ -98,7 +98,6 @@ def term(id):
                     .all()
                 
                 zaci_data = []
-
                 for item in zaci:
                     zaci_data.append({
                         'id': item.zak.id,
@@ -110,10 +109,57 @@ def term(id):
                         'narozeni': item.zak.narozeni
                     })
 
-                return render_template('term.html', termin=termin, zaci=zaci_data)
+                volna_mista = termin.max_ridicu - Zapsany_zak.query.filter_by(id_terminu=termin.id, potvrzeni='Y').count()
+                print(volna_mista)
+
+                return render_template('term.html', termin=termin, volna_mista=volna_mista,zaci=zaci_data)
             case 'R':
                 pass #TODO
     
+    elif current_user.isAdmin:
+        match termin.ac_flag:
+            case 'Y':
+
+                zaci = Zapsany_zak.query \
+                    .join(Zak) \
+                    .join(Termin) \
+                    .filter(Zapsany_zak.id_terminu == id) \
+                    .all()
+                
+                zaci_v_as = {} # zde se jako klíče budou dávat id autoškol a hodnota bude list žáků
+                for item in zaci:
+                    autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
+                    if autoskola.nazev not in zaci_v_as:
+                        zaci_v_as[autoskola.nazev] = [{     
+                                                            'id': item.zak.id,                 
+                                                            'ev_cislo': item.zak.ev_cislo,
+                                                            'jmeno': item.zak.jmeno,
+                                                            'prijmeni': item.zak.prijmeni,
+                                                            'narozeni': item.zak.narozeni,
+                                                            'typ_zkousky': item.typ_zkousky,
+                                                            'druh_zkousky': item.druh_zkousky,
+                                                            'potvrzeni': item.potvrzeni
+                                                        }]
+                    elif autoskola.nazev in zaci_v_as:
+                         zaci_v_as[autoskola.nazev].append({
+                                                            'id': item.zak.id,                 
+                                                            'ev_cislo': item.zak.ev_cislo,
+                                                            'jmeno': item.zak.jmeno,
+                                                            'prijmeni': item.zak.prijmeni,
+                                                            'narozeni': item.zak.narozeni,
+                                                            'typ_zkousky': item.typ_zkousky,
+                                                            'druh_zkousky': item.druh_zkousky,
+                                                            'potvrzeni': item.potvrzeni
+                                                        })
+
+                srovnany_dict = dict(sorted(zaci_v_as.items()))
+                return render_template('term_admin.html', list_as=srovnany_dict, termin=termin)
+                             
+            case 'N':
+                pass
+            case 'R':
+                pass
+        
     if request.method=='POST':
         return redirect(url_for('/'))
     return render_template('term.html', termin=termin)
@@ -207,6 +253,7 @@ def novy_termin():
         flash('Termín se přidal!', category='mess_success')
         return redirect(url_for('admin'))
 
+@login_required
 @app.route('/calendar_api', methods=['GET'])
 def get_calendar_dates():
     # Simulace termínů, které máš v databázi
@@ -217,6 +264,7 @@ def get_calendar_dates():
     ]
     return jsonify(events)
 
+@login_required
 @app.route('/add_drivers', methods=['POST'])
 def add_drivers():
     try:
@@ -246,7 +294,9 @@ def add_drivers():
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
+    
 
+@login_required
 @app.route('/api/delete_student', methods=['POST'])
 def delete_student():
     print('Jsem tu')
