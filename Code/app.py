@@ -16,7 +16,7 @@ db.init_app(app) # Spojení s databází
 loginManager = LoginManager(app)
 loginManager.login_view = 'home'
 
-
+@app.route("/login", methods=['GET', 'POST'])
 @app.route("/", methods=['GET', 'POST'])
 def home():
     """

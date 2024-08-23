@@ -46,10 +46,18 @@ function createEmptyForm() {
     return form;
 }
 
+const maxForms = document.getElementById('max-forms').value;
+
 document.getElementById('add-form').addEventListener('click', function() {
     const formList = document.getElementById('form-list');
-    const newForm = createEmptyForm();
-    formList.appendChild(newForm);
+    const currentForms = formList.getElementsByTagName('form').length;
+
+    if (currentForms < maxForms) {
+        const newForm = createEmptyForm();
+        formList.appendChild(newForm);
+    } else {
+        alert(`Nelze přidat více formulářů. Je pouze ${maxForms} volných míst.`);
+    }
 });
 
 document.getElementById('remove-form').addEventListener('click', function() {
