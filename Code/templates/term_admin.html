@@ -23,7 +23,7 @@
                 {% for zak in students %}
                     {% if zak['potvrzeni'] == 'Y' %}
                         <div class="student-line" id="zak_{{ zak['id'] }}">
-                            <p>zapsany zak</p>
+                            <p>zapsany</p>
                             <p>{{ zak['ev_cislo']}}</p>
                             <p>{{ zak['jmeno']}}</p>
                             <p>{{ zak['prijmeni']}}</p>
@@ -33,7 +33,7 @@
                         </div>
                     {% else %}
                     <div class="student-line" id="zak_{{ zak['id'] }}">
-                        <p>NEEEEEEEEEEEEE</p>
+                        <p>NEE</p>
                         <p>{{ zak['ev_cislo']}}</p>
                         <p>{{ zak['jmeno']}}</p>
                         <p>{{ zak['prijmeni']}}</p>

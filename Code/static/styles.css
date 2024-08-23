@@ -451,6 +451,12 @@ button:hover {
     height: 100vh; /* Výška na celou stránku */
 }
 
+.column-div {
+    width: 80%;
+    display: flexbox;
+    justify-content: center;
+}
+
 /* Box pro .term-info */
 .term-info {
     display: inline-block; /* Box pro .term-info, jehož elementy jsou inline */
@@ -469,6 +475,10 @@ button:hover {
     width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
 }
 
+.students-container:empty {
+    display: none;
+}
+
 /* .nazev zarovnaný na střed svého parent elementu */
 .nazev {
     font-family: 'Work Sans';
@@ -484,11 +494,11 @@ button:hover {
     flex-wrap: wrap; /* Zalomení na další řádek, pokud se nevejdou do jednoho řádku */
     padding: 5px;
     margin: 2px;
-    gap: auto; /* Mezera mezi jednotlivými elementy */
+    gap: 0px; /* Mezera mezi jednotlivými elementy */
 }
 
 .student-line > * {
-    flex: 1; /* Každý dětský element zabere stejný podíl prostoru */
+    flex: auto; /* Každý dětský element zabere stejný podíl prostoru */
     margin:  3px; /* Přidá mezery mezi elementy */
     text-align: center; /* Zarovná obsah elementu na střed */
 }
