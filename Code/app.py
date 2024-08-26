@@ -138,9 +138,13 @@ def term(id):
                     .filter(Zapsany_zak.id_terminu == id) \
                     .all()
                 
+                komisari = Komisar.query.all() #vrací list objektů Komisar
+                
                 zaci_v_as = {} # zde se jako klíče budou dávat název autoškol a hodnota bude list žáků
                 for item in zaci:
                     autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
+                    komisar = next((k for k in komisari if k.id == item.id_komisare), None) 
+                    print(komisar)
                     if autoskola.nazev not in zaci_v_as:
                         zaci_v_as[autoskola.nazev] = [{     
                                                             'id': item.zak.id,                 
@@ -150,7 +154,9 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
-                                                            'potvrzeni': item.potvrzeni
+                                                            'potvrzeni': item.potvrzeni,
+                                                            'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
+                                                            'cas': '8:00'
                                                         }]
                     elif autoskola.nazev in zaci_v_as:
                          zaci_v_as[autoskola.nazev].append({
@@ -161,12 +167,15 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
-                                                            'potvrzeni': item.potvrzeni
+                                                            'potvrzeni': item.potvrzeni,
+                                                            #'komisar': (item.komisar.jmeno, item.komisar.prijmeni),
+                                                            'cas': '8:00'
                                                         })
 
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
-                return render_template('term_admin.html', list_as=srovnany_dict, termin=termin)
-                             
+                return render_template('term_admin.html', list_as=srovnany_dict, termin=termin, komisari= komisari)
+                
+
             case 'N':
                 #TODO Upravit termín nebo zapsat žáky
                 pass

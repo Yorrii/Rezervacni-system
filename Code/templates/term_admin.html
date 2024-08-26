@@ -18,29 +18,36 @@
                 <div>{{ volna_mista }}</div> 
             </div>
         {% for nazev, students in list_as.items() %}
-            <div class="students-container" id="{{nazev}}">
+            <div class="students-container-admin" id="{{nazev}}">
                 <div class="nazev">{{nazev}}</div>
                 {% for zak in students %}
                     {% if zak['potvrzeni'] == 'Y' %}
-                        <div class="student-line" id="zak_{{ zak['id'] }}">
-                            <p>zapsany</p>
-                            <p>{{ zak['ev_cislo']}}</p>
-                            <p>{{ zak['jmeno']}}</p>
-                            <p>{{ zak['prijmeni']}}</p>
-                            <p>{{ zak['narozeni']}}</p>
-                            <p>{{ zak['typ_zkousky']}}</p>
-                            <p>{{ zak['druh_zkousky']}}</p>         
+                        <div class="student-line-admin" id="zak_{{ zak['id'] }}">
+                            <div>zapsany</div>
+                            <div>{{ zak['ev_cislo']}}</div>
+                            <div>{{ zak['jmeno']}}</div>
+                            <div>{{ zak['prijmeni']}}</div>
+                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['typ_zkousky']}}</div>
+                            <div>{{ zak['druh_zkousky']}}</div>
+                            <div>{{ zak['komisar'] }}</div>
+                            <div>{{ zak['cas']}}</div>         
                         </div>
                     {% else %}
-                    <div class="student-line" id="zak_{{ zak['id'] }}">
-                        <p>NEE</p>
-                        <p>{{ zak['ev_cislo']}}</p>
-                        <p>{{ zak['jmeno']}}</p>
-                        <p>{{ zak['prijmeni']}}</p>
-                        <p>{{ zak['narozeni']}}</p>
-                        <p>{{ zak['typ_zkousky']}}</p>
-                        <p>{{ zak['druh_zkousky']}}</p>         
-                    </div>
+                        <div class="student-line-admin" id="zak_{{ zak['id'] }}">                       
+                            <div>{{ zak['ev_cislo']}}</div>
+                            <div>{{ zak['jmeno']}}</div>
+                            <div>{{ zak['prijmeni']}}</div>
+                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['typ_zkousky']}}</div>
+                            <div>{{ zak['druh_zkousky']}}</div>
+                            <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="8:00" required>
+                            <select name="commissar" id="commissar-for-zak_{{zak['id']}}" required>
+                                {% for komisar in komisari %}
+                                    <option value="{{komisar['id']}}">{{komisar['jmeno']}} {{komisar['prijmeni']}}</option>
+                                {% endfor %}
+                            </select>         
+                        </div>
                     {% endif %}
                 {% endfor %}
             </div>
