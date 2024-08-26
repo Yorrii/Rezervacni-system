@@ -18,20 +18,34 @@
             <h3>{{ volna_mista }}</h3> 
         </div>
         <input type="hidden" id="max-forms" value="{{ volna_mista }}">
-        {% if zaci %}
-        <div class="students-container" id="students_container">
-            {% for zak in zaci %}
-                <div class="student-line" id="zak_{{ zak['id'] }}">
-                    <p>{{ zak['ev_cislo']}}</p>
-                    <p>{{ zak['jmeno']}}</p>
-                    <p>{{ zak['prijmeni']}}</p>
-                    <p>{{ zak['narozeni']}}</p>
-                    <p>{{ zak['typ_zkousky']}}</p>
-                    <p>{{ zak['druh_zkousky']}}</p>
-                    <button class="delete-student" id="delete-student" data-zakId="{{zak['id']}}" data-terminId="{{termin.id}}">Smazat</button>
-                </div> 
-            {% endfor %}
-        </div>
+        {% if zaci_Y %}
+            <div class="students-container" id="students_container">
+                {% for zak in zaci_Y %}
+                    <div class="student-line" id="zak_{{ zak['id'] }}">
+                        <p>{{ zak['ev_cislo']}}</p>
+                        <p>{{ zak['jmeno']}}</p>
+                        <p>{{ zak['prijmeni']}}</p>
+                        <p>{{ zak['narozeni']}}</p>
+                        <p>{{ zak['typ_zkousky']}}</p>
+                        <p>{{ zak['druh_zkousky']}}</p>
+                    </div> 
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% if zaci_W %}
+            <div class="students-container" id="students_container">
+                {% for zak in zaci_W %}
+                    <div class="student-line" id="zak_{{ zak['id'] }}">
+                        <p>{{ zak['ev_cislo']}}</p>
+                        <p>{{ zak['jmeno']}}</p>
+                        <p>{{ zak['prijmeni']}}</p>
+                        <p>{{ zak['narozeni']}}</p>
+                        <p>{{ zak['typ_zkousky']}}</p>
+                        <p>{{ zak['druh_zkousky']}}</p>
+                        <button class="delete-student" id="delete-student" data-zakId="{{zak['id']}}" data-terminId="{{termin.id}}">Smazat</button>
+                    </div> 
+                {% endfor %}
+            </div>
         {% endif %}
         <div class="form-container">
             <div id="form-list">

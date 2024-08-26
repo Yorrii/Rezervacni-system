@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak
+from sqlalchemy import or_
 import app_logic
 from hashlib import sha256
 
@@ -86,47 +87,58 @@ def term(id):
         session['term_id'] = id
 
         match termin.ac_flag:
-            case 'N': # pokud je termín neaktivní abort
+            case 'N': # pokud je termín neaktivní abort 
                 abort(404)
             case 'Y': # pokud je aktivní
-                #TODO natahat si zapsané žáky, ukázat ty z naší autoškoly a nedovolit překročit limit
-
                 zaci = Zapsany_zak.query \
                     .join(Zak) \
                     .join(Termin) \
-                    .filter(Zapsany_zak.id_terminu == id, Zak.id_autoskoly == current_user.id) \
+                    .filter(Zapsany_zak.id_terminu == id, Zak.id_autoskoly == current_user.id, or_(Zapsany_zak.potvrzeni == 'Y', Zapsany_zak.potvrzeni == 'W')) \
                     .all()
                 
-                zaci_data = []
+                zaci_Y = []
+                zaci_W = []
                 for item in zaci:
-                    zaci_data.append({
-                        'id': item.zak.id,
-                        'typ_zkousky': item.typ_zkousky,
-                        'druh_zkousky': item.druh_zkousky,
-                        'ev_cislo': item.zak.ev_cislo,
-                        'jmeno': item.zak.jmeno,
-                        'prijmeni': item.zak.prijmeni,
-                        'narozeni': item.zak.narozeni
-                    })
+                    if item.potvrzeni == 'Y':
+                        zaci_Y.append({
+                            'id': item.zak.id,
+                            'typ_zkousky': item.typ_zkousky,
+                            'druh_zkousky': item.druh_zkousky,
+                            'ev_cislo': item.zak.ev_cislo,
+                            'jmeno': item.zak.jmeno,
+                            'prijmeni': item.zak.prijmeni,
+                            'narozeni': item.zak.narozeni,
+                            'potvrzeni': item.potvrzeni
+                        })
+                    if item.potvrzeni == 'W':
+                        zaci_W.append({
+                            'id': item.zak.id,
+                            'typ_zkousky': item.typ_zkousky,
+                            'druh_zkousky': item.druh_zkousky,
+                            'ev_cislo': item.zak.ev_cislo,
+                            'jmeno': item.zak.jmeno,
+                            'prijmeni': item.zak.prijmeni,
+                            'narozeni': item.zak.narozeni,
+                            'potvrzeni': item.potvrzeni
+                        })
 
-                volna_mista = termin.max_ridicu - Zapsany_zak.query.filter_by(id_terminu=termin.id, potvrzeni='Y').count()
-                print(volna_mista)
+                volna_mista = termin.max_ridicu - Zapsany_zak.query.filter_by(id_terminu=termin.id, potvrzeni='Y').count() - len(zaci_W)
 
-                return render_template('term.html', termin=termin, volna_mista=volna_mista,zaci=zaci_data)
+                return render_template('term.html', termin=termin, volna_mista=volna_mista,zaci_Y=zaci_Y, zaci_W=zaci_W)
             case 'R':
-                pass #TODO
-    
+                #TODO read-only, vrátí seznam studentů ze zkoušky, jejich časy a závěr
+                pass 
     elif current_user.isAdmin:
         match termin.ac_flag:
             case 'Y':
-
+                # Vrátí všechny zapsané studenty, schromáždí je pod jejich autoškoly a zobrazí jestli jsou už přijmutí nebo ne!
                 zaci = Zapsany_zak.query \
                     .join(Zak) \
                     .join(Termin) \
                     .filter(Zapsany_zak.id_terminu == id) \
                     .all()
                 
-                zaci_v_as = {} # zde se jako klíče budou dávat id autoškol a hodnota bude list žáků
+                zaci_v_as = {} # zde se jako klíče budou dávat název autoškol a hodnota bude list žáků
                 for item in zaci:
                     autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
                     if autoskola.nazev not in zaci_v_as:
@@ -156,8 +168,10 @@ def term(id):
                 return render_template('term_admin.html', list_as=srovnany_dict, termin=termin)
                              
             case 'N':
+                #TODO Upravit termín nebo zapsat žáky
                 pass
             case 'R':
+                #TODO zapsat a zobrazit závěr zkoušky
                 pass
         
     if request.method=='POST':
