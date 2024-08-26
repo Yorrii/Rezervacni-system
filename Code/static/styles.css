@@ -467,16 +467,36 @@ button:hover {
 
 /* Elementy .students-container inline */
 .students-container {
-    display: inline-block;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    align-items: center;
     padding: 10px;
-    margin-top: 50px;
+    margin-top: 30px;
     border-radius: 4px;
     background-color: #C6DAF2;
     width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
 }
 
-.students-container:empty {
-    display: none;
+.students-container-admin {
+    display: inline-block;
+    padding: 10px;
+    margin-top: 30px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%;
+}
+
+.students-container_button {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    margin-top: 30px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
 }
 
 /* .nazev zarovnaný na střed svého parent elementu */
@@ -490,15 +510,34 @@ button:hover {
 /* Elementy .student-line inline */
 .student-line {
     font-family: 'Work Sans';
-    display: flex; /* Flexbox pro zarovnání elementů inline */
+    display: contents; /* Flexbox pro zarovnání elementů inline */
     flex-wrap: wrap; /* Zalomení na další řádek, pokud se nevejdou do jednoho řádku */
     padding: 5px;
     margin: 2px;
     gap: 0px; /* Mezera mezi jednotlivými elementy */
+    align-items: center;
+    justify-content: center;
+}
+
+.student-line div {
+    margin: 0;
+    padding: 5px;
+    display: flex;
+    align-items: center; /* Vertically center the text */
+    justify-content: center; /* Horizontally center the text */
 }
 
 .student-line > * {
     flex: auto; /* Každý dětský element zabere stejný podíl prostoru */
     margin:  3px; /* Přidá mezery mezi elementy */
     text-align: center; /* Zarovná obsah elementu na střed */
+}
+
+.student-line-admin {
+    font-family: 'Work Sans';
+    display: flex; /* Flexbox pro zarovnání elementů inline */
+    flex-wrap: wrap; /* Zalomení na další řádek, pokud se nevejdou do jednoho řádku */
+    padding: 5px;
+    margin: 2px;
+    gap: 0px;
 }
