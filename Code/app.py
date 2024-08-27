@@ -343,8 +343,11 @@ def novy_termin():
 
 @login_required
 @app.route('/calendar_api', methods=['GET'])
-def get_calendar_dates():
-    # Simulace termínů, které máš v databázi
+def get_calendar_dates(): #TODO
+    """
+    API bude vracet informace o termínech aby se zobrazili v kalendáři
+
+    """
     events = [
         {"date": "2024-08-20"},
         {"date": "2024-08-22"},
@@ -355,6 +358,17 @@ def get_calendar_dates():
 @login_required
 @app.route('/add_drivers', methods=['POST'])
 def add_drivers():
+    """
+    API metoda pro vytvoření autoškoly, určená pro použití pouze během testování
+
+    Parametry:
+        request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o autoškole
+
+    Vrací:
+        Exception: pokud při vytvoření a nebo commitu do databáze vznikne error
+        flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
+        redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
+    """
     try:
         # Získání dat ve formátu JSON
         data = request.get_json()
@@ -415,7 +429,6 @@ def enroll_drivers():
 @login_required
 @app.route('/api/delete_student', methods=['POST'])
 def delete_student():
-    print('Jsem tu')
     data = request.get_json()
     zak_id = data.get('zak_id')
     termin_id = data.get('termin_id')
