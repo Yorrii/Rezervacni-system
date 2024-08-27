@@ -79,6 +79,7 @@ class Zapsany_zak(db.Model):
     id_komisare = db.Column('id_komisare', db.Integer, db.ForeignKey('komisari.id'), nullable=True)
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=True)
     id_zaka = db.Column('id_zaka', db.Integer, db.ForeignKey('zaci.id'), nullable=True)
+    zacatek = db.Column('zacatek', db.Time, nullable=True)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('id_terminu', 'id_zaka'),
