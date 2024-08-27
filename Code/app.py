@@ -70,13 +70,23 @@ def calendar():
 @login_required
 def term(id):
     """
-    Stránka slouží k zápisu žáků na termín a přehled zapsaných žáků
+    Stránka slouží k zobrazení a zápisu žáků, k potvrzení zápisu, přidání času pro začátek, přidání komisaře k zápisu.
+    Chování je rozdělené podle toho, jestli je přistupující user nebo admin.
 
     Parametry:
         id (str): id místnosti, která se má načíst
 
     Vrací:
-        #TODO
+        user:
+        -----
+            abort(404): při přístupu na neexistující termín nebo termín, který není ještě aktivní
+            term.html:  pokud je termín aktivní('Y'), vrací se stránka, kde user může přihlásit žáky,
+                        upravit přihlášené žáky nebo zobrazit si potvrzené žáky
+        admin:
+        -----
+            term_admin.html: pokud je termín aktivní('Y') admin uvidí všechny zapsané žáky rozdělené podle autoškol,
+                        zde jim může dodat zkoušejícího a začátek zkoušky a poté změnit jejich potvrzení na aktivní('Y')
+
     """
     termin = Termin.query.filter_by(id=id).first()
 
@@ -224,7 +234,15 @@ def admin():
 @app.route('/create_autoskola', methods=['POST'])
 def nova_autoskola():
     """
-    Vytvoří novou autoškolu
+    API metoda pro vytvoření autoškoly, určená pro použití pouze během testování
+
+    Parametry:
+        request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o autoškole
+
+    Vrací:
+        Exception: pokud při vytvoření a nebo commitu do databáze vznikne error
+        flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
+        redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
     """
     nazev = request.form['nazev']
     da_schranka = request.form['datova_schranka']
@@ -243,7 +261,15 @@ def nova_autoskola():
 @app.route('/create_komisar', methods=['POST'])
 def novy_komisar():
     """
-    Vytvoří nového komisaře
+    API metoda pro vytvoření komisaře, určená pro použití pouze během testování
+
+    Parametry:
+        request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o komisaři
+
+    Vrací:
+        raise (str): pokud při vytvoření a nebo commitu do databáze vznikne error
+        flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
+        redirect(url_for(str)): po přijmutí a vytvoření komisaře vrátí uživatele zpátky na /admin
     """
     email = request.form['email']
     heslo = sha256(request.form['heslo'].encode('utf-8')).hexdigest()
@@ -262,7 +288,15 @@ def novy_komisar():
 @app.route('/create_zak', methods=['POST'])
 def novy_zak():
     """
-    Vytvoří nového žáka
+    API metoda pro vytvoření žáka, určená pro použití pouze během testování
+
+    Parametry:
+        request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o žákovi
+
+    Vrací:
+        str: pokud při vytvoření a nebo commitu do databáze vznikne error
+        flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
+        redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
     """
     ev_cislo = request.form['ev_cislo']
     jmeno = request.form['jmeno']
@@ -284,7 +318,15 @@ def novy_zak():
 @app.route('/create_termin', methods=['POST'])
 def novy_termin():
     """
-    Vytvoří nový termín žáka
+    API metoda pro vytvoření termínu, určená pro použití pouze během testování
+
+    Parametry:
+        request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o termínu
+
+    Vrací:
+        str: pokud při vytvoření a nebo commitu do databáze vznikne error
+        flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
+        redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
     """
     datum = request.form['datum']
     max_ridicu = request.form['max_ridicu']
