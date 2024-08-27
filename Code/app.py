@@ -82,9 +82,11 @@ def term(id):
 
     if not termin: # podmínka zkontroluje jestli termín existuje
         abort(404)
+    else:
+        session['term_id'] = id #pokud termín existuje dáme ho do sessionu protože s ním budeme ještě pracovat
 
     if not current_user.isAdmin:
-        session['term_id'] = id
+        
 
         match termin.ac_flag:
             case 'N': # pokud je termín neaktivní abort 
@@ -156,7 +158,7 @@ def term(id):
                                                             'druh_zkousky': item.druh_zkousky,
                                                             'potvrzeni': item.potvrzeni,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
-                                                            'cas': '8:00'
+                                                            'cas': item.zacatek
                                                         }]
                     elif autoskola.nazev in zaci_v_as:
                          zaci_v_as[autoskola.nazev].append({
@@ -168,8 +170,8 @@ def term(id):
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
                                                             'potvrzeni': item.potvrzeni,
-                                                            #'komisar': (item.komisar.jmeno, item.komisar.prijmeni),
-                                                            'cas': '8:00'
+                                                            'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
+                                                            'cas': item.zacatek
                                                         })
 
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
@@ -317,8 +319,36 @@ def add_drivers():
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
-    
 
+@login_required
+@app.route('/enroll', methods=['POST'])
+def enroll_drivers():
+    try:
+        # Získání dat ve formátu JSON
+        data = request.get_json()
+        
+        # Zpracování dat
+    
+        id_studenta = data.get('id')
+        time_start = data.get('time_start')
+        id_commissar = data.get('commissar')
+        
+        zak = Zak.query.filter_by(id= id_studenta).first()
+        if zak:
+            zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
+            zapis.potvrzeni = 'Y'
+            zapis.zacatek = time_start
+            zapis.id_komisare = id_commissar
+            print('zak se zapsal na termín')
+            
+            db.session.commit()
+            return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu 
+        else:
+            return jsonify({"error": str(e)}), 400   
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400   
+    
 @login_required
 @app.route('/api/delete_student', methods=['POST'])
 def delete_student():
