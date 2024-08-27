@@ -1,0 +1,38 @@
+{% extends 'template.html' %}
+{% block title %}{{termin.datum}}{% endblock %}
+{% block nav %}
+    <nav>
+        <div class="navbar">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+            <a class="logout" href="{{ url_for('logout') }}">Odhlásit se</a>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+    <main class="term-main">
+        <div class="column-div">
+            <div class="term-info">       
+                <div>{{termin.datum}}</div>
+                <div>{{termin.max_ridicu}}</div>
+                <div>{{ volna_mista }}</div> 
+            </div>
+            <div class="students-container" id="{{nazev}}">
+                {% for zak in students %}
+                        <div class="student-line" id="zak_{{ zak['id'] }}">
+                            <div>{{ zak['ev_cislo']}}</div>
+                            <div>{{ zak['jmeno']}}</div>
+                            <div>{{ zak['prijmeni']}}</div>
+                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['typ_zkousky']}}</div>
+                            <div>{{ zak['druh_zkousky']}}</div>
+                            <div>{{ zak['komisar'] }}</div>
+                            <div>{{ zak['cas']}}</div>
+                            <div>{{ zak['zaver']}}</div>
+                            <div>{{ zak['cas']}}</div>               
+                        </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+{% endblock %}

@@ -453,8 +453,25 @@ button:hover {
 
 .column-div {
     width: 80%;
-    display: flexbox;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    /*justify-content: center;*/
+    align-items: center;
+    height: auto; /* Automaticky přizpůsobí výšku obsahu */
+    /*overflow: hidden;*/
+}
+
+.term-container {
+    font-family: 'Work Sans';
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 30px;
+    border-radius: 4px;
+    width: 100%;
+    align-items: center;
+    background-color: #C6DAF2;
+    width: 100%;
 }
 
 /* Box pro .term-info */
@@ -471,7 +488,6 @@ button:hover {
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     align-items: center;
-    padding: 10px;
     margin-top: 30px;
     border-radius: 4px;
     background-color: #C6DAF2;

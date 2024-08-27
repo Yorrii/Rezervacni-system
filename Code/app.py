@@ -129,7 +129,28 @@ def term(id):
                 return render_template('term.html', termin=termin, volna_mista=volna_mista,zaci_Y=zaci_Y, zaci_W=zaci_W)
             case 'R':
                 #TODO read-only, vrátí seznam studentů ze zkoušky, jejich časy a závěr
-                pass 
+                zaci = Zapsany_zak.query \
+                    .join(Zak) \
+                    .join(Termin) \
+                    .filter(Zapsany_zak.id_terminu == id, Zak.id_autoskoly == current_user.id, Zapsany_zak.potvrzeni == 'Y') \
+                    .all()
+                
+                zaci = []
+                for item in zaci:
+                        zaci.append({
+                            'id': item.zak.id,
+                            'typ_zkousky': item.typ_zkousky,
+                            'druh_zkousky': item.druh_zkousky,
+                            'ev_cislo': item.zak.ev_cislo,
+                            'jmeno': item.zak.jmeno,
+                            'prijmeni': item.zak.prijmeni,
+                            'narozeni': item.zak.narozeni,
+                            'potvrzeni': item.potvrzeni,
+                            'zaver': item.zaver,
+                            'cas': item.zacatek
+                        })
+                return render_template('term_read.html', termin=termin, zaci=zaci)
+                 
     elif current_user.isAdmin:
         match termin.ac_flag:
             case 'Y':

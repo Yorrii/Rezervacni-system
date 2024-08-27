@@ -13,9 +13,9 @@
 <main class="term-main">
     <div class="column-div">
         <div class="term-container">       
-            <h3>{{termin.datum}}</h3>
-            <h3>{{termin.max_ridicu}}</h3>
-            <h3>{{ volna_mista }}</h3> 
+            <h3>Datum: {{termin.datum}}</h3>
+            <h3>Místa: {{termin.max_ridicu}}</h3>
+            <h3>Volná místa: {{ volna_mista }}</h3> 
         </div>
         <input type="hidden" id="max-forms" value="{{ volna_mista }}">
         {% if zaci_Y %}
