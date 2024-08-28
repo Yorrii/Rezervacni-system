@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak
+from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo
 from sqlalchemy import or_
 import app_logic
 from hashlib import sha256
@@ -219,6 +219,20 @@ def term(id):
     if request.method=='POST':
         return redirect(url_for('/'))
     return render_template('term.html', termin=termin)
+
+@app.route('/profil', methods=['GET', 'POST'])
+@login_required
+def profil():
+
+    id = current_user.id
+    skola = Autoskola.query.filter_by(id=id).first()
+    seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
+    print(id)
+    return render_template('profil.html', vozidla= seznam_vozidel)
+
+@app.route('/sign_up', methods=['GET', 'POST'])
+def sign_up():
+    pass
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
