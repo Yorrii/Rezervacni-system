@@ -89,7 +89,6 @@ class Zapsany_zak(db.Model):
     komisar = db.relationship('Komisar', backref='zapsani', lazy=True)
     autoskola = db.relationship('Autoskola', backref='zapsani', lazy=True)
 
-
 class Zaznam(db.Model):
     """
     Třída Zaznam je model reprezentující tabulku zaznamy v DB
@@ -101,3 +100,12 @@ class Zaznam(db.Model):
     kdy = db.Column('kdy', db.DateTime, nullable=True)
     zprava = db.Column('zprava', db.Text, nullable=True)
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=True)
+
+class Vozidlo(db.Model):
+    __tablename__ = 'vozidla'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    znacka = db.Column('znacka', db.String(100), nullable=False)
+    model = db.Column('model', db.String(100), nullable=False)
+    spz = db.Column('spz', db.String(10))
+    id_autoskoly = db.Column('id_autoskoly',db.Integer, db.ForeignKey('autoškoly.id'), nullable=False)
