@@ -228,9 +228,13 @@ def profil():
     seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
     return render_template('profil.html', vozidla= seznam_vozidel, autoskola=skola)
 
-@app.route('/sign_up', methods=['GET', 'POST'])
-def sign_up():
-    pass
+@app.route('/teaching_training', methods=['GET', 'POST'])
+def teaching_training():
+    #TODO: endpoint pro zápis řidičů žádajících o výuku a výcvik
+    autoskola = Autoskola.query.filter_by(id=current_user.id).first()
+    vozidla = Vozidlo.query.filter_by(id_autoskoly=current_user.id).all()
+
+    return render_template('sign_up.html', vozidla=vozidla, autoskola=autoskola)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():

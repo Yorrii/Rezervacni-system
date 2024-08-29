@@ -1,0 +1,68 @@
+{% extends 'template.html' %}
+{% block title %}Výuka a výcvik{% endblock %}
+{% block nav %}
+    <nav>
+        <div class="navbar">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+            <a class="logout" href="{{ url_for('logout') }}">Odhlásit se</a>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+<main class="term-main">
+    <div class="column-div">
+        <div class="term-container">
+            <form class="">       
+                <input type="text" name="adress" id="adress" placeholder="Adrasa účebny"> 
+                <input type="date" name="start-of-training" id="start-of-training"> 
+                <select name="vehicle-list" id="vehicle-list" multiple>
+                    {% for vozidlo in vozidla %}
+                        <option value="{{vozidlo.id}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
+                    {% endfor %}
+                </select>
+            </form>        
+        </div>   
+        <div class="form-container">
+            <div id="form-list">
+                <form class="exam-form">
+                    <div class="form-group">
+                        <input type="text" name="evidence_number" id="evidence_number" placeholder="Evidenční číslo" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" name="birth_date" id="birth_date" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="adress" id="adress" placeholder="Adrasa" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="drivers_license" id="drivers_license" placeholder="Číslo řidičského průkazu-Nepoviné">
+                    </div>
+                    <div class="form-group">
+                        <select name="type-of-teaching" id="type-of-teaching">
+                            <option value="základní-výuka-a-výcvik">Základní výuka a výcvik</option>
+                            <option value="sdružená-výuka-a-výcvik" selected>Sdružená výuka a výcvik</option>
+                            <option value="rozšiřující-výuka-a-výcvik">Rozšiřující výuka a výcvik</option>
+                            <option value="výuka-a-výcvik-podle-individuálního-plánu">Výuka a výcvik podle individuálního plánu</option>
+                            <option value="doplňující-výuka-a-výcvik">Doplňující výuka a výcvik</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="buttons">
+                <button type="button" id="add-form">Přidat další formulář</button>
+                <button type="button" id="remove-form">Odebrat poslední formulář</button>
+            </div>
+            <div class="buttons">
+                <button type="submit" id="submit-forms">Odeslat všechny formuláře</button>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
