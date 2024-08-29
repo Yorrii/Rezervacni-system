@@ -45,6 +45,7 @@ class Autoskola(db.Model):
     da_schranka = db.Column('datova_schranka', db.String(100), nullable=True)
     email = db.Column('email', db.String(70), nullable=True)
     heslo = db.Column('heslo', db.String(70), nullable=True)
+    adresa_u = db.Column('adresa_ucebny', db.String(100), nullable=True)
 
     zaci = db.relationship('Zak', backref='autoskola', lazy=True)
     zaznami = db.relationship('Zaznam', backref='autoskoly', lazy=True)
@@ -108,4 +109,4 @@ class Vozidlo(db.Model):
     znacka = db.Column('znacka', db.String(100), nullable=False)
     model = db.Column('model', db.String(100), nullable=False)
     spz = db.Column('spz', db.String(10))
-    id_autoskoly = db.Column('id_autoskoly',db.Integer, db.ForeignKey('autoškoly.id'), nullable=False)
+    id_autoskoly = db.Column('id_autoskoly',db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)

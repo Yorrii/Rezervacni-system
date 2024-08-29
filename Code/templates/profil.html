@@ -12,9 +12,28 @@
 {% block main %}
 <main class="main">
     <div class="column-div">
-        {% for vozidlo in vozidla %}
-            <div>{{vozidlo.znacka}} {{ vozidlo.model }} {{vozidlo.spz}}</div>
-        {% endfor %}
+        <div class='user-info'>
+            <div>{{ autoskola.nazev }}</div>
+            <div>{{ autoskola.adresa_u }}</div>
+        </div>
+        <div class="contain-two-divs">
+            <div class="vehicle-list">
+                {% for vozidlo in vozidla %}
+                    <div class="vehicle-column">{{vozidlo.znacka}} {{ vozidlo.model }} {{vozidlo.spz}}</div>
+                {% endfor %}
+            </div>
+            <div class="vehicle-add">
+                <form action="/api/add_vehicle" id="vehicle-form" autocomplete="off" method="post">
+                    <label for="znacka">Značka:</label>
+                    <input type="text" name="znacka" id="znacka">
+                    <label for="model">Model:</label>
+                    <input type="text" name="model" id="model">
+                    <label for="spz">Spz:</label>
+                    <input type="text" name="spz" id="spz">
+                    <button type="submit" form="vehicle-form">Přidat</button>
+                </form>
+            </div>  
+        </div>
     </div>        
 </main>
 {% endblock %}

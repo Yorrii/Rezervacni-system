@@ -177,7 +177,6 @@ def term(id):
                 for item in zaci:
                     autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
                     komisar = next((k for k in komisari if k.id == item.id_komisare), None) 
-                    print(komisar)
                     if autoskola.nazev not in zaci_v_as:
                         zaci_v_as[autoskola.nazev] = [{     
                                                             'id': item.zak.id,                 
@@ -227,8 +226,7 @@ def profil():
     id = current_user.id
     skola = Autoskola.query.filter_by(id=id).first()
     seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
-    print(id)
-    return render_template('profil.html', vozidla= seznam_vozidel)
+    return render_template('profil.html', vozidla= seznam_vozidel, autoskola=skola)
 
 @app.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
@@ -260,10 +258,11 @@ def nova_autoskola():
     """
     nazev = request.form['nazev']
     da_schranka = request.form['datova_schranka']
+    adresa_u = request.form['adresa_ucebny']
     email = request.form['email']
     heslo = sha256(request.form['heslo'].encode('utf-8')).hexdigest()
     try:
-        autoskola = Autoskola(nazev=nazev, da_schranka=da_schranka,email=email, heslo=heslo)
+        autoskola = Autoskola(nazev=nazev, da_schranka=da_schranka, adresa_u=adresa_u, email=email, heslo=heslo)
         db.session.add(autoskola)
         db.session.commit()
     except:
@@ -439,7 +438,22 @@ def enroll_drivers():
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400   
-    
+
+@login_required
+@app.route('/api/add_vehicle', methods=['POST'])
+def add_vehicle():
+    znacka= request.form['znacka']
+    model= request.form['model']
+    spz= request.form['spz']
+    #try:
+    vozidlo = Vozidlo(znacka=znacka, model=model, spz=spz, id_autoskoly= current_user.id)
+    db.session.add(vozidlo)
+    db.session.commit()
+    #except:
+    #    raise Exception
+    #else:
+    return redirect(url_for('profil'))
+
 @login_required
 @app.route('/api/delete_student', methods=['POST'])
 def delete_student():
