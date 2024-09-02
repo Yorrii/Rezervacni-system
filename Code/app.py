@@ -2,8 +2,10 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, f
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo
 from sqlalchemy import or_
+from docx import Document
 import app_logic
 from hashlib import sha256
+from datetime import date
 
 
 app = Flask(__name__) # Vytvoření instance pro web
@@ -120,7 +122,8 @@ def term(id):
                             'jmeno': item.zak.jmeno,
                             'prijmeni': item.zak.prijmeni,
                             'narozeni': item.zak.narozeni,
-                            'potvrzeni': item.potvrzeni
+                            'potvrzeni': item.potvrzeni,
+                            'cas': item.zacatek
                         })
                     if item.potvrzeni == 'W':
                         zaci_W.append({
@@ -389,9 +392,10 @@ def add_drivers():
     try:
         # Získání dat ve formátu JSON
         data = request.get_json()
-    
+        print(data)
         # Zpracování dat
         for student in data:
+            print(student)
             evidence_number = student.get('evidence_number')
             first_name = student.get('first_name')
             last_name = student.get('last_name')
@@ -406,10 +410,11 @@ def add_drivers():
                                     id_terminu=session.get('term_id'), id_autoskoly=current_user.id,id_zaka=zak.id)
                 print('zak se zapsal')
                 db.session.add(zapis)
-                db.session.commit()
-                return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu 
+                db.session.commit() 
             else:
-                return jsonify({"error": str(e)}), 400   
+                print('Něco se posralo')
+                return jsonify({"error": str(e)}), 400
+        return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
@@ -466,7 +471,7 @@ def delete_student():
     termin_id = data.get('termin_id')
     
     # Najdi záznam v tabulce Zapsany_zak a smaž ho
-    zapsany = Zapsany_zak.query.filter_by(id_zaka=zak_id, id_terminu=termin_id).first()
+    zapsany = Zapsany_zak.query.filter_by(id_zaka=zak_id, id_terminu=termin_id, potvrzeni='N' or 'W').first()
     
     if zapsany:
         db.session.delete(zapsany)
@@ -474,6 +479,58 @@ def delete_student():
         return jsonify({'message': 'Student smazán'}), 200
     else:
         return jsonify({'error': 'Student nenalezen'}), 404
+
+@login_required
+@app.route('/api/sign_up', methods=['POST'])
+def docx_for_signup():
+    try:
+        data = request.get_json()
+
+        autoskola = Autoskola.query.filter_by(id=current_user.id).first()
+
+        adresa = data['main_form']['adress']
+        datum = data['main_form']['start_of_training']
+        seznam_vozidel = adress = data['main_form']['vehicle_list']
+        seznam_studentu = data['students']
+
+        document = Document()
+
+        document.add_heading('Seznam řidičů žádajících o zařazení do výuky a výcviku', 0)
+
+        p = document.add_paragraph('A plain paragraph having some ')
+        p.add_run('bold').bold = True
+        p.add_run(' and some ')
+        p.add_run('italic.').italic = True
+
+        document.add_heading('Heading, level 1', level=1)
+        document.add_paragraph('Intense quote', style='Intense Quote')
+
+        table = document.add_table(rows=1, cols=7)
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Evidenčí číslo'
+        hdr_cells[1].text = 'Jméno'
+        hdr_cells[2].text = 'Přijmení'
+        hdr_cells[3].text = 'Datum narození'
+        hdr_cells[4].text = 'Adresa'
+        hdr_cells[5].text = 'Číslo řidičského průkazu'
+        hdr_cells[6].text = 'Druh výcviku'
+        for student in seznam_studentu:
+            row_cells = table.add_row().cells
+            row_cells[0].text = student['evidence_number']
+            row_cells[1].text = student['first_name']
+            row_cells[2].text = student['last_name']
+            row_cells[3].text = student['birth_date']
+            row_cells[4].text = student['adress']
+            row_cells[5].text = student['drivers_license'] if student['drivers_license'] else ' '
+            row_cells[6].text = student['type_of_teaching'].replace('-', ' ')
+
+        document.add_page_break()
+
+        document.save(f'Zapis_studentu/{autoskola.nazev}_{date.today().strftime("%d-%m-%Y")}.docx')
+        return jsonify({"message": "Data přijata úspěšně"}), 200   
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/logout')
 def logout():

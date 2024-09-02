@@ -27,12 +27,12 @@ function createEmptyForm() {
         </div>
         <div class="form-group">
             <select name="exam_type" id="exam_type">
-                <option value="řádná_zkouška">Řádná zkouška</option>
-                <option value="opravná_jízda_test">Opravná zkouška (jízda+test)</option>
-                <option value="opravná_jízda">Opravná zkouška (jízda)</option>
-                <option value="opravná_technika">Opravná zkouška (technika)</option>
-                <option value="opravná_technika_jízda">Opravná zkouška (technika+jízda)</option>
-                <option value="profesní_způsobilost">Profesní způsobilost</option>
+                <option value="Řádná_zkouška" selected>Řádná zkouška</option>
+                <option value="Opravná_zkouška-jízda+test">Opravná zkouška (jízda+test)</option>
+                <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
+                <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
+                <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
+                <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
             </select>
         </div>
     `;
@@ -67,7 +67,7 @@ document.getElementById('submit-forms').addEventListener('click', function() {
         const formData = new FormData(form);
         return Object.fromEntries(formData.entries());
     });
-
+    console.log(data)
     fetch('/add_drivers', {
         method: 'POST',
         headers: {

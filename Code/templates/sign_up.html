@@ -14,11 +14,11 @@
     <div class="column-div">
         <div class="term-container">
             <form class="">       
-                <input type="text" name="adress" id="adress" placeholder="Adrasa účebny"> 
-                <input type="date" name="start-of-training" id="start-of-training"> 
-                <select name="vehicle-list" id="vehicle-list" multiple>
+                <input type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
+                <input type="date" name="start-of-training" id="start-of-training" required> 
+                <select name="vehicle-list" id="vehicle-list" multiple required>
                     {% for vozidlo in vozidla %}
-                        <option value="{{vozidlo.id}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
+                        <option value="{{vozidlo.znacka}}_{{vozidlo.model}}_{{vozidlo.spz}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
                     {% endfor %}
                 </select>
             </form>        
@@ -46,8 +46,8 @@
                     </div>
                     <div class="form-group">
                         <select name="type-of-teaching" id="type-of-teaching">
-                            <option value="základní-výuka-a-výcvik">Základní výuka a výcvik</option>
-                            <option value="sdružená-výuka-a-výcvik" selected>Sdružená výuka a výcvik</option>
+                            <option value="základní-výuka-a-výcvik" selected>Základní výuka a výcvik</option>
+                            <option value="sdružená-výuka-a-výcvik">Sdružená výuka a výcvik</option>
                             <option value="rozšiřující-výuka-a-výcvik">Rozšiřující výuka a výcvik</option>
                             <option value="výuka-a-výcvik-podle-individuálního-plánu">Výuka a výcvik podle individuálního plánu</option>
                             <option value="doplňující-výuka-a-výcvik">Doplňující výuka a výcvik</option>
@@ -65,4 +65,5 @@
         </div>
     </div>
 </main>
+<script src="{{ url_for('static', filename='script_sign_up.js') }}"></script>
 {% endblock %}

@@ -485,7 +485,7 @@ button:hover {
 /* Elementy .students-container inline */
 .students-container {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: 10px;
     align-items: center;
     margin-top: 30px;
