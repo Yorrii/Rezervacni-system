@@ -35,13 +35,13 @@ def home():
         redirect(...): přesměrování na jiný endpoint při správném přihlášení autoškoly.
         flash("message.html", message=error): při špatném přihlášení vrátí pouze zprávu. 
     """  
-    if request.method == 'POST':
-        email = request.form['login_email']
-        heslo = request.form['login_heslo']
-        if email.endswith('@mesto-most.cz'):
-            cil = Komisar.query.filter_by(email=email).first()
+    if request.method == 'POST': # při POST requestu
+        email = request.form['login_email'] # načte si email
+        heslo = request.form['login_heslo'] # načte si string z formu pro heslo
+        if email.endswith('@mesto-most.cz'): # kontrolo jestli email nekončí @mesto-most.cz pro admina
+            cil = Komisar.query.filter_by(email=email).first()  # podle emailu se najde komisař
             if cil:
-                if app_logic.porovnat_hesla(heslo, cil.heslo):
+                if app_logic.porovnat_hesla(heslo, cil.heslo): # tady se porovná heslo z databáze a hashovaná forma zadaného hesla
                     login_user(app_logic.User(cil.id))
                     flash('Přihlášený komisař', category='mess_success')
                     return redirect(url_for('calendar'))
@@ -97,9 +97,8 @@ def term(id):
     else:
         session['term_id'] = id #pokud termín existuje dáme ho do sessionu protože s ním budeme ještě pracovat
 
-    if not current_user.isAdmin:
+    if not current_user.isAdmin: 
         
-
         match termin.ac_flag:
             case 'N': # pokud je termín neaktivní abort 
                 abort(404)
@@ -216,20 +215,59 @@ def term(id):
                 pass
             case 'R':
                 #TODO zapsat a zobrazit závěr zkoušky
-                pass
-        
+                zaci = Zapsany_zak.query \
+                    .join(Zak) \
+                    .join(Termin) \
+                    .filter(Zapsany_zak.id_terminu == id) \
+                    .all()
+                
+                komisari = Komisar.query.all() #vrací list objektů Komisar
+                
+                zaci_v_as = {} # zde se jako klíče budou dávat název autoškol a hodnota bude list žáků
+                for item in zaci:
+                    autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
+                    komisar = next((k for k in komisari if k.id == item.id_komisare), None) 
+                    if autoskola.nazev not in zaci_v_as:
+                        zaci_v_as[autoskola.nazev] = [{     
+                                                            'id': item.zak.id,                 
+                                                            'ev_cislo': item.zak.ev_cislo,
+                                                            'jmeno': item.zak.jmeno,
+                                                            'prijmeni': item.zak.prijmeni,
+                                                            'narozeni': item.zak.narozeni,
+                                                            'typ_zkousky': item.typ_zkousky,
+                                                            'druh_zkousky': item.druh_zkousky,
+                                                            'potvrzeni': item.potvrzeni,
+                                                            'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
+                                                            'cas': item.zacatek
+                                                        }]
+                    elif autoskola.nazev in zaci_v_as:
+                         zaci_v_as[autoskola.nazev].append({
+                                                            'id': item.zak.id,                 
+                                                            'ev_cislo': item.zak.ev_cislo,
+                                                            'jmeno': item.zak.jmeno,
+                                                            'prijmeni': item.zak.prijmeni,
+                                                            'narozeni': item.zak.narozeni,
+                                                            'typ_zkousky': item.typ_zkousky,
+                                                            'druh_zkousky': item.druh_zkousky,
+                                                            'potvrzeni': item.potvrzeni,
+                                                            'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
+                                                            'cas': item.zacatek
+                                                        })                   
+                srovnany_dict = dict(sorted(zaci_v_as.items()))
+                return render_template('term_conclusion.html', list_as=srovnany_dict, termin=termin, komisari= komisari)
+            
     if request.method=='POST':
         return redirect(url_for('/'))
     return render_template('term.html', termin=termin)
 
-@app.route('/profil', methods=['GET', 'POST'])
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
-def profil():
+def profile():
 
     id = current_user.id
     skola = Autoskola.query.filter_by(id=id).first()
     seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
-    return render_template('profil.html', vozidla= seznam_vozidel, autoskola=skola)
+    return render_template('profile.html', vozidla= seznam_vozidel, autoskola=skola)
 
 @app.route('/teaching_training', methods=['GET', 'POST'])
 def teaching_training():
@@ -267,7 +305,7 @@ def nova_autoskola():
     da_schranka = request.form['datova_schranka']
     adresa_u = request.form['adresa_ucebny']
     email = request.form['email']
-    heslo = sha256(request.form['heslo'].encode('utf-8')).hexdigest()
+    heslo = sha256(request.form['heslo'].encode('utf-8')).hexdigest() # heslo se zahashuje
     try:
         autoskola = Autoskola(nazev=nazev, da_schranka=da_schranka, adresa_u=adresa_u, email=email, heslo=heslo)
         db.session.add(autoskola)
@@ -484,18 +522,18 @@ def delete_student():
 @app.route('/api/sign_up', methods=['POST'])
 def docx_for_signup():
     try:
-        data = request.get_json()
+        data = request.get_json() #data z POST requestu
 
-        autoskola = Autoskola.query.filter_by(id=current_user.id).first()
+        autoskola = Autoskola.query.filter_by(id=current_user.id).first() # data o autoškole, potřebuju jméno pro ukládání
 
-        adresa = data['main_form']['adress']
-        datum = data['main_form']['start_of_training']
-        seznam_vozidel = adress = data['main_form']['vehicle_list']
-        seznam_studentu = data['students']
+        adresa = data['main_form']['adress'] # adresa účebny
+        datum = data['main_form']['start_of_training'] # datum začátku výcviku
+        seznam_vozidel = data['main_form']['vehicle_list'] # seznam vozidel k výcviku
+        seznam_studentu = data['students'] # seznam studentů do výcviku
 
-        document = Document()
+        document = Document() # docx dokument
 
-        document.add_heading('Seznam řidičů žádajících o zařazení do výuky a výcviku', 0)
+        document.add_heading('Seznam řidičů žádajících o zařazení do výuky a výcviku', 0) # nadpis
 
         p = document.add_paragraph('A plain paragraph having some ')
         p.add_run('bold').bold = True
@@ -505,6 +543,7 @@ def docx_for_signup():
         document.add_heading('Heading, level 1', level=1)
         document.add_paragraph('Intense quote', style='Intense Quote')
 
+        # vytvoření tabulky a sloupců s názvem
         table = document.add_table(rows=1, cols=7)
         hdr_cells = table.rows[0].cells
         hdr_cells[0].text = 'Evidenčí číslo'
@@ -514,7 +553,7 @@ def docx_for_signup():
         hdr_cells[4].text = 'Adresa'
         hdr_cells[5].text = 'Číslo řidičského průkazu'
         hdr_cells[6].text = 'Druh výcviku'
-        for student in seznam_studentu:
+        for student in seznam_studentu: # cykl pro studenty, aby se zapsali do tabulky a zároveň jejich tvorba do db
             row_cells = table.add_row().cells
             row_cells[0].text = student['evidence_number']
             row_cells[1].text = student['first_name']
@@ -524,13 +563,29 @@ def docx_for_signup():
             row_cells[5].text = student['drivers_license'] if student['drivers_license'] else ' '
             row_cells[6].text = student['type_of_teaching'].replace('-', ' ')
 
+            # Tady se vytvoří žák a uloží se do db
+            zak = Zak(ev_cislo=student['evidence_number'],jmeno=student['first_name'],prijmenni=student['last_name'],
+                      narozeni=student['birth_date'],adresa=student['adress'],id_autoskoly= current_user.id)
+            db.session.add(zak)
+            db.session.commit()
+
         document.add_page_break()
 
-        document.save(f'Zapis_studentu/{autoskola.nazev}_{date.today().strftime("%d-%m-%Y")}.docx')
+        document.save(f'Zapis_studentu/{autoskola.nazev}_{date.today().strftime("%d-%m-%Y")}.docx') # ukládání dokumentu
         return jsonify({"message": "Data přijata úspěšně"}), 200   
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
+
+@login_required
+@app.route('/api/success')
+def student_success():
+    pass
+
+@login_required
+@app.route('/api/reject')
+def student_reject():
+    pass
 
 @app.route('/logout')
 def logout():

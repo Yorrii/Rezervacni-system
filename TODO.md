@@ -10,6 +10,8 @@
     - logování
     - dokončit databázi
     - udělat zvoneček
+    - upravit dokument na /api/sign_up
+    
 
 ### Admin
     - endpoint pro změnu termínů, přehled zapsaných a přidání komisaře a času, zapsat autoškolu a studenty na termín, přehled logů
