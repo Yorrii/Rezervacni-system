@@ -1,6 +1,6 @@
 function successStudent(id) {
     // Definujte endpoint pro schválení studenta
-    const endpoint = `/api/student/success/${id}`;
+    const endpoint = `/api/success`;
 
     // Proveďte API volání pomocí fetch
     fetch(endpoint, {
@@ -20,6 +20,7 @@ function successStudent(id) {
     .then(data => {
         // Zpracujte úspěšnou odpověď
         console.log('Success:', data);
+        window.location.reload()
     })
     .catch(error => {
         // Zpracujte chybu
@@ -29,7 +30,7 @@ function successStudent(id) {
 
 function rejectStudent(id) {
     // Definujte endpoint pro odmítnutí studenta
-    const endpoint = `/api/student/reject/${id}`;
+    const endpoint = `/api/reject`;
 
     // Proveďte API volání pomocí fetch
     fetch(endpoint, {
@@ -38,7 +39,7 @@ function rejectStudent(id) {
             'Content-Type': 'application/json'
         },
         // Případně přidejte tělo žádosti (pokud je potřeba)
-         body: JSON.stringify({ 'id': id })
+        body: JSON.stringify({ 'id': id })
     })
     .then(response => {
         if (!response.ok) {
@@ -49,6 +50,7 @@ function rejectStudent(id) {
     .then(data => {
         // Zpracujte úspěšnou odpověď
         console.log('Rejected:', data);
+        window.location.reload()
     })
     .catch(error => {
         // Zpracujte chybu

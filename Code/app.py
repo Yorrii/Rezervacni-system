@@ -238,7 +238,8 @@ def term(id):
                                                             'druh_zkousky': item.druh_zkousky,
                                                             'potvrzeni': item.potvrzeni,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
-                                                            'cas': item.zacatek
+                                                            'cas': item.zacatek,
+                                                            'zaver': item.zaver
                                                         }]
                     elif autoskola.nazev in zaci_v_as:
                          zaci_v_as[autoskola.nazev].append({
@@ -251,7 +252,8 @@ def term(id):
                                                             'druh_zkousky': item.druh_zkousky,
                                                             'potvrzeni': item.potvrzeni,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
-                                                            'cas': item.zacatek
+                                                            'cas': item.zacatek,
+                                                            'zaver': item.zaver
                                                         })                   
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
                 return render_template('term_conclusion.html', list_as=srovnany_dict, termin=termin, komisari= komisari)
@@ -578,14 +580,57 @@ def docx_for_signup():
         return jsonify({"error": str(e)}), 400
 
 @login_required
-@app.route('/api/success')
+@app.route('/api/success', methods=['POST'])
 def student_success():
-    pass
+    try:
+        # Získání dat ve formátu JSON
+        data = request.get_json()
+        
+        # Zpracování dat
+        id_studenta = data.get('id')
+        
+        zak = Zak.query.filter_by(id = id_studenta).first()
+        termin = Termin.query.filter_by(id = session.get('term_id')).first()
+        if zak and termin:
+            zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
+            print(f'{zak.jmeno} {zak.prijmeni} uspěl na zkoušce {termin.datum} :)')
+            zapis.zaver = 'Y'
+            db.session.add(zapis)
+            db.session.commit()
+            
+            return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu 
+        else:
+            return jsonify({"error": str(e)}), 400   
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400    
 
 @login_required
-@app.route('/api/reject')
+@app.route('/api/reject', methods=['POST'])
 def student_reject():
-    pass
+    try:
+        # Získání dat ve formátu JSON
+        data = request.get_json()
+        
+        # Zpracování dat
+        id_studenta = data.get('id')
+        
+        zak = Zak.query.filter_by(id= id_studenta).first()
+        termin = Termin.query.filter_by(id = session.get('term_id')).first()
+        if zak and termin:
+            zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
+            print(f'{zak.jmeno} {zak.prijmeni} neuspěl na zkoušce {termin.datum} :(')
+            zapis.zaver = 'N'
+            db.session.add(zapis)
+            db.session.commit()
+            
+            return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu 
+        else:
+            return jsonify({"error": str(e)}), 400   
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400    
+
 
 @app.route('/logout')
 def logout():
