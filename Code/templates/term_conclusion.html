@@ -1,0 +1,43 @@
+{% extends 'template.html' %}
+{% block title %}{{termin.datum}}{% endblock %}
+{% block nav %}
+    <nav>
+        <div class="navbar">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+            <a class="logout" href="{{ url_for('logout') }}">Odhlásit se</a>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+    <main class="term-main">
+        <div class="column-div">
+            <div class="term-container">       
+                <h3></h3>
+                <h3>{{termin.datum}}</h3>
+                <h3></h3> 
+            </div>
+        {% for nazev, students in list_as.items() %}
+            <div class="students-container-admin" id="{{nazev}}">
+                <div class="nazev">{{nazev}}</div>
+                {% for zak in students %} 
+                        <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">                       
+                            <div>{{ zak['ev_cislo']}}</div>
+                            <div>{{ zak['jmeno']}}</div>
+                            <div>{{ zak['prijmeni']}}</div>
+                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['typ_zkousky']}}</div>
+                            <div>{{ zak['druh_zkousky']}}</div>
+                            <div>{{ zak['cas']}}</div>
+                            <div>{{ zak['komisar']}}</div>
+                            <div>
+                                <button class="no-fill" onclick="successStudent('{{ zak['id'] }}')"><img src="../static/images/checkmark.svg" alt="checkmark" height="20px" width="20px"></button>
+                                <button class="no-fill" onclick="rejectStudent('{{ zak['id'] }}')"><img src="../static/images/cross.svg" alt="cross" height="20px" width="20px"></button>         
+                            </div>
+                        </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        </div>
+    </main>
+{% endblock %}
