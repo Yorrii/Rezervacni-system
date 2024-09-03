@@ -496,7 +496,8 @@ button:hover {
 
 .students-container-admin {
     display: inline-block;
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     margin-top: 30px;
     border-radius: 4px;
     background-color: #C6DAF2;
@@ -556,4 +557,24 @@ button:hover {
     padding: 5px;
     margin: 2px;
     gap: 0px;
+}
+
+.no-fill {
+    background-color: transparent;
+    padding: 1px;
+}
+
+.student-line-admin-grid-9 {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-9 > *{
+    text-align: center;
 }
