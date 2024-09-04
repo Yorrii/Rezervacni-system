@@ -408,12 +408,21 @@ def get_calendar_dates(): #TODO
     API bude vracet informace o termínech aby se zobrazili v kalendáři
 
     """
-    events = [
-        {"date": "2024-08-20"},
-        {"date": "2024-08-22"},
-        {"date": "2024-08-29"}
-    ]
-    return jsonify(events)
+    terminy = Termin.query.all()
+    
+    # Serializace dat
+    terminy_list = []
+    for termin in terminy:
+        termin_data = {
+            'id': termin.id,
+            'date': termin.datum.isoformat(),  # datum převedeme na string ve formátu ISO
+            'ac_flag': termin.ac_flag,
+            'max_ridicu': termin.max_ridicu,
+            'zapsani_zaci': len(termin.zapsani_zaci)  # Příklad jak zahrnout počet zapsaných žáků
+        }
+        terminy_list.append(termin_data)
+
+    return jsonify(terminy_list)
 
 @login_required
 @app.route('/add_drivers', methods=['POST'])
