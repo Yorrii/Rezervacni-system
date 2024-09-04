@@ -147,9 +147,9 @@ def term(id):
                     .filter(Zapsany_zak.id_terminu == id, Zak.id_autoskoly == current_user.id, Zapsany_zak.potvrzeni == 'Y') \
                     .all()
                 
-                zaci = []
+                zaci_s = []
                 for item in zaci:
-                        zaci.append({
+                        zaci_s.append({
                             'id': item.zak.id,
                             'typ_zkousky': item.typ_zkousky,
                             'druh_zkousky': item.druh_zkousky,
@@ -161,7 +161,7 @@ def term(id):
                             'zaver': item.zaver,
                             'cas': item.zacatek
                         })
-                return render_template('term_read.html', termin=termin, zaci=zaci)
+                return render_template('term_read.html', termin=termin, zaci=zaci_s)
                  
     elif current_user.isAdmin:
         match termin.ac_flag:

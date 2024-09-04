@@ -12,24 +12,27 @@
 {% block main %}
     <main class="term-main">
         <div class="column-div">
-            <div class="term-info">       
-                <div>{{termin.datum}}</div>
-                <div>{{termin.max_ridicu}}</div>
-                <div>{{ volna_mista }}</div> 
+            <div class="term-container">       
+                <div></div>
+                <h3>{{termin.datum}}</h3>
+                <div></div> 
             </div>
-            <div class="students-container" id="{{nazev}}">
-                {% for zak in students %}
-                        <div class="student-line" id="zak_{{ zak['id'] }}">
+            <div class="students-container-admin" id="{{nazev}}">
+                {% for zak in zaci %}
+                        <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni']}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
-                            <div>{{ zak['komisar'] }}</div>
                             <div>{{ zak['cas']}}</div>
                             <div>{{ zak['zaver']}}</div>
-                            <div>{{ zak['cas']}}</div>               
+                            {% if zak['zaver'] == 'Y' %}
+                                <div> Splněno </div>
+                            {% else %}
+                                <div> Nesplněno </div>
+                            {% endif %}               
                         </div>
                 {% endfor %}
             </div>
