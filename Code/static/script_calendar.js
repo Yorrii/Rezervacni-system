@@ -41,6 +41,10 @@ function renderCalendar(date, events = []) {
                 dayDiv.style.backgroundColor = "#bcf5f1"; // Světle modrá pro waiting
             }
             dayDiv.classList.add("event-day"); // Přidání třídy pro další styly
+            // Přidání event listeneru pro přesměrování
+            dayDiv.addEventListener("click", () => {
+                window.location.href = `/term/${event.id}`;
+            });
         }
 
         daysContainer.appendChild(dayDiv);
@@ -65,6 +69,8 @@ document.getElementById("nextMonth").addEventListener("click", () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     fetchAndRenderCalendar();
 });
+
+document.getElementsByClassName('')
 
 // Prvotní načtení kalendáře
 fetchAndRenderCalendar();
