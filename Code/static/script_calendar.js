@@ -70,7 +70,5 @@ document.getElementById("nextMonth").addEventListener("click", () => {
     fetchAndRenderCalendar();
 });
 
-document.getElementsByClassName('')
-
 // Prvotní načtení kalendáře
 fetchAndRenderCalendar();
