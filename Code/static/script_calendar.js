@@ -29,7 +29,6 @@ function renderCalendar(date, events = []) {
         dayDiv.id = `day-${dateString}`;
         dayDiv.classList.add('day')
         dayDiv.textContent = i;
-
         // Kontrola, zda tento den je v seznamu termínů
         const event = events.find(event => event.date === dateString);
         if (event) {
@@ -46,8 +45,15 @@ function renderCalendar(date, events = []) {
             dayDiv.addEventListener("click", () => {
                 window.location.href = `/term/${event.id}`;
             });
+        } else {
+                // Přidání event listeneru pro dny bez událostí
+                dayDiv.addEventListener("click", () => {
+                    // Zobrazíme calendar_menu a uložíme ID vybraného dne
+                    calendar_menu.style.display = "flex";
+                    selectedDayId = dayDiv.id; // Uložíme ID dne
+                    console.log(`Vybraný den: ${selectedDayId}`); // Pro debugování
+            });
         }
-
         daysContainer.appendChild(dayDiv);
     }
 }

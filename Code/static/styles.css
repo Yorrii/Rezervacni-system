@@ -346,7 +346,8 @@
 }
 
 .calendar_main {
-    display: flex;    
+    display: flex;
+    justify-content: center;    
 }
 
 .calendar_main_user{
@@ -356,7 +357,7 @@
 }
 
 .calendar_menu {
-    display: flex;
+    display: none;
     background-color: #fff;
     padding: 20px;
     margin: 2%;
@@ -413,6 +414,7 @@
 }
 
 .header {
+    font-family: 'Work Sans';
     display: flex;
     justify-content: space-between;
     align-items: center;
