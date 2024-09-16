@@ -27,6 +27,7 @@ function renderCalendar(date, events = []) {
         
         // Nastavení ID pro každý den
         dayDiv.id = `day-${dateString}`;
+        dayDiv.classList.add('day')
         dayDiv.textContent = i;
 
         // Kontrola, zda tento den je v seznamu termínů

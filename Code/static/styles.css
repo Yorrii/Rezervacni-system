@@ -346,8 +346,13 @@
 }
 
 .calendar_main {
+    display: flex;    
+}
+
+.calendar_main_user{
     display: flex;
-    
+    align-items: center;
+    justify-content: center;
 }
 
 .calendar_menu {
@@ -580,4 +585,12 @@ button:hover {
 
 .student-line-admin-grid-9 > *{
     text-align: center;
+}
+
+.event-day:hover {
+    cursor: pointer;
+}
+
+.day {
+    height: 100px;
 }

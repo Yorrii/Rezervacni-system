@@ -11,7 +11,7 @@
 {% endblock %}
 {% block main %}
 {% include 'message.html' %}
-    <main class="calendar_main">
+    <main class="calendar_main_user">
         <div class="calendar">
             <div class="header">
                 <button id="prevMonth">&lt;</button>
@@ -30,15 +30,6 @@
             <div id="days" class="days">
 
             </div>
-        </div>
-        <div class="calendar_menu">                 
-            <form>
-                <div class="input-group">
-                    <label for="pocet_mist">Počet míst:</label>
-                    <input type="number" id="pocet_mist" name="pocet_mist" value="12">
-                </div>
-                <button type="submit" class="confirm-btn">POTVRDIT</button>
-            </form>
         </div>
     </main>
     <script src="{{ url_for('static', filename='script_calendar.js') }}"></script>
