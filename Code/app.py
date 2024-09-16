@@ -66,7 +66,10 @@ def home():
 @app.route('/calendar', methods=['GET'])
 @login_required
 def calendar():
-    return render_template('main_page.html')
+    if current_user.isAdmin:
+        return render_template('main_page.html')
+    else:
+        return render_template('main_page_user.html')
 
 @app.route('/term/<id>', methods=['GET', 'POST'])
 @login_required
@@ -408,21 +411,47 @@ def get_calendar_dates(): #TODO
     API bude vracet informace o termínech aby se zobrazili v kalendáři
 
     """
-    terminy = Termin.query.all()
-    
-    # Serializace dat
-    terminy_list = []
-    for termin in terminy:
-        termin_data = {
-            'id': termin.id,
-            'date': termin.datum.isoformat(),  # datum převedeme na string ve formátu ISO
-            'ac_flag': termin.ac_flag,
-            'max_ridicu': termin.max_ridicu,
-            'zapsani_zaci': len(termin.zapsani_zaci)  # Příklad jak zahrnout počet zapsaných žáků
-        }
-        terminy_list.append(termin_data)
+    if current_user.isAdmin:
+        terminy = Termin.query.all()
+        
+        # Serializace dat
+        terminy_list = []
+        for termin in terminy:
+            termin_data = {
+                'id': termin.id,
+                'date': termin.datum.isoformat(),  # datum převedeme na string ve formátu ISO
+                'ac_flag': termin.ac_flag,
+                'max_ridicu': termin.max_ridicu,
+                'zapsani_zaci': len(termin.zapsani_zaci)  # Příklad jak zahrnout počet zapsaných žáků
+            }
+            terminy_list.append(termin_data)
+        print(terminy_list)
+        return jsonify(terminy_list)
+    if not current_user.isAdmin:
+        # Dotaz pro aktivní termíny (ac_flag = 'Y')
+        aktivni_terminy = db.session.query(Termin).filter(Termin.ac_flag == 'Y').all()
+        
+        # Dotaz pro ukončené termíny (ac_flag = 'R') s žáky z konkrétní autoškoly
+        ukoncene_terminy = db.session.query(Termin)\
+            .join(Zapsany_zak)\
+            .filter(Termin.ac_flag == 'R', Zapsany_zak.id_autoskoly == current_user.id)\
+            .all()
 
-    return jsonify(terminy_list)
+        # Spojíme aktivní i ukončené termíny dohromady
+        terminy = aktivni_terminy + ukoncene_terminy
+
+        # Příprava dat pro frontend ve formátu JSON
+        terminy_data = []
+        for termin in terminy:
+            terminy_data.append({
+                "id": termin.id,
+                "date": termin.datum.isoformat(),
+                "ac_flag": termin.ac_flag,
+                "max_ridicu": termin.max_ridicu,
+            })
+        
+        print(terminy_data)
+        return jsonify(terminy_data)
 
 @login_required
 @app.route('/add_drivers', methods=['POST'])
