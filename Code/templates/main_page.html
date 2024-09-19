@@ -5,6 +5,7 @@
         <div class="navbar">
             <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
             <p>Rezervační<br/>systém Most</p>
+            <!-- <a class="logout" href="{{ url_for('enroll_drivers') }}">Nová Autoškola</a> -->
             <a class="logout" href="{{ url_for('logout') }}">Odhlásit se</a>
         </div>
     </nav>
@@ -31,7 +32,7 @@
 
             </div>
         </div>
-        <div class="calendar_menu">                 
+        <div id="calendar_menu" class="calendar_menu">                 
             <form>
                 <div class="input-group">
                     <label for="pocet_mist">Počet míst:</label>

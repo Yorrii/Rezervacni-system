@@ -589,6 +589,21 @@ button:hover {
     text-align: center;
 }
 
+.student-line-admin-grid-8 {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-8 > *{
+    text-align: center;
+}
+
 .event-day:hover {
     cursor: pointer;
 }

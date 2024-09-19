@@ -19,7 +19,7 @@
             </div>
             <div class="students-container-admin" id="{{nazev}}">
                 {% for zak in zaci %}
-                        <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">
+                        <div class="student-line-admin-grid-8" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
@@ -27,7 +27,6 @@
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>{{ zak['cas']}}</div>
-                            <div>{{ zak['zaver']}}</div>
                             {% if zak['zaver'] == 'Y' %}
                                 <div> Splněno </div>
                             {% else %}
