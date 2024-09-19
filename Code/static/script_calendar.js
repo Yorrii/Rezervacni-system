@@ -46,12 +46,26 @@ function renderCalendar(date, events = []) {
                 window.location.href = `/term/${event.id}`;
             });
         } else {
-                // Přidání event listeneru pro dny bez událostí
-                dayDiv.addEventListener("click", () => {
-                    // Zobrazíme calendar_menu a uložíme ID vybraného dne
-                    calendar_menu.style.display = "flex";
-                    selectedDayId = dayDiv.id; // Uložíme ID dne
-                    console.log(`Vybraný den: ${selectedDayId}`); // Pro debugování
+            dayDiv.id = `day-${dateString}`; // Nastavení unikátního ID pro den
+
+            // Přidání event listeneru pro dny bez událostí
+            dayDiv.addEventListener("click", () => {
+                // Zavření menu, pokud je zobrazené pro jiný den
+                const selectedDayElement = document.querySelector(".selected-day");
+                if (selectedDayElement) {
+                    selectedDayElement.style.backgroundColor = ""; // Vrácení původní barvy
+                    selectedDayElement.classList.remove("selected-day");
+                }
+
+                // Zvýraznění aktuálně vybraného dne
+                dayDiv.style.backgroundColor = "#FFD700"; // Nová barva při výběru
+                dayDiv.classList.add("selected-day");
+
+                // Zobrazení menu a uložení ID vybraného dne
+                calendar_menu.style.display = "flex";
+                selectedDayId = dayDiv.id;
+
+                console.log(`Vybraný den: ${selectedDayId}`); // Pro debugování
             });
         }
         daysContainer.appendChild(dayDiv);
@@ -75,6 +89,25 @@ document.getElementById("prevMonth").addEventListener("click", () => {
 document.getElementById("nextMonth").addEventListener("click", () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
     fetchAndRenderCalendar();
+});
+
+/* metoda pro skrytí menu a odbarvení vybraného dne */
+document.addEventListener("click", (event) => {
+    const calendar_menu = document.getElementById("calendar_menu");
+    const selectedDayElement = document.querySelector(".selected-day");
+
+    // Zkontrolujeme, zda bylo kliknuto mimo calendar_menu
+    if (!calendar_menu.contains(event.target) && !event.target.classList.contains("selected-day")) {
+        if (calendar_menu.style.display === "flex") {
+            calendar_menu.style.display = "none"; // Zavření menu
+        }
+
+        // Vrácení původní barvy vybraného dne
+        if (selectedDayElement) {
+            selectedDayElement.style.backgroundColor = ""; // Reset barvy
+            selectedDayElement.classList.remove("selected-day");
+        }
+    }
 });
 
 // Prvotní načtení kalendáře
