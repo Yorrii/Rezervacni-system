@@ -215,7 +215,54 @@ def term(id):
 
             case 'N':
                 #TODO Upravit termín nebo zapsat žáky
-                pass
+                """
+                V případě, že je termín stále neaktivní, admin by měl mít možnost od něj zapsat studenty sám bez
+                zásahu autoškoly. Tudíž v tomto případě je potřeba dostat žáky, kteří jsou již zapsaní, čekají na zápis
+                a formuláře pro zapsaní žáků.
+                """
+                # Vrátí všechny zapsané studenty, schromáždí je pod jejich autoškoly a zobrazí jestli jsou už přijmutí nebo ne!
+                zaci = Zapsany_zak.query \
+                    .join(Zak) \
+                    .join(Termin) \
+                    .filter(Zapsany_zak.id_terminu == id) \
+                    .all()
+                
+                komisari = Komisar.query.all() #vrací list objektů Komisar
+                
+                zaci_v_as = {} # zde se jako klíče budou dávat název autoškol a hodnota bude list žáků
+                for item in zaci:
+                    autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
+                    komisar = next((k for k in komisari if k.id == item.id_komisare), None) 
+                    if autoskola.nazev not in zaci_v_as:
+                        zaci_v_as[autoskola.nazev] = [{     
+                                                            'id': item.zak.id,                 
+                                                            'ev_cislo': item.zak.ev_cislo,
+                                                            'jmeno': item.zak.jmeno,
+                                                            'prijmeni': item.zak.prijmeni,
+                                                            'narozeni': item.zak.narozeni,
+                                                            'typ_zkousky': item.typ_zkousky,
+                                                            'druh_zkousky': item.druh_zkousky,
+                                                            'potvrzeni': item.potvrzeni,
+                                                            'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
+                                                            'cas': item.zacatek
+                                                        }]
+                    elif autoskola.nazev in zaci_v_as:
+                         zaci_v_as[autoskola.nazev].append({
+                                                            'id': item.zak.id,                 
+                                                            'ev_cislo': item.zak.ev_cislo,
+                                                            'jmeno': item.zak.jmeno,
+                                                            'prijmeni': item.zak.prijmeni,
+                                                            'narozeni': item.zak.narozeni,
+                                                            'typ_zkousky': item.typ_zkousky,
+                                                            'druh_zkousky': item.druh_zkousky,
+                                                            'potvrzeni': item.potvrzeni,
+                                                            'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
+                                                            'cas': item.zacatek
+                                                        })
+
+                srovnany_dict = dict(sorted(zaci_v_as.items()))
+                volna_mista = termin.max_ridicu - len([zak for zak in zaci if zak.potvrzeni == 'Y'])
+                return render_template('zapis_studenta_adminem.html', termin=termin, list_as=srovnany_dict, komisari=komisari, volna_mista=volna_mista)
             case 'R':
                 #TODO zapsat a zobrazit závěr zkoušky
                 zaci = Zapsany_zak.query \
@@ -496,6 +543,22 @@ def add_drivers():
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
+
+@login_required
+@app.route('/api/enroll_by_admin', methods=['POST'])
+def enroll_by_admin():
+    """
+    API metoda pro zapsání žáka od admina na termín, který je zatím neaktivní! 
+
+    Parametry:
+        request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o termínu
+
+    Vrací:
+        str: pokud při vytvoření a nebo commitu do databáze vznikne error
+        flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
+        redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
+    """
+    pass
 
 @login_required
 @app.route('/enroll', methods=['POST'])

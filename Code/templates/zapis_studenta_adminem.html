@@ -1,0 +1,108 @@
+<!-- HTML by měla být určena pro admina. Má zobrazovat studenty zapsané na neaktivní termín + dát mu možnost je zapsat -->
+{% extends 'template.html' %}
+{% block title %}{{termin.datum}}{% endblock %}
+{% block nav %}
+    <nav>
+        <div class="navbar">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+            <a class="logout" href="{{ url_for('logout') }}">Odhlásit se</a>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+    <main class="term-main">
+        <div class="column-div">
+            <div class="term-container">       
+                <h3>{{termin.datum}}</h3>
+                <h3>Počet řidičů: {{termin.max_ridicu}}</h3>
+                <h3>Volná místa: {{volna_mista}}</h3> 
+            </div>
+        {% for nazev, students in list_as.items() %}
+            <div class="students-container-admin" id="{{nazev}}">
+                <div class="nazev">{{nazev}}</div>
+                {% for zak in students %}
+                    {% if zak['potvrzeni'] == 'Y' %}
+                        <div class="student-line-admin" id="zak_{{ zak['id'] }}">
+                            <div>zapsany</div>
+                            <div>{{ zak['ev_cislo']}}</div>
+                            <div>{{ zak['jmeno']}}</div>
+                            <div>{{ zak['prijmeni']}}</div>
+                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['typ_zkousky']}}</div>
+                            <div>{{ zak['druh_zkousky']}}</div>
+                            <div>{{ zak['komisar'] }}</div>
+                            <div>{{ zak['cas']}}</div>         
+                        </div>
+                    {% else %}
+                        <div class="student-line-admin" id="zak_{{ zak['id'] }}">                       
+                            <div>{{ zak['ev_cislo']}}</div>
+                            <div>{{ zak['jmeno']}}</div>
+                            <div>{{ zak['prijmeni']}}</div>
+                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['typ_zkousky']}}</div>
+                            <div>{{ zak['druh_zkousky']}}</div>
+                            <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="8:00" required>
+                            <select name="commissar" id="commissar-for-zak_{{zak['id']}}" required>
+                                {% for komisar in komisari %}
+                                    <option value="{{komisar['id']}}">{{komisar['jmeno']}} {{komisar['prijmeni']}}</option>
+                                {% endfor %}
+                            </select>
+                            <button onclick="enrollStudent('{{ zak['id'] }}')">Enroll</button>         
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <!-- Pod tímhle komentem je form na zápis studentů -->
+        <div class="form-container">
+            <div id="form-list">
+                <form class="exam-form">
+                    <div class="form-group">
+                        <input type="text" name="evidence_number" id="evidence_number" placeholder="E.č" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" name="birth_date" id="birth_date" required>
+                    </div>
+                    <div class="form-group">
+                        <select name="license_category" id="license_category">
+                            <option value="A">A</option>
+                            <option value="B" selected>B</option>
+                            <option value="C">C</option>
+                            <option value="C+E">C+E</option>
+                            <option value="D">D</option>
+                            <option value="D+E">D+E</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select name="exam_type" id="exam_type">
+                            <option value="Řádná_zkouška" selected>Řádná zkouška</option>
+                            <option value="Opravná_zkouška-jízda+test">Opravná zkouška (jízda+test)</option>
+                            <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
+                            <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
+                            <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
+                            <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="buttons">
+                <button type="button" id="add-form">Přidat další formulář</button>
+                <button type="button" id="remove-form">Odebrat poslední formulář</button>
+            </div>
+            <div class="buttons">
+                <button type="submit" id="submit-forms">Odeslat všechny formuláře</button>
+            </div>
+        </div>
+        </div>
+    </main>
+    <script src="{{ url_for('static', filename='term_admin.js') }}">
+        
+    </script>
+{% endblock %}
