@@ -77,3 +77,21 @@ ALTER TABLE `Zapsani_zaci` ADD FOREIGN KEY (`id_autoskoly`) REFERENCES `Autoskol
 ALTER TABLE `Zapsani_zaci` ADD FOREIGN KEY (`id_zaka`) REFERENCES `Zaci` (`id`);
 
 ALTER TABLE `Vozidla` ADD FOREIGN KEY (`id_autoskoly`) REFERENCES `Autoskoly` (`id`);
+
+SET GLOBAL event_scheduler = ON;
+
+CREATE EVENT IF NOT EXISTS `aktualizace_active_flag`
+ON SCHEDULE EVERY 1 DAY
+DO
+  UPDATE `Terminy`
+  SET `active_flag` = 'Y'
+  WHERE `datum` BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+  AND `active_flag` != 'Y';
+
+CREATE EVENT IF NOT EXISTS `nastavit_flag_na_R`
+ON SCHEDULE EVERY 1 DAY
+DO
+  UPDATE `Terminy`
+  SET `active_flag` = 'R'
+  WHERE `datum` < CURDATE()
+  AND `active_flag` != 'R';

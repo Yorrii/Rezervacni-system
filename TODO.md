@@ -13,11 +13,13 @@
     - dokončit databázi
     - udělat zvoneček
     - upravit dokument na /api/sign_up
+    - zapomenuté heslo https://github.com/berat/flask-forgot-password/blob/master/app.py
     
 
 ### Admin
     - endpoint pro změnu termínů, 
     - zapsat autoškolu a studenty na termín
+    - api metodu, která vytvoří novou školu, udělá pro ní dočasné heslo, pošle ho na vybraný email spolu s manuálem
     - přehled logů
     - dodělat kalendář + js
     - css
