@@ -339,7 +339,7 @@ def admin():
     if request.method == 'POST':
         pass
 
-#API metody
+#TODO API metody
 @app.route('/create_autoskola', methods=['POST'])
 def nova_autoskola():
     """
@@ -504,14 +504,14 @@ def get_calendar_dates(): #TODO
 @app.route('/add_drivers', methods=['POST'])
 def add_drivers():
     """
-    API metoda pro vytvoření autoškoly, určená pro použití pouze během testování
+    API metoda pro zápis řidičů na termín AUTOŠKOLOU. Přijme data, ty projde a podle nich vytvoří záznam v DB.
 
     Parametry:
-        request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o autoškole
+        request: JSON objekt, který v sobě nese informace o žácích
 
     Vrací:
         Exception: pokud při vytvoření a nebo commitu do databáze vznikne error
-        flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
+        jsonify(dic): při úspěšném přidání se vrací zpráva s kódem 200(successful request)
         redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
     """
     try:
@@ -548,7 +548,7 @@ def add_drivers():
 @app.route('/api/enroll_by_admin', methods=['POST'])
 def enroll_by_admin():
     """
-    API metoda pro zapsání žáka od admina na termín, který je zatím neaktivní! 
+    API metoda pro zapsání žáka od ADMINA na termín, který je zatím neaktivní! 
 
     Parametry:
         request: myslím si, že se jedná o objekt, který v sobě přenáší JSON z formu pro informace o termínu
@@ -558,7 +558,31 @@ def enroll_by_admin():
         flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
         redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
     """
-    pass
+    try:
+        data = request.get_json()
+
+        for student in data:
+            evidence_number = student.get('evidence_number')
+            first_name = student.get('first_name')
+            last_name = student.get('last_name')
+            birth_date = student.get('birth_date')
+            license_category = student.get('license_category')
+            exam_type = student.get('exam_type').replace('_', ' ') # value se vrací ve tvaru něco_něco tak se mění '_' v ' '
+            
+            zak = Zak.query.filter_by(ev_cislo=evidence_number, jmeno=first_name, prijmeni=last_name,
+                                    narozeni=birth_date).first()
+            if zak:
+                zapis = Zapsany_zak(typ_zkousky=license_category, druh_zkousky=exam_type,
+                                    id_terminu=session.get('term_id'), id_autoskoly=zak.id_autoskoly,id_zaka=zak.id)
+                db.session.add(zapis)
+                db.session.commit()
+            else:
+                print('Něco se nevyšlo')
+                return jsonify({"error": str(e)}), 400
+        return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400
 
 @login_required
 @app.route('/enroll', methods=['POST'])

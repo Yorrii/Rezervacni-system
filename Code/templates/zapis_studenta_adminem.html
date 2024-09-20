@@ -167,14 +167,14 @@ document.getElementById('remove-form').addEventListener('click', function() {
 });
 
 /* Nutnost předělat. Metoda volá api endpoint, který by schodil stránku */
-/*document.getElementById('submit-forms').addEventListener('click', function() {
+document.getElementById('submit-forms').addEventListener('click', function() {
     const forms = document.querySelectorAll('.exam-form');
     const data = Array.from(forms).map(form => {
         const formData = new FormData(form);
         return Object.fromEntries(formData.entries());
     });
     console.log(data)
-    fetch('/add_drivers', {
+    fetch('/api/enroll_by_admin', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -192,7 +192,7 @@ document.getElementById('remove-form').addEventListener('click', function() {
         console.error('Error:', error);
         alert('Nastala chyba při odesílání formulářů.');
     });
-});*/
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     const deleteButtons = document.querySelectorAll('.delete-student');
@@ -225,6 +225,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function enrollStudent(zakId) {
+    const studentDiv = document.getElementById(`zak_${zakId}`);
+
+    
+    const timeStart = document.getElementById(`time-zak_${zakId}`).value;
+    const commissar = document.getElementById(`commissar-for-zak_${zakId}`).value;
+    
+    const data = {
+        id: zakId, 
+        time_start: timeStart,
+        commissar: commissar
+    };
+    
+    fetch('/enroll', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload();
+        } else {
+            console.error('Failed to enroll student');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
         
     </script>
 {% endblock %}
