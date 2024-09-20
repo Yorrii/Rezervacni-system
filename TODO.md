@@ -8,7 +8,6 @@
 ### Uživatel
     - upravit profil(vozidla, učebny), správa vozidel
     - upravit se žádostí o zápis
-    - úprava termínů, na které se přihlásí
     - logování
     - dokončit databázi
     - udělat zvoneček
@@ -18,7 +17,6 @@
 
 ### Admin
     - endpoint pro změnu termínů, 
-    - zapsat autoškolu a studenty na termín
     - api metodu, která vytvoří novou školu, udělá pro ní dočasné heslo, pošle ho na vybraný email spolu s manuálem
     - přehled logů
     - dodělat kalendář + js
@@ -28,6 +26,4 @@
 
 ## Databáze
     - udělat rutiny
-    - udělat eventy(změna active_flagů pro termíny v následujících 14 dnech, změna v den zkoušky)
-    - u některých flagů přidat další možnost (read only)
     - tabulka message pro zvoneček (asi)

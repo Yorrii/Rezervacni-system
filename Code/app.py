@@ -452,6 +452,21 @@ def novy_termin():
         return redirect(url_for('admin'))
 
 @login_required
+@app.route('/api/create_term', methods=['POST'])
+def vytvor_termin():
+    data = request.get_json()
+
+    try:
+        print(data.get('dayId'), data.get('pocetMist'))
+        termin = Termin(datum=data.get('dayId'), max_ridicu=data.get('pocetMist'))
+        db.session.add(termin)
+        db.session.commit()
+        return redirect(url_for('calendar'))
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400
+    
+@login_required
 @app.route('/calendar_api', methods=['GET'])
 def get_calendar_dates(): #TODO
     """
@@ -472,7 +487,6 @@ def get_calendar_dates(): #TODO
                 'zapsani_zaci': len(termin.zapsani_zaci)  # Příklad jak zahrnout počet zapsaných žáků
             }
             terminy_list.append(termin_data)
-        print(terminy_list)
         return jsonify(terminy_list)
     if not current_user.isAdmin:
         # Dotaz pro aktivní termíny (ac_flag = 'Y')
@@ -497,7 +511,6 @@ def get_calendar_dates(): #TODO
                 "max_ridicu": termin.max_ridicu,
             })
         
-        print(terminy_data)
         return jsonify(terminy_data)
 
 @login_required
@@ -537,7 +550,7 @@ def add_drivers():
                 db.session.add(zapis)
                 db.session.commit() 
             else:
-                print('Něco se posralo')
+                print('Něco se pokazilo')
                 return jsonify({"error": str(e)}), 400
         return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
     except Exception as e:
@@ -558,6 +571,7 @@ def enroll_by_admin():
         flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
         redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
     """
+    #TODO udělat záznamy pro autoškolu i komisaře
     try:
         data = request.get_json()
 

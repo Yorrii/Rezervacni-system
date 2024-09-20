@@ -46,7 +46,7 @@ function renderCalendar(date, events = []) {
                 window.location.href = `/term/${event.id}`;
             });
         } else {
-            dayDiv.id = `day-${dateString}`; // Nastavení unikátního ID pro den
+            dayDiv.id = `${dateString}`; // Nastavení unikátního ID pro den
 
             // Přidání event listeneru pro dny bez událostí
             dayDiv.addEventListener("click", () => {
@@ -71,6 +71,36 @@ function renderCalendar(date, events = []) {
         daysContainer.appendChild(dayDiv);
     }
 }
+
+// Funkce, která se spustí po kliknutí na tlačítko
+document.getElementById('create_term_btn').addEventListener('click', function() {
+    // Získáme hodnotu z inputu s id 'pocet_mist'
+    let pocetMist = document.getElementById('pocet_mist').value;
+
+    // Vytvoříme objekt s daty, které budeme odesílat
+    let data = {
+        dayId: selectedDayId,
+        pocetMist: pocetMist
+    };
+
+    // Odeslání POST requestu na endpoint /create_termin
+    fetch('/api/create_term', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data) // Převod objektu na JSON
+    })
+    .then(response => response.json()) // Odpověď z endpointu
+    .then(data => {
+        // Zpracování odpovědi
+        console.log('Úspěch:', data);
+    })
+    .catch((error) => {
+        console.error('Chyba:', error);
+        // Zde můžete přidat akci v případě chyby
+    });
+})
 
 function fetchAndRenderCalendar() {
     fetch('/calendar_api')
