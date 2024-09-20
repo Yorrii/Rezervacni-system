@@ -1,0 +1,31 @@
+{% extends "template.html" %}
+{% block title %}Nová autoškola{% endblock %}
+{% block nav %}
+    <nav>
+        <div class="navbar">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+            <a class="logout" href="{{ url_for('calendar') }}">Kalendář</a>
+            <a class="logout" href="{{ url_for('logout') }}">Odhlásit se</a>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+{% include 'message.html' %}
+    <main class="calendar_main">
+        <div class="form-container">
+            <form action="/new_driving_school" method="POST">
+                <label for="nazev">Název:</label>
+                <input type="text" id="nazev" name="nazev" placeholder="Autoškola" required>
+    
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" placeholder="E-mail" required>
+    
+                <label for="datova-schranka">Datová schránka:</label>
+                <input type="text" id="datova-schranka" name="datova-schranka" placeholder="Autoškola" required>
+    
+                <input type="submit" value="Přidat">
+            </form>
+        </div>
+    </main>
+{% endblock %}

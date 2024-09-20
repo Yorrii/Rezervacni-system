@@ -9,7 +9,7 @@ from datetime import date
 
 
 app = Flask(__name__) # Vytvoření instance pro web
-app.config['SECRET_KEY'] = 'Secret'
+app.config['SECRET_KEY'] = 'Secret' #TODO zmenit klíc!!!
 
 # Nastavení aplikace pro spoj s databází
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost:3306/resymost2' # ://uživatel:heslo@kde_db_běží:port/název_db
@@ -320,6 +320,23 @@ def profile():
     skola = Autoskola.query.filter_by(id=id).first()
     seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
     return render_template('profile.html', vozidla= seznam_vozidel, autoskola=skola)
+
+@app.route('/new_driving_school', methods=['GET', 'POST'])
+@login_required
+def new_driving_school():
+    if not current_user.isAdmin:
+        abort(404)
+    if request.method == 'POST':
+        #TODO tady by se měla vytvořit autoškola, měl by se jí poslat email s vytvořením hesla a manuálem
+        nazev = request.form.get('nazev')
+        dat_schranka = request.form.get('email')
+        email =  request.form.get('email')
+        print(nazev, dat_schranka, email)
+        flash('Nová autoškola přidána', category='success')
+        return render_template('new_driving_school.html')
+    
+    if request.method == 'GET':
+        return render_template('new_driving_school.html')
 
 @app.route('/teaching_training', methods=['GET', 'POST'])
 def teaching_training():
