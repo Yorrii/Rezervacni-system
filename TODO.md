@@ -3,7 +3,8 @@
 ## App
 
 ### FIXME
-    - odebrat endpoint /admin před nasazením 
+    - odebrat endpoint /admin před nasazením
+    - změnit secret_key 
 
 ### Uživatel
     - upravit profil(vozidla, učebny), správa vozidel
