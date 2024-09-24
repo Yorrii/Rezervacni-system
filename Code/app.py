@@ -843,6 +843,25 @@ def student_reject():
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400    
 
+@login_required
+@app.route('/api/notifications', methods=['POST'])
+def get_notifications():
+    try:
+        upozorneni_list = Upozorneni.query.filter_by(id_autoskoly=current_user.id)\
+                                      .order_by(Upozorneni.datum_vytvoreni.desc())\
+                                      .limit(10)\
+                                      .all()
+        lst = []
+        for upozorneni in upozorneni_list:
+            lst.append({
+            'zprava': upozorneni.zprava,
+            'stav': upozorneni.stav
+            })
+        
+        return jsonify(lst)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/logout')
 def logout():
