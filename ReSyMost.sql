@@ -59,8 +59,17 @@ CREATE TABLE `Vozidla` (
     `znacka` VARCHAR(100) NOT NULL,
     `model` VARCHAR(100) NOT NULL,
     `spz` VARCHAR(10),
-    `id_autoškoly` INT,
-    FOREIGN KEY (id_autoškoly) REFERENCES autoškoly(id)
+    `id_autoskoly` INT,
+    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id)
+);
+
+CREATE TABLE `Upozorneni` (
+    `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    `zprava` VARCHAR(200) NOT NULL,
+    `datum_vytvoreni` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `stav` ENUM('Y', 'N') DEFAULT 'N',
+    `id_autoskoly` INT,
+    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id) ON DELETE CASCADE
 );
 
 

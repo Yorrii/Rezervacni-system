@@ -110,3 +110,14 @@ class Vozidlo(db.Model):
     model = db.Column('model', db.String(100), nullable=False)
     spz = db.Column('spz', db.String(10))
     id_autoskoly = db.Column('id_autoskoly',db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)
+
+
+class Upozorneni(db.Model):
+    __tablename__ = 'Upozorneni'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    zprava = db.Column(db.String(200), nullable=False)
+    datum_vytvoreni = db.Column(db.DateTime)
+    stav = db.Column(db.Enum('Y', 'N'), default='N')
+    
+    id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)
