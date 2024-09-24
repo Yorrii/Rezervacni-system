@@ -1,11 +1,11 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo
+from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo, Upozorneni
 from sqlalchemy import or_
 from docx import Document
 import app_logic
 from hashlib import sha256
-from datetime import date
+from datetime import date, datetime
 
 
 app = Flask(__name__) # Vytvoření instance pro web
@@ -331,7 +331,9 @@ def new_driving_school():
         nazev = request.form.get('nazev')
         dat_schranka = request.form.get('email')
         email =  request.form.get('email')
-        print(nazev, dat_schranka, email)
+        autoskola = Autoskola(nazev=nazev ,email=email, heslo=sha256('heslo123'.encode('utf-8')).hexdigest(),da_schranka=dat_schranka)
+        db.session.add(autoskola)
+        db.session.commit()
         flash('Nová autoškola přidána', category='success')
         return render_template('new_driving_school.html')
     
@@ -563,8 +565,12 @@ def add_drivers():
             if zak:
                 zapis = Zapsany_zak(typ_zkousky=license_category, druh_zkousky=exam_type,
                                     id_terminu=session.get('term_id'), id_autoskoly=current_user.id,id_zaka=zak.id)
+                zaznam = Zaznam(druh='zápis', kdy=datetime.now(),
+                                zprava=f'Autoškola přidala studentku/studenta {first_name} {last_name} {evidence_number} na termín s id: {session.get('term_id')}',
+                                id_autoskoly=current_user.id)
                 print('zak se zapsal')
                 db.session.add(zapis)
+                db.session.add(zaznam)
                 db.session.commit() 
             else:
                 print('Něco se pokazilo')
@@ -629,13 +635,16 @@ def enroll_drivers():
         id_commissar = data.get('commissar')
         
         zak = Zak.query.filter_by(id= id_studenta).first()
+        termin = Termin.query.filter_by(id=session.get('term_id')).first()
         if zak:
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             zapis.potvrzeni = 'Y'
             zapis.zacatek = time_start
             zapis.id_komisare = id_commissar
             print('zak se zapsal na termín')
-            
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} byl/a zapsán/a na termín {termin.datum} v {time_start}',
+                                   id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+            db.session.add(upozorneni)
             db.session.commit()
             return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu 
         else:
@@ -667,18 +676,30 @@ def delete_student():
     termin_id = data.get('termin_id')
     
     # Najdi záznam v tabulce Zapsany_zak a smaž ho
-    zapsany = Zapsany_zak.query.filter_by(id_zaka=zak_id, id_terminu=termin_id, potvrzeni='N' or 'W').first()
+    zapsany = Zapsany_zak.query.filter_by(id_zaka=zak_id, id_terminu=termin_id).filter(Zapsany_zak.potvrzeni.in_(['W', 'N'])).first()
     
     if zapsany:
         db.session.delete(zapsany)
         db.session.commit()
         return jsonify({'message': 'Student smazán'}), 200
     else:
+        print(f'Nebylo nalezeno zapsání {zak_id} {termin_id}')
         return jsonify({'error': 'Student nenalezen'}), 404
 
 @login_required
 @app.route('/api/sign_up', methods=['POST'])
 def docx_for_signup():
+    """
+    API metoda, která vytvoří dokument o zápisu studentů. Zapsané studenty přidá do databáze. 
+
+    Parametry:
+        request: JSON soubor s novými studenty, adresou učebny, typem výuky, vozidli pro výuku
+
+    Vrací:
+        str: pokud při vytvoření a nebo commitu do databáze vznikne error
+        str: pokud vše proběhne v pořádku
+        docx: dokument o žádost zápisu studentů do výuky a výcviku
+    """
     try:
         data = request.get_json() #data z POST requestu
 
@@ -724,6 +745,10 @@ def docx_for_signup():
             # Tady se vytvoří žák a uloží se do db
             zak = Zak(ev_cislo=student['evidence_number'],jmeno=student['first_name'],prijmenni=student['last_name'],
                       narozeni=student['birth_date'],adresa=student['adress'],id_autoskoly= current_user.id)
+            zaznam = Zaznam(druh='přidání', kdy=datetime.now(),
+                            zprava=f'Autoškola zapsala studentku/studenta {student['first_name']} {student['last_name']} {student['evidence_number']} do výuky a výcviku.',
+                            id_autoskoly=current_user.id)
+            db.session.add(zaznam)
             db.session.add(zak)
             db.session.commit()
 
@@ -738,6 +763,18 @@ def docx_for_signup():
 @login_required
 @app.route('/api/success', methods=['POST'])
 def student_success():
+    """
+    API metoda, která slouží pro zápis úspěchu studenta na zkoušce. 
+
+    Parametry:
+        request: JSON soubor s id studenta, který uspěl.
+
+    Vrací:
+        str: error, když dojede k chybě nebo když neexistuje termín nebo žák
+        str: pokud vše proběhne v pořádku
+    """
+    if not current_user.isAdmin:
+        abort(404)
     try:
         # Získání dat ve formátu JSON
         data = request.get_json()
@@ -751,7 +788,10 @@ def student_success():
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             print(f'{zak.jmeno} {zak.prijmeni} uspěl na zkoušce {termin.datum} :)')
             zapis.zaver = 'Y'
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} úspěšně splnil termín.',
+                                   id_autoskoly= zak.id_autoskoly)
             db.session.add(zapis)
+            db.session.add(upozorneni)
             db.session.commit()
             
             return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu 
@@ -764,6 +804,19 @@ def student_success():
 @login_required
 @app.route('/api/reject', methods=['POST'])
 def student_reject():
+    """
+    API metoda, která slouží k zápisu neúspěchu při zkoušce. 
+
+    Parametry:
+        request: JSON soubor s id žáka
+
+    Vrací:
+        str: error, pokud se nenajde žák nebo termín nebo pokud dojde k nějaké chybě
+        str: 200, pokud vše proběhne v pořádku
+        abort: 404 pokud user není admin, jelikož k metodě by měl mít přístup pouze admin
+    """
+    if not current_user.isAdmin:
+        abort(404)
     try:
         # Získání dat ve formátu JSON
         data = request.get_json()
@@ -777,6 +830,9 @@ def student_reject():
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             print(f'{zak.jmeno} {zak.prijmeni} neuspěl na zkoušce {termin.datum} :(')
             zapis.zaver = 'N'
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} neuspěl u termínu.',
+                                   id_autoskoly= zak.id_autoskoly)
+            db.session.add(upozorneni)
             db.session.add(zapis)
             db.session.commit()
             
