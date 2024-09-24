@@ -8,6 +8,7 @@
 
 ### Uživatel
     - upravit profil(vozidla, učebny), správa vozidel
+    - opravbá zkouška (jizda+ test) se zapisuje špatně
     - upravit se žádostí o zápis
     - logování
     - dokončit databázi
