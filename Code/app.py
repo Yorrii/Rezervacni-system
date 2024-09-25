@@ -677,7 +677,12 @@ def delete_student():
     
     # Najdi záznam v tabulce Zapsany_zak a smaž ho
     zapsany = Zapsany_zak.query.filter_by(id_zaka=zak_id, id_terminu=termin_id).filter(Zapsany_zak.potvrzeni.in_(['W', 'N'])).first()
-    
+    zak = Zak.query.filter_by(id=zak_id).first()
+    zaznam = Zaznam(druh='odpis', kdy=datetime.now(),
+                    zprava=f'Autoškola odebrala studentku/studenta {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} z termínu s id: {session.get('term_id')}',
+                    id_autoskoly=current_user.id)
+    db.session.add(zaznam)
+
     if zapsany:
         db.session.delete(zapsany)
         db.session.commit()
@@ -844,7 +849,7 @@ def student_reject():
         return jsonify({"error": str(e)}), 400    
 
 @login_required
-@app.route('/api/notifications', methods=['POST'])
+@app.route('/api/notifications', methods=['GET'])
 def get_notifications():
     try:
         upozorneni_list = Upozorneni.query.filter_by(id_autoskoly=current_user.id)\
@@ -858,7 +863,7 @@ def get_notifications():
             'stav': upozorneni.stav
             })
         
-        return jsonify(lst)
+        return jsonify(lst), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
