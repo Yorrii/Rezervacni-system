@@ -4,6 +4,7 @@
         <p>Rezervační<br>systém Most</p>
     </div>
     <div class="navbar-links">
+        {% include 'notifications.html' %}
         <a class="logout" href="{{ url_for('calendar') }}">Kalendář</a>
         <a class="logout" href="{{ url_for('profile') }}">Profil</a>
         <a class="logout" href="{{ url_for('teaching_training') }}">Výuka a výcvik</a>

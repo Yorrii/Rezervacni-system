@@ -11,10 +11,9 @@
     - opravbá zkouška (jizda+ test) se zapisuje špatně
     - upravit se žádostí o zápis
     - logování
-    - dokončit databázi
     - udělat zvoneček
     - upravit dokument na /api/sign_up
-    - zapomenuté heslo https://github.com/berat/flask-forgot-password/blob/master/app.py
+    - zapomenuté heslo pomocí tokenu
     
 
 ### Admin
@@ -27,5 +26,5 @@
 
 
 ## Databáze
-    - udělat rutiny
-    - tabulka message pro zvoneček (asi)
+    
+    
