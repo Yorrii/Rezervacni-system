@@ -358,6 +358,18 @@ def admin():
     if request.method == 'POST':
         pass
 
+def logs():
+    """
+    Stránka slouží k zobrazení logů autoškoly. Bude přístupná pouze komisařům. Po prvním načtení si komisař vybere, které logy chce
+    vidět, od jaké autoškoly. Pošle POST request, endpoint vyhledá logy v db a vrátí je.
+
+    Vrací:
+        Abort(404): Pokud user není admin
+        html
+
+    """
+    pass
+
 #TODO API metody
 @app.route('/create_autoskola', methods=['POST'])
 def nova_autoskola():
@@ -487,7 +499,7 @@ def vytvor_termin():
     
 @login_required
 @app.route('/calendar_api', methods=['GET'])
-def get_calendar_dates(): #TODO
+def get_calendar_dates():
     """
     API bude vracet informace o termínech aby se zobrazili v kalendáři
 
