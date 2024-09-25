@@ -395,3 +395,22 @@ button:hover {
 .day {
     height: 100px;
 }
+
+.notification-popup {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Zobrazení notifikací při přidání třídy 'visible' */
+.notification-popup.visible {
+    display: block;
+}
+
+/* Styl zvonečku pro zvýraznění klikatelnosti */
+.bell-icon {
+    cursor: pointer;
+}

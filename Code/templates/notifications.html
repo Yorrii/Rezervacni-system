@@ -1,0 +1,61 @@
+<div class="notification-container">
+    <img src="../static/images/bell.svg" alt="Notification Bell" class="bell-icon" id="bellIcon" height="30px">
+    <div class="notification-popup" id="notificationPopup">
+        <ul id="notificationList">
+            
+        </ul>
+    </div>
+</div>
+<script>
+    // Najdeme elementy zvonečku a notifikačního popupu
+    const bellIcon = document.getElementById('bellIcon');
+    const notificationPopup = document.getElementById('notificationPopup');
+
+    // Přepínání viditelnosti při kliknutí na zvoneček
+    bellIcon.addEventListener('click', () => {
+        notificationPopup.classList.toggle('visible');  // Přepíná třídu 'visible'
+    });
+
+    // Skrytí seznamu při kliknutí mimo popup
+    document.addEventListener('click', (event) => {
+        // Zkontrolujeme, zda kliknutý element není zvoneček nebo popup
+        if (!notificationPopup.contains(event.target) && event.target !== bellIcon) {
+            notificationPopup.classList.remove('visible');  // Skryje popup
+        }
+    });
+
+    function updateUpozorneni(data) {
+        const ul = document.getElementById('notificationList');
+        ul.innerHTML = '';  // Vymaže staré upozornění, aby se neakumulovala
+
+        // Projde upozornění a vytvoří <li> pro každé z nich
+        data.forEach(upozorneni => {
+            const li = document.createElement('li');
+            li.textContent = `${upozorneni.zprava}`;
+            ul.appendChild(li);
+        });
+    }
+    // Funkce pro získání upozornění z API
+    function fetchUpozorneni() {
+        fetch(`/api/notifications`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Chyba při načítání upozornění');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Upozornění:", data);
+                updateUpozorneni(data);
+            })
+            .catch(error => {
+                console.error('Došlo k chybě:', error);
+            });
+    }
+
+    // Funkce, která se spustí každých 30 sekund
+    setInterval(fetchUpozorneni, 30000);
+
+    // Spuštění funkce hned při načtení stránky
+    fetchUpozorneni();
+</script>
