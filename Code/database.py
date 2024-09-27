@@ -48,7 +48,7 @@ class Autoskola(db.Model):
     adresa_u = db.Column('adresa_ucebny', db.String(100), nullable=True)
 
     zaci = db.relationship('Zak', backref='autoskola', lazy=True)
-    zaznami = db.relationship('Zaznam', backref='autoskoly', lazy=True)
+    zaznamy = db.relationship('Zaznam', backref='autoskola', lazy=True)
 
 
 class Komisar(db.Model):
@@ -101,6 +101,7 @@ class Zaznam(db.Model):
     kdy = db.Column('kdy', db.DateTime, nullable=True)
     zprava = db.Column('zprava', db.Text, nullable=True)
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=True)
+
 
 class Vozidlo(db.Model):
     __tablename__ = 'vozidla'

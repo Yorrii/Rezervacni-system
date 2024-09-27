@@ -414,3 +414,29 @@ button:hover {
 .bell-icon {
     cursor: pointer;
 }
+
+.logs-container {
+    display: flex;
+    flex-direction: column; /* Zajistí, že logy budou pod sebou */
+    gap: 10px; /* Mezera mezi jednotlivými logy */
+    align-items: center; /* Centrovaní obsahu na střed */
+    width: 100%;
+    background-color: #C6DAF2;
+    border-radius: 4px;
+}
+
+.log {
+    display: grid;
+    grid-template-columns: 15% 20% 10% 1fr;
+    gap: 10px;
+    width: 100%; /* Nastaví pevnou šířku pro každý log */
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: 'Work Sans';
+}
+
+.log-zprava:nth-child(4) {
+    white-space: nowrap;
+  }
+
