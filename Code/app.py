@@ -341,6 +341,7 @@ def new_driving_school():
         return render_template('new_driving_school.html')
 
 @app.route('/teaching_training', methods=['GET', 'POST'])
+@login_required
 def teaching_training():
     #TODO: endpoint pro zápis řidičů žádajících o výuku a výcvik
     autoskola = Autoskola.query.filter_by(id=current_user.id).first()
@@ -358,6 +359,8 @@ def admin():
     if request.method == 'POST':
         pass
 
+@app.route('/logs', methods= ['GET', 'POST'])
+@login_required
 def logs():
     """
     Stránka slouží k zobrazení logů autoškoly. Bude přístupná pouze komisařům. Po prvním načtení si komisař vybere, které logy chce
@@ -368,7 +371,43 @@ def logs():
         html
 
     """
-    pass
+    if not current_user.isAdmin:
+        abort(404)
+    if request.method == 'GET':
+        autoskoly = Autoskola.query.all()
+        # Pokud přibudou typy záznamu tak je můžeme zjistit takhle: druhy_zaznamu = [choice for choice in Zaznam.druh.type.enums]
+        lst_as = []
+        for autoskola in autoskoly:
+            lst_as.append({'id':autoskola.id,
+                           'nazev':autoskola.nazev})
+        return render_template('logs.html', autoskoly=lst_as)
+    if request.method == 'POST':
+        id_as = request.form.get('autoskola') or None
+        druh = request.form.get('druh') or None
+        datum = request.form.get('datum') or None
+
+        quary = Zaznam.query # Tady se přípravý quary, které potom budu doplňovat podle parametrů
+
+        if id_as:
+            quary = quary.filter(Zaznam.id_autoskoly == id_as)
+        if druh:
+            quary = quary.filter(Zaznam.druh == druh)
+        if datum:
+            quary = quary.filter(Zaznam.kdy >= datum)
+
+        quary.limit(100) # limit na počet záznamů
+        zaznamy = quary.all()
+
+        lst_zaznamy= []
+        for zaznam in zaznamy:
+            lst_zaznamy.append({
+                'kdy': zaznam.kdy,
+                'druh': zaznam.druh,
+                'zprava': zaznam.zprava,
+                'autoskola': zaznam.autoskola.nazev
+            })
+            
+        return render_template('logs.html', logs=lst_zaznamy)
 
 #TODO API metody
 @app.route('/create_autoskola', methods=['POST'])
