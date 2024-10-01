@@ -30,7 +30,7 @@
             {% for log in logs %}
                 <div id="{{log['id']}}" class="log">
                     <div class="log-zprava">{{log['autoskola']}}</div>
-                    <div class="log-zprava">{{log['kdy']}}</div>
+                    <div class="log-zprava">{{log['kdy'].strftime('%d.%m.%Y')}}</div>
                     <div class="log-zprava">{{log['druh']}}</div>
                     <div class="log-zprava">{{log['zprava']}}</div>
                 </div>
