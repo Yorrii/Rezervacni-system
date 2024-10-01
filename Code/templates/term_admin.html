@@ -6,18 +6,17 @@
 {% block main %}
     <main class="term-main">
         <div class="column-div">
-            <div class="term-info">       
-                <div>{{termin.datum}}</div>
-                <div>{{termin.max_ridicu}}</div>
-                <div>{{ volna_mista }}</div> 
+            <div class="term-container">       
+                <h3>Datum: {{termin.datum.strftime('%d.%m.%Y')}}</h3>
+                <h3>Místa: {{termin.max_ridicu}}</h3>
+                <h3>Volná místa: {{ volna_mista }}</h3> 
             </div>
         {% for nazev, students in list_as.items() %}
             <div class="students-container-admin" id="{{nazev}}">
                 <div class="nazev">{{nazev}}</div>
                 {% for zak in students %}
                     {% if zak['potvrzeni'] == 'Y' %}
-                        <div class="student-line-admin" id="zak_{{ zak['id'] }}">
-                            <div>zapsany</div>
+                        <div class="student-line-admin-grid-8" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
@@ -28,19 +27,21 @@
                             <div>{{ zak['cas']}}</div>         
                         </div>
                     {% else %}
-                        <div class="student-line-admin" id="zak_{{ zak['id'] }}">                       
+                        <div class="student-line-admin-grid-8" id="zak_{{ zak['id'] }}">                       
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni']}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
-                            <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="8:00" required>
-                            <select name="commissar" id="commissar-for-zak_{{zak['id']}}" required>
-                                {% for komisar in komisari %}
-                                    <option value="{{komisar['id']}}">{{komisar['jmeno']}} {{komisar['prijmeni']}}</option>
-                                {% endfor %}
-                            </select>
+                            <div>
+                                <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="8:00" required>
+                                <select name="commissar" id="commissar-for-zak_{{zak['id']}}" required>
+                                    {% for komisar in komisari %}
+                                        <option value="{{komisar['id']}}">{{komisar['jmeno']}} {{komisar['prijmeni']}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             <button onclick="enrollStudent('{{ zak['id'] }}')">Enroll</button>         
                         </div>
                     {% endif %}
