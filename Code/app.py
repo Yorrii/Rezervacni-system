@@ -167,6 +167,7 @@ def term(id):
                 return render_template('term_read.html', termin=termin, zaci=zaci_s)
                  
     elif current_user.isAdmin:
+        volna_mista = termin.max_ridicu - Zapsany_zak.query.filter_by(id_terminu=termin.id, potvrzeni='Y').count()
         match termin.ac_flag:
             case 'Y':
                 # Vrátí všechny zapsané studenty, schromáždí je pod jejich autoškoly a zobrazí jestli jsou už přijmutí nebo ne!
@@ -210,7 +211,7 @@ def term(id):
                                                         })
 
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
-                return render_template('term_admin.html', list_as=srovnany_dict, termin=termin, komisari= komisari)
+                return render_template('term_admin.html', list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista)
                 
 
             case 'N':
@@ -369,18 +370,20 @@ def logs():
     Vrací:
         Abort(404): Pokud user není admin
         html
-
     """
     if not current_user.isAdmin:
         abort(404)
-    if request.method == 'GET':
-        autoskoly = Autoskola.query.all()
+
+    autoskoly = Autoskola.query.all()
         # Pokud přibudou typy záznamu tak je můžeme zjistit takhle: druhy_zaznamu = [choice for choice in Zaznam.druh.type.enums]
-        lst_as = []
-        for autoskola in autoskoly:
-            lst_as.append({'id':autoskola.id,
-                           'nazev':autoskola.nazev})
+    lst_as = []
+    for autoskola in autoskoly:
+        lst_as.append({'id':autoskola.id,
+                        'nazev':autoskola.nazev})
+
+    if request.method == 'GET':
         return render_template('logs.html', autoskoly=lst_as)
+    
     if request.method == 'POST':
         id_as = request.form.get('autoskola') or None
         druh = request.form.get('druh') or None
@@ -407,7 +410,7 @@ def logs():
                 'autoskola': zaznam.autoskola.nazev
             })
             
-        return render_template('logs.html', logs=lst_zaznamy)
+        return render_template('logs.html', logs=lst_zaznamy, autoskoly=lst_as)
 
 #TODO API metody
 @app.route('/create_autoskola', methods=['POST'])
@@ -623,9 +626,6 @@ def add_drivers():
                 db.session.add(zapis)
                 db.session.add(zaznam)
                 db.session.commit() 
-            else:
-                print('Něco se pokazilo')
-                return jsonify({"error": str(e)}), 400
         return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
