@@ -3,37 +3,39 @@ function createEmptyForm() {
     form.className = 'exam-form';
 
     form.innerHTML = `
-        <div class="form-group">
-            <input type="text" name="evidence_number" id="evidence_number" placeholder="E.č" required>
-        </div>
-        <div class="form-group">
-            <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
-        </div>
-        <div class="form-group">
-            <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
-        </div>
-        <div class="form-group">
-            <input type="date" name="birth_date" id="birth_date" required>
-        </div>
-        <div class="form-group">
-            <select name="license_category" id="license_category">
-                <option value="A">A</option>
-                <option value="B" selected>B</option>
-                <option value="C">C</option>
-                <option value="C+E">C+E</option>
-                <option value="D">D</option>
-                <option value="D+E">D+E</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <select name="exam_type" id="exam_type">
-                <option value="Řádná_zkouška" selected>Řádná zkouška</option>
-                <option value="Opravná_zkouška-jízda+test">Opravná zkouška (jízda+test)</option>
-                <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
-                <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
-                <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
-                <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
-            </select>
+        <div class="form-line">
+            <div class="form-group">
+                <input type="text" name="evidence_number" id="evidence_number" placeholder="E.č" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
+            </div>
+            <div class="form-group">
+                <input type="date" name="birth_date" id="birth_date" required>
+            </div>
+            <div class="form-group">
+                <select name="license_category" id="license_category">
+                    <option value="A">A</option>
+                    <option value="B" selected>B</option>
+                    <option value="C">C</option>
+                    <option value="C+E">C+E</option>
+                    <option value="D">D</option>
+                    <option value="D+E">D+E</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select name="exam_type" id="exam_type">
+                    <option value="Řádná_zkouška" selected>Řádná zkouška</option>
+                    <option value="Opravná_zkouška-test+jízda">Opravná zkouška (jízda+test)</option>
+                    <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
+                    <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
+                    <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
+                    <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
+                </select>
+            </div>
         </div>
     `;
 
