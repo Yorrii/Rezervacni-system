@@ -8,7 +8,7 @@
         <div class="column-div">
             <div class="term-container">       
                 <h3></h3>
-                <h3>{{termin.datum}}</h3>
+                <h3>{{termin.datum.strftime('%d.%m.%Y')}}</h3>
                 <h3></h3> 
             </div>
         {% for nazev, students in list_as.items() %}
