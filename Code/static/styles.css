@@ -1,132 +1,130 @@
 /* Media pro desktopy*/
-@media only screen and (min-width:1024px) {
-    html {
-        width: 100%;
-        height: 100%;
-    }
+html {
+    width: 100%;
+    height: 100%;
+}
 
-    body {
-        background-color: #425CC7;
-        width: 100%;
-        height: 100%;
-        margin: 0;
-    }
+body {
+    background-color: #425CC7;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
 
-    main{
-        width: 100%;
-        height: 100%;
-    }
+main{
+    width: 100%;
+    height: 100%;
+}
 
-    .navbar {
-        background-color: #FFFFFF;
-        width: 100%;
-        height: 10%;
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
+.navbar {
+    background-color: #FFFFFF;
+    width: 100%;
+    height: 10%;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    .navbar-left {
-        display: flex;
-        align-items: center; /* Aby byly logo a text vertikálně vyrovnané */
-    }
+.navbar-left {
+    display: flex;
+    align-items: center; /* Aby byly logo a text vertikálně vyrovnané */
+}
 
-    .navbar img{
-        padding: 20px;
-    }
+.navbar img{
+    padding: 20px;
+}
 
-    .navbar p {
-        font-family: 'Work Sans';
-        font-size: 20px;
-        margin: 0;
-    }
+.navbar p {
+    font-family: 'Work Sans';
+    font-size: 20px;
+    margin: 0;
+}
 
-    .navbar-links {
-        display: flex;
-        gap: 20px; /* Rozdělí odkazy rovnoměrně */
-        align-items: center;
-        margin-right: 20px;
-    }
+.navbar-links {
+    display: flex;
+    gap: 20px; /* Rozdělí odkazy rovnoměrně */
+    align-items: center;
+    margin-right: 20px;
+}
 
-    .navbar .logout {
-        font-family: 'Work Sans';
-        font-size: 20px;
-        padding: 5px;
-        color: #000000;
-        text-decoration: underline;
-    }
+.navbar .logout {
+    font-family: 'Work Sans';
+    font-size: 20px;
+    padding: 5px;
+    color: #000000;
+    text-decoration: underline;
+}
 
-    .mess_success {
-        font-family: 'Work Sans';
-        font-weight: bold;
-        font-size: 10px;
-        color: #00A541;
-        margin-top: 3%;
-        align-items: center;
-    }
+.mess_success {
+    font-family: 'Work Sans';
+    font-weight: bold;
+    font-size: 10px;
+    color: #00A541;
+    margin-top: 3%;
+    align-items: center;
+}
 
-    .mess_error {
-        font-family: 'Work Sans';
-        font-weight: bold;
-        font-size: 10px;
-        color: #e93609;       
-        margin-top: 3%;
-        align-items: center;
-    }
+.mess_error {
+    font-family: 'Work Sans';
+    font-weight: bold;
+    font-size: 10px;
+    color: #e93609;       
+    margin-top: 3%;
+    align-items: center;
+}
 
-    .log_div {
-        display: flex;
-        justify-content: center;
-        align-items: middle;
-        margin: auto;
-        margin-top: 10%;
-    }
+.log_div {
+    display: flex;
+    justify-content: center;
+    align-items: middle;
+    margin: auto;
+    margin-top: 10%;
+}
 
-    .log_div form {
-        border-radius: 10px;
-        display: flex;  /* Flexbox for the form elements */
-        flex-direction: column;  /* Stack elements vertically */
-        align-items: center;
-        background-color: #C6DAF2;
-    }
+.log_div form {
+    border-radius: 10px;
+    display: flex;  /* Flexbox for the form elements */
+    flex-direction: column;  /* Stack elements vertically */
+    align-items: center;
+    background-color: #C6DAF2;
+}
 
-    .input-box {
-        border-color: #FFFFFF;
-        border-radius: 10px;
-        width: 384px;
-        height: 40px;
-        margin: 50px;
-        margin-top: 5%;
-        margin-bottom: 1%;
-        background-color: #FFFFFF;
-        font-family: 'Work Sans';
-        font-size: 100%;
-        display: flex;
-        align-items: center;
-        text-align: center;
-    }
+.input-box {
+    border-color: #FFFFFF;
+    border-radius: 10px;
+    width: 384px;
+    height: 40px;
+    margin: 50px;
+    margin-top: 5%;
+    margin-bottom: 1%;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    font-size: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
 
-    .log_div button {
-        background-color: #00A541;
-        font-family: 'Work Sans';
-        font-size: 100%;
-        color: #FFFFFF;
-        border-radius: 4px;
-        margin-top: 5%;
-        width: 50%;
-        height: 40px;
-        cursor: pointer;
-    }
+.log_div button {
+    background-color: #00A541;
+    font-family: 'Work Sans';
+    font-size: 100%;
+    color: #FFFFFF;
+    border-radius: 4px;
+    margin-top: 5%;
+    width: 50%;
+    height: 40px;
+    cursor: pointer;
+}
 
-    .log_div .odkaz {
-        font-family: 'Work Sans';
-        font-size: 60%;
-        margin-top: 5%;
-        margin-bottom: 5%;
-        color:#425CC7;
-    }
+.log_div .odkaz {
+    font-family: 'Work Sans';
+    font-size: 60%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    color:#425CC7;
 }
 
 .calendar_main {
@@ -456,7 +454,6 @@ button:hover {
 .form-line {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
     margin: 10px;
     align-items: center;
 }
@@ -465,6 +462,10 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.form-group input[type="text"]{
+    width: 80%;
 }
 
 .form-group input,
@@ -486,5 +487,28 @@ button:hover {
 
 .unordered-list > * {
     margin-top: 15px;
+}
 
+.user-info {
+    display: flex;
+    flex-direction: row;
+    background-color: #C6DAF2;
+    font-family: 'Work Sans';
+    width: 100%;
+    margin-top: 30px;
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-for-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-for-7 {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    margin: 10px;
+    align-items: center;
 }
