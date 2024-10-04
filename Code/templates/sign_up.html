@@ -6,23 +6,31 @@
 {% block main %}
 <main class="term-main">
     <div class="column-div">
-        <div class="term-container">
-            <form class="">       
-                <input type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
-                <input type="date" name="start-of-training" id="start-of-training" required> 
-                <select name="vehicle-list" id="vehicle-list" multiple required>
-                    {% for vozidlo in vozidla %}
-                        <option value="{{vozidlo.znacka}}_{{vozidlo.model}}_{{vozidlo.spz}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
-                    {% endfor %}
-                </select>
+        <div>
+            <form>
+                <div class="grid-for-3">      
+                    <div>
+                        <input type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
+                    </div>
+                    <div>
+                        <input type="date" name="start-of-training" id="start-of-training" required> 
+                    </div>
+                    <div>  
+                        <select name="vehicle-list" id="vehicle-list" multiple required>
+                            {% for vozidlo in vozidla %}
+                                <option value="{{vozidlo.znacka}}_{{vozidlo.model}}_{{vozidlo.spz}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </form>        
         </div>   
         <div class="form-container">
             <div id="form-list">
                 <form class="exam-form">
-                    <div class="form-line">
+                    <div class="students-container">
                         <div class="form-group">
-                            <input type="text" name="evidence_number" id="evidence_number" placeholder="Evidenční číslo" required>
+                            <input type="text" name="evidence_number" id="evidence_number" placeholder="E. č." required>
                         </div>
                         <div class="form-group">
                             <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
