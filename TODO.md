@@ -7,11 +7,12 @@
     - změnit secret_key
     - Dokumentace
     - Soubor s databází nevytváří databázi jen tabulky (předělat)
-    - Udělat requirements 
+    - Udělat requirements
+    - zajistit licence
+    - selecty vypadají hrozně, bude asi potřeba použít nějakou knihovnu (select2 vypadá ok + pěkný multiselect) 
 
 ### Uživatel
     - upravit profil(vozidla, učebny), správa vozidel
-    - opravbá zkouška (jizda+ test) se zapisuje špatně
     - upravit se žádostí o zápis
     - logování
     - upravit dokument na /api/sign_up
