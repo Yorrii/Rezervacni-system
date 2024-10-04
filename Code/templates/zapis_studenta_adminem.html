@@ -1,6 +1,6 @@
 <!-- HTML by měla být určena pro admina. Má zobrazovat studenty zapsané na neaktivní termín + dát mu možnost je zapsat -->
 {% extends 'template.html' %}
-{% block title %}{{termin.datum}}{% endblock %}
+{% block title %}{{termin.datum.strftime('%d.%m.%Y')}}{% endblock %}
 {% block nav %}
     {% include 'nav_bar_admin.html' %}
 {% endblock %}
@@ -8,7 +8,7 @@
     <main class="term-main">
         <div class="column-div">
             <div class="term-container">       
-                <h3>{{termin.datum}}</h3>
+                <h3>{{termin.datum.strftime('%d.%m.%Y')}}</h3>
                 <h3>Počet řidičů: {{termin.max_ridicu}}</h3>
                 <h3 id="volna_mista">Volná místa: {{volna_mista}}</h3> 
             </div>
