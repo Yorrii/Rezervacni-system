@@ -3,9 +3,9 @@ function createEmptyForm() {
     form.className = 'exam-form';
 
     form.innerHTML = `
-        <div class="form-line">
+        <div class="students-container margin-top-10">
             <div class="form-group">
-                <input type="text" name="evidence_number" id="evidence_number" placeholder="Evidenční číslo" required>
+                <input type="text" name="evidence_number" id="evidence_number" placeholder="E. č." required>
             </div>
             <div class="form-group">
                 <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
@@ -20,7 +20,7 @@ function createEmptyForm() {
                 <input type="text" name="adress" id="adress" placeholder="Adrasa" required>
             </div>
             <div class="form-group">
-                <input type="text" name="drivers_license" id="drivers_license" placeholder="Číslo řidičského průkazu-Nepoviné">
+                <input type="text" name="drivers_license" id="drivers_license" placeholder="Číslo ř. p.-Nepoviné">
             </div>
             <div class="form-group">
                 <select name="type-of-teaching" id="type-of-teaching">
@@ -43,11 +43,18 @@ document.getElementById('add-form').addEventListener('click', function() {
     formList.appendChild(newForm); 
 });
 
+document.getElementById('remove-form').addEventListener('click', function() {
+    const formList = document.getElementById('form-list');
+    if (formList.children.length > 1) {
+        formList.removeChild(formList.lastElementChild);
+    }
+});
+
 document.getElementById('submit-forms').addEventListener('click', function(event) {
     event.preventDefault(); // Zabráníme defaultnímu odeslání formuláře
 
     // Shromáždění údajů z hlavního formuláře
-    const mainForm = document.querySelector('.term-container form');
+    const mainForm = document.querySelector('#for-form form');
     const mainFormData = {
         adress: mainForm.querySelector('#adress').value,
         start_of_training: mainForm.querySelector('#start-of-training').value,
