@@ -18,7 +18,7 @@
                 {% include 'message.html' %}
                 <button type='submit' name='potvrdit'>Přihlásit</button>
                 
-                <a class="odkaz" href="/zapomenute_heslo">Zapomenuté heslo</a>
+                <a class="odkaz" href="{{ url_for('forgotten_password') }}">Zapomenuté heslo</a>
             </form>
         </div>
     </main>

@@ -504,6 +504,13 @@ button:hover {
 .grid-for-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    margin-top: 1%;
+    justify-content: center;
+}
+
+.small-gap {
+    gap: 20px;
 }
 
 .grid-for-7 {
@@ -511,4 +518,103 @@ button:hover {
     grid-template-columns: repeat(6, 1fr);
     margin: 10px;
     align-items: center;
+}
+
+.center-div {
+    display: flex;
+    justify-content: center;
+    align-items: middle;
+}
+
+.center-div label {
+    align-self: center;
+    justify-self: center;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-bot-10 {
+    margin-bottom: 10px;
+}
+
+.box{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    background-color: #C6DAF2;
+    margin-top: 30px;
+    border-radius: 4px;
+}
+
+.box-row {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    background-color: #C6DAF2;
+    margin-top: 30px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.input-box2 {
+    border-color: #000000;
+    border-radius: 5px;
+    padding: 0px;
+    margin-left: 4px;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    font-size: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.input-box3 {
+    border-color: #000000;
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 0px;
+    margin-left: 4px;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    height: 28px;
+    font-size: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+/* Kontejner pro select2 */
+.select2-container--default .select2-selection--multiple {
+    height: 28px; /* Nastavení výšky */
+    border: 1px solid black !important; /* Černý border o tloušťce 1px */
+    border-radius: 5px; /* Radius hrany 5px */
+    font-family: 'Work Sans', sans-serif !important; /* Nastavení fontu */
+    color: black !important; /* Černý text */
+    box-sizing: border-box; /* Ujistit se, že velikost funguje správně */
+    display: flex !important;
+    align-items: center !important; /* Zarovnání obsahu vertikálně uprostřed */
+    justify-items: center !important;
+}
+
+/* Zajistí, že každá vybraná položka (tag) má správnou velikost */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    font-family: 'Work Sans', sans-serif !important; /* Nastavení fontu pro vybrané možnosti */
+    color: black !important; /* Černý text pro vybrané možnosti */
+}
+
+/* Nastavení vyhledávacího pole uvnitř select2 multiselectu */
+.select2-container--default .select2-search--inline .select2-search__field {
+    font-family: 'Work Sans', sans-serif; /* Nastavení fontu pro vyhledávání */
+    color: black; /* Černý text pro vyhledávací pole */
+    height: 28px; /* Výška vyhledávacího pole */
+}
+
+/* Zajištění správného zarovnání při psaní v selectu */
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    display: flex !important;
+    align-items: center !important; /* Zarovnání textu vertikálně uprostřed */
+    height: 100%;
 }

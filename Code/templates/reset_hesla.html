@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block title %}Reset password{% endblock %}
+{% block nav %}
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+    <main>
+        <div class='log_div'>
+            <form method='post'>
+                <input class='input-box' id='password' type="password" placeholder='Nové Heslo' name='password' required>
+                <button class="margin-bot-10" type='submit' name='potvrdit'>Odeslat</button>
+            </form>
+        </div>
+    </main>
+{% endblock %}

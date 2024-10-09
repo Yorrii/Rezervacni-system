@@ -6,17 +6,17 @@
 {% block main %}
 <main class="term-main">
     <div class="column-div">
-        <div>
+        <div id="for-form">
             <form>
-                <div class="grid-for-3">      
-                    <div>
-                        <input type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
+                <div class="grid-for-3 margin-top-10 box-row small-gap">      
+                    <div >
+                        <input class="input-box3" type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
                     </div>
-                    <div>
-                        <input type="date" name="start-of-training" id="start-of-training" required> 
+                    <div >
+                        <input class="input-box3" type="date" name="start-of-training" id="start-of-training" required> 
                     </div>
-                    <div>  
-                        <select name="vehicle-list" id="vehicle-list" multiple required>
+                    <div >  
+                        <select class="input-box2" name="vehicle-list" id="vehicle-list" multiple required>
                             {% for vozidlo in vozidla %}
                                 <option value="{{vozidlo.znacka}}_{{vozidlo.model}}_{{vozidlo.spz}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
                             {% endfor %}
@@ -45,7 +45,7 @@
                             <input type="text" name="adress" id="adress" placeholder="Adrasa" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="drivers_license" id="drivers_license" placeholder="Číslo řidičského průkazu-Nepoviné">
+                            <input type="text" name="drivers_license" id="drivers_license" placeholder="Číslo ř. p.-Nepoviné">
                         </div>
                         <div class="form-group">
                             <select name="type-of-teaching" id="type-of-teaching">
@@ -59,15 +59,24 @@
                     </div>
                 </form>
             </div>
-            <div class="buttons">
+            <div class="buttons center-div margin-top-10">
                 <button type="button" id="add-form">Přidat další formulář</button>
                 <button type="button" id="remove-form">Odebrat poslední formulář</button>
             </div>
-            <div class="buttons">
+            <div class="buttons center-div margin-top-10 margin-bot-10">
                 <button type="submit" id="submit-forms">Odeslat všechny formuláře</button>
             </div>
         </div>
     </div>
 </main>
 <script src="{{ url_for('static', filename='script_sign_up.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 on the select element with id="vehicle-list"
+        $('#vehicle-list').select2({
+            placeholder: "Vyberte vozidla",  // Volitelný placeholder
+            allowClear: true  // Přidá možnost vymazání výběru
+        });
+    });
+</script>
 {% endblock %}

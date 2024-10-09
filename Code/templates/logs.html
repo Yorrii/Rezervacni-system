@@ -6,31 +6,37 @@
 {% block main %}
 <main class="term-main">
     <div class="column-div">
-        <form action="{{ url_for('logs')}}" method="post" id="search-form">
-            <select name="autoskola" id="autoskola">
-                <option value="" disabled selected>Autoškola</option>
-                {% for autoskola in autoskoly %}
-                <option value="{{autoskola['id']}}">{{ autoskola['nazev'] }}</option>
-                {% endfor %}
-            </select>
-            <select name="druh" id="druh">
-                <option value="" disabled selected>Druh</option>
-                <option value="zápis">Zápis</option>
-                <option value="odpis">Odpis</option>
-                <option value="přidání">Přidání</option>
-                <option value="odebrání">Odebrání</option>
-                <option value="přihlásil se">Přihlásil se</option>
-                <option value="odhlásil se">Odhlásil se</option>
-            </select>
-            <input type="date" id="datum" name="datum"/>
-        </form>
-        <button type="submit" form="search-form" value="Submit" >Vyhledat</button>
+        <div class="box">
+            <form action="{{ url_for('logs')}}" method="post" id="search-form">
+                <div class="grid-for-3">
+                    <select class="input-box2" name="autoskola" id="autoskola">
+                        <option value="" disabled selected>Autoškola</option>
+                        {% for autoskola in autoskoly %}
+                        <option value="{{autoskola['id']}}">{{ autoskola['nazev'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="input-box2" name="druh" id="druh">
+                        <option value="" disabled selected>Druh</option>
+                        <option value="zápis">Zápis</option>
+                        <option value="odpis">Odpis</option>
+                        <option value="přidání">Přidání</option>
+                        <option value="odebrání">Odebrání</option>
+                        <option value="přihlásil se">Přihlásil se</option>
+                        <option value="odhlásil se">Odhlásil se</option>
+                    </select>
+                    <input class="input-box2" type="date" id="datum" name="datum"/>
+                </div>
+            </form>
+            <div class="center-div margin-top-10">
+                <button type="submit" form="search-form" value="Submit" >Vyhledat</button>
+            </div>
+        </div>
         {% if logs %}
-        <div class="logs-container">
+        <div class="logs-container margin-top-10">
             {% for log in logs %}
                 <div id="{{log['id']}}" class="log">
                     <div class="log-zprava">{{log['autoskola']}}</div>
-                    <div class="log-zprava">{{log['kdy'].strftime('%d.%m.%Y')}}</div>
+                    <div class="log-zprava">{{log['kdy'].strftime('%d.%m.%Y %H:%M')}}</div>
                     <div class="log-zprava">{{log['druh']}}</div>
                     <div class="log-zprava">{{log['zprava']}}</div>
                 </div>
