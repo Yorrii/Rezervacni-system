@@ -1,10 +1,13 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, session
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo, Upozorneni
-from sqlalchemy import or_
-from docx import Document
-import app_logic
-from hashlib import sha256
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, session #mikrorámec na routování a celkovou správu webu
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user #podpůrná knihovna na správu přihlášených uživatelů
+from flask_mail import Mail, Message #podúůrná knihovna na posílání emailů
+from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo, Upozorneni #ORM modely na komunikaci s databází
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature #knihovna na generování tokenů. Kontrola, jestli není token 'prošlí' a je autentický 'neupravený'.
+from sqlalchemy import or_ #metoda na možnost or v quary
+from docx import Document #Objekt, který generuje word dokument z kódu
+import app_logic #soubor s metodamy
+from config import Config #nastavení pro posílání emailů
+from hashlib import sha256  #hashovací metoda
 from datetime import date, datetime
 
 
@@ -15,11 +18,15 @@ app.config['SECRET_KEY'] = 'Secret' #TODO zmenit klíc!!!
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost:3306/resymost2' # ://uživatel:heslo@kde_db_běží:port/název_db
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config.from_object(Config) # Nastavení na připojení na email server
 db.init_app(app) # Spojení s databází
-loginManager = LoginManager(app)
+loginManager = LoginManager(app) # Instance spravuje přihlášené uživatele
+mail = Mail(app) # Instance na posílaní mailů
 loginManager.login_view = 'home'
+serializer = URLSafeTimedSerializer(app.config['SECRET_KEY']) # instance objektu, který vytváří token na resetování a vytváření hesla
 
 @app.route("/login", methods=['GET', 'POST'])
+@app.route("/home", methods=['GET', 'POST'])
 @app.route("/", methods=['GET', 'POST'])
 def home():
     """
@@ -62,6 +69,80 @@ def home():
                 flash('Neplatný email nebo heslo', category='mess_error')
 
     return render_template('home.html')
+
+@app.route('/zapomenute_heslo', methods=['GET', 'POST'])
+def forgotten_password():
+    """
+    Stránka slouží k resetování zapomenutého hesla. Uživatel zadá email, pokud se email najde v DB pošle se na něj odkaz s tokenem
+    na jiný endpoint, kde si heslo bude moci změnit.
+
+    Parametry:
+        email (str): vstupní string při POST requestu.
+    
+    Vrací:
+        render_template("zapomenute_heslo.html"): html stránka, vracená při GET requestu.
+        redirect(calendar): přesměrování na jiný endpoint pokud je uživatel přihlášený.
+        redirect(home): přesměrování na jiný endpoint, pokud se v DB najde email.
+        #TODO flash("message.html", message=error): při špatném přihlášení vrátí pouze zprávu. 
+    """
+    if current_user.is_authenticated:
+        return redirect(url_for('calendar'))
+    
+    if request.method == 'GET':
+        return render_template('zapomenute_heslo.html')
+    
+    if request.method == 'POST':
+        email = request.form['email']
+        if email.endswith('@mesto-most.cz'): # kontrolo jestli email nekončí @mesto-most.cz pro admina
+            cil = Komisar.query.filter_by(email=email).first() # pokud jo, tak se ho pokusí najít
+        else:
+            cil = Autoskola.query.filter_by(email=email).first() # pokud ne, tak ho hledá v autoškolách
+        
+        if cil: # pokud to najde komisaře nebo i autoškolu
+            token = serializer.dumps(email, salt='8na5YMzlD1A32xS1m') # vytvoří token z emailu a solí
+            reset_url = url_for('reset_password', token=token, _external=True) # vytvoří odkaz na resetování hesla
+
+            msg = Message(
+                subject="Resetování hesla",
+                sender='Rezervační systém Most',
+                recipients=[str(email)],
+                body=f'Klikněte na tento odkaz pro resetování hesla: {reset_url}',
+                html=f'<p>Klikněte na tento odkaz pro resetování hesla:</p><a href="{reset_url}">Resetovat heslo</a>'
+            )    
+            try:
+                mail.send(msg)
+                flash('Email s odkazem na resetování hesla byl poslán.', category='success')
+                return redirect(url_for('home'))
+            except Exception as e:
+                flash(f'Email se nepodařilo odeslat. Prosím, kontaktujte Magistrát města Most.', category='error')
+                return redirect(url_for('home'))
+
+    return redirect(url_for('home'))
+
+@app.route('/resetovat/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = serializer.loads(token, salt='8na5YMzlD1A32xS1m', max_age=7200) # token se rozbalí, pokud bude "prošlí" vyhodí SignatureExpired, pokud bude token změněn vyhodí BadSignature
+        if request.method == 'GET': # Pokud je token v pořádku a request je GET
+            return render_template('reset_hesla.html')
+        
+        if request.method == 'POST': 
+            nove_heslo= request.form['password'] # heslo z formuláře při POST          
+            if email.endswith('@mesto-most.cz'): # kontrola jak končí email aby se hledalo ve správné tabulce
+                komisar = Komisar.query.filter_by(email=email).first()
+                komisar.heslo = sha256(nove_heslo.encode('utf-8')).hexdigest()
+                db.session.commit()
+                return redirect(url_for('home'))
+            else:
+                autoskola = Autoskola.query.filter_by(email=email).first()
+                autoskola.heslo = sha256(nove_heslo.encode('utf-8')).hexdigest()
+                db.session.commit()
+                return redirect(url_for('home'))
+            
+    except SignatureExpired: # Pokud vyprší platnost tokenu
+        return 'Nestihnul jsi to'
+    except BadSignature: # Token je neplatný nebo byl změněn (např. útok nebo modifikace)
+        abort(404)
 
 @app.route('/calendar', methods=['GET'])
 @login_required
@@ -717,7 +798,7 @@ def add_vehicle():
     #except:
     #    raise Exception
     #else:
-    return redirect(url_for('profil'))
+    return redirect(url_for('profile'))
 
 @login_required
 @app.route('/api/delete_student', methods=['POST'])
@@ -756,7 +837,7 @@ def docx_for_signup():
         str: pokud vše proběhne v pořádku
         docx: dokument o žádost zápisu studentů do výuky a výcviku
     """
-    try:
+    if True:
         data = request.get_json() #data z POST requestu
 
         autoskola = Autoskola.query.filter_by(id=current_user.id).first() # data o autoškole, potřebuju jméno pro ukládání
@@ -765,7 +846,7 @@ def docx_for_signup():
         datum = data['main_form']['start_of_training'] # datum začátku výcviku
         seznam_vozidel = data['main_form']['vehicle_list'] # seznam vozidel k výcviku
         seznam_studentu = data['students'] # seznam studentů do výcviku
-
+        print(adresa, datum, seznam_vozidel, seznam_studentu)
         document = Document() # docx dokument
 
         document.add_heading('Seznam řidičů žádajících o zařazení do výuky a výcviku', 0) # nadpis
@@ -799,22 +880,22 @@ def docx_for_signup():
             row_cells[6].text = student['type_of_teaching'].replace('-', ' ')
 
             # Tady se vytvoří žák a uloží se do db
-            zak = Zak(ev_cislo=student['evidence_number'],jmeno=student['first_name'],prijmenni=student['last_name'],
+            zak = Zak(ev_cislo=student['evidence_number'],jmeno=student['first_name'],prijmeni=student['last_name'],
                       narozeni=student['birth_date'],adresa=student['adress'],id_autoskoly= current_user.id)
             zaznam = Zaznam(druh='přidání', kdy=datetime.now(),
                             zprava=f'Autoškola zapsala studentku/studenta {student['first_name']} {student['last_name']} {student['evidence_number']} do výuky a výcviku.',
                             id_autoskoly=current_user.id)
             db.session.add(zaznam)
             db.session.add(zak)
-            db.session.commit()
-
+            
+        db.session.commit()
         document.add_page_break()
 
         document.save(f'Zapis_studentu/{autoskola.nazev}_{date.today().strftime("%d-%m-%Y")}.docx') # ukládání dokumentu
         return jsonify({"message": "Data přijata úspěšně"}), 200   
-    except Exception as e:
+    """except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), 400"""
 
 @login_required
 @app.route('/api/success', methods=['POST'])
