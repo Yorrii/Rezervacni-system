@@ -144,6 +144,18 @@ def reset_password(token):
     except BadSignature: # Token je neplatný nebo byl změněn (např. útok nebo modifikace)
         abort(404)
 
+@app.route('/nove_heslo/<token>', methods=['GET', 'POST'])
+def create_password(token):
+    try:
+        email = serializer.loads(token, salt='8na5YMzlD1A32xS1m', max_age=172800) # token je platný dva dny
+
+
+
+    except SignatureExpired: # Pokud vyprší platnost tokenu
+        return 'Nestihnul jsi to'
+    except BadSignature: # Token je neplatný nebo byl změněn (např. útok nebo modifikace)
+        abort(404)    
+
 @app.route('/calendar', methods=['GET'])
 @login_required
 def calendar():
@@ -413,9 +425,34 @@ def new_driving_school():
         nazev = request.form.get('nazev')
         dat_schranka = request.form.get('email')
         email =  request.form.get('email')
-        autoskola = Autoskola(nazev=nazev ,email=email, heslo=sha256('heslo123'.encode('utf-8')).hexdigest(),da_schranka=dat_schranka)
-        db.session.add(autoskola)
-        db.session.commit()
+        
+        autoskola = Autoskola.query.filter_by(email=email).first()
+
+        if not autoskola:
+            nova_autoskola = Autoskola(nazev=nazev, da_schranka=dat_schranka, email=email)
+            db.session.add(nova_autoskola)
+            db.session.commit()
+
+            flash('Nová autoškola přidána', category='success')
+
+            token = serializer.dumps(email, salt='8QLlZzV5TtW1Rfb') # vytvoří token z emailu a solí
+            newPassword_url = url_for('create_password', token=token, _external=True) # vytvoří odkaz na resetování hesla
+
+            msg = Message(
+                subject="Odkaz na vytvoření hesla",
+                sender='Rezervační systém Most',
+                recipients=[str(email)],
+                body=f'Klikněte na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}',
+                html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a>'
+            )    
+            try:
+                mail.send(msg)
+                flash('Email s odkazem na resetování hesla byl poslán.', category='success')
+                return redirect(url_for('home'))
+            except Exception as e:
+                flash(f'Email se nepodařilo odeslat. Prosím, kontaktujte Magistrát města Most.', category='error')
+                return redirect(url_for('home'))
+
         flash('Nová autoškola přidána', category='success')
         return render_template('new_driving_school.html')
     
