@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
-            alert('clicked');
             const zakId = this.getAttribute('data-zakId');
             const terminId = this.getAttribute('data-terminId');
             const studentDiv = document.getElementById(`zak_${zakId}`);
@@ -18,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => {
                 if (response.ok) {
                     // Úspěšné odstranění
-                    studentDiv.remove();
+                    location.reload(); // načte stránku
                 } else {
                     console.error('Chyba při mazání studenta');
                 }
