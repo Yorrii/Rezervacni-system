@@ -35,7 +35,7 @@
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>
-                                <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="8:00" required>
+                                <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="08:00" required>
                                 <select name="commissar" id="commissar-for-zak_{{zak['id']}}" required>
                                     {% for komisar in komisari %}
                                         <option value="{{komisar['id']}}">{{komisar['jmeno']}} {{komisar['prijmeni']}}</option>
