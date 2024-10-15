@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS ReSyMost;
+
+USE ReSyMost;
+
 CREATE TABLE `Terminy` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `datum` date,
