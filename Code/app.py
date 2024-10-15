@@ -50,6 +50,7 @@ def home():
             if cil:
                 if app_logic.porovnat_hesla(heslo, cil.heslo): # tady se porovná heslo z databáze a hashovaná forma zadaného hesla
                     login_user(app_logic.User(cil.id))
+
                     flash('Přihlášený komisař', category='mess_success')
                     return redirect(url_for('calendar'))
                 else:
@@ -61,7 +62,11 @@ def home():
             if cil:
                 if app_logic.porovnat_hesla(heslo, cil.heslo):
                     login_user(app_logic.User(cil.id))
-                    flash('Přihlášená Autoškola', category='mess_success')
+                    zaznam = Zaznam(druh='přihlásil se', kdy=datetime.now(),
+                                zprava='Autoškola se přihlásila do aplikace',
+                                id_autoskoly=current_user.id)
+                    db.session.add(zaznam)
+                    db.session.commit()
                     return redirect(url_for('calendar'))
                 else:
                     flash('Neplatný email nebo heslo', category='mess_error')
@@ -121,6 +126,7 @@ def forgotten_password():
 
 @app.route('/resetovat/<token>', methods=['GET', 'POST'])
 def reset_password(token):
+    #TODO dokumentace
     try:
         email = serializer.loads(token, salt='8na5YMzlD1A32xS1m', max_age=7200) # token se rozbalí, pokud bude "prošlí" vyhodí SignatureExpired, pokud bude token změněn vyhodí BadSignature
         if request.method == 'GET': # Pokud je token v pořádku a request je GET
@@ -146,10 +152,18 @@ def reset_password(token):
 
 @app.route('/nove_heslo/<token>', methods=['GET', 'POST'])
 def create_password(token):
+    #TODO dokumentace
     try:
-        email = serializer.loads(token, salt='8na5YMzlD1A32xS1m', max_age=172800) # token je platný dva dny
-
-
+        email = serializer.loads(token, salt='8QLlZzV5TtW1Rfb', max_age=172800) # token je platný dva dny
+        
+        if request.method == 'POST':
+            nove_heslo= request.form['password']
+            autoskola = Autoskola.query.filter_by(email=email).first()
+            autoskola.heslo = sha256(nove_heslo.encode('utf-8')).hexdigest()
+            db.session.commit()
+            return redirect(url_for('home'))
+        else:
+            return render_template('reset_hesla.html') #vrací sice html na reset hesla ale funkčnost je správná
 
     except SignatureExpired: # Pokud vyprší platnost tokenu
         return 'Nestihnul jsi to'
@@ -159,6 +173,7 @@ def create_password(token):
 @app.route('/calendar', methods=['GET'])
 @login_required
 def calendar():
+    #TODO dokumentace
     if current_user.isAdmin:
         return render_template('main_page.html')
     else:
@@ -236,7 +251,6 @@ def term(id):
 
                 return render_template('term.html', termin=termin, volna_mista=volna_mista,zaci_Y=zaci_Y, zaci_W=zaci_W)
             case 'R':
-                #TODO read-only, vrátí seznam studentů ze zkoušky, jejich časy a závěr
                 zaci = Zapsany_zak.query \
                     .join(Zak) \
                     .join(Termin) \
@@ -308,7 +322,6 @@ def term(id):
                 
 
             case 'N':
-                #TODO Upravit termín nebo zapsat žáky
                 """
                 V případě, že je termín stále neaktivní, admin by měl mít možnost od něj zapsat studenty sám bez
                 zásahu autoškoly. Tudíž v tomto případě je potřeba dostat žáky, kteří jsou již zapsaní, čekají na zápis
@@ -358,7 +371,6 @@ def term(id):
                 volna_mista = termin.max_ridicu - len([zak for zak in zaci if zak.potvrzeni == 'Y'])
                 return render_template('zapis_studenta_adminem.html', termin=termin, list_as=srovnany_dict, komisari=komisari, volna_mista=volna_mista)
             case 'R':
-                #TODO zapsat a zobrazit závěr zkoušky
                 zaci = Zapsany_zak.query \
                     .join(Zak) \
                     .join(Termin) \
@@ -409,7 +421,7 @@ def term(id):
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-
+    #TODO dokumentace
     id = current_user.id
     skola = Autoskola.query.filter_by(id=id).first()
     seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
@@ -418,10 +430,10 @@ def profile():
 @app.route('/new_driving_school', methods=['GET', 'POST'])
 @login_required
 def new_driving_school():
+    #TODO dokumentace
     if not current_user.isAdmin:
         abort(404)
     if request.method == 'POST':
-        #TODO tady by se měla vytvořit autoškola, měl by se jí poslat email s vytvořením hesla a manuálem
         nazev = request.form.get('nazev')
         dat_schranka = request.form.get('email')
         email =  request.form.get('email')
@@ -435,7 +447,7 @@ def new_driving_school():
 
             flash('Nová autoškola přidána', category='success')
 
-            token = serializer.dumps(email, salt='8QLlZzV5TtW1Rfb') # vytvoří token z emailu a solí
+            token = serializer.dumps(email, salt='8QLlZzV5TtW1Rfb') # vytvoří token z emailu a soli
             newPassword_url = url_for('create_password', token=token, _external=True) # vytvoří odkaz na resetování hesla
 
             msg = Message(
@@ -444,14 +456,36 @@ def new_driving_school():
                 recipients=[str(email)],
                 body=f'Klikněte na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}',
                 html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a>'
+                #TODO přidat soubor s manuálem
             )    
             try:
                 mail.send(msg)
-                flash('Email s odkazem na resetování hesla byl poslán.', category='success')
+                flash('Email s odkazem byl poslán.', category='success')
                 return redirect(url_for('home'))
             except Exception as e:
                 flash(f'Email se nepodařilo odeslat. Prosím, kontaktujte Magistrát města Most.', category='error')
+                return redirect(url_for('calendar'))
+        
+        if autoskola:
+            token = serializer.dumps(email, salt='8QLlZzV5TtW1Rfb') # vytvoří token z emailu a soli
+            newPassword_url = url_for('create_password', token=token, _external=True) # vytvoří odkaz na resetování hesla
+
+            msg = Message(
+                subject="Odkaz na vytvoření hesla",
+                sender='Rezervační systém Most',
+                recipients=[str(email)],
+                body=f'Klikněte na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}',
+                html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a>'
+                #TODO přidat soubor s manuálem
+            )    
+            try:
+                mail.send(msg)
+                flash('Email s odkazem byl poslán.', category='success')
                 return redirect(url_for('home'))
+            except Exception as e:
+                flash(f'Email se nepodařilo odeslat. Prosím, kontaktujte Magistrát města Most.', category='error')
+                return redirect(url_for('calendar'))    
+
 
         flash('Nová autoškola přidána', category='success')
         return render_template('new_driving_school.html')
@@ -462,7 +496,9 @@ def new_driving_school():
 @app.route('/teaching_training', methods=['GET', 'POST'])
 @login_required
 def teaching_training():
-    #TODO: endpoint pro zápis řidičů žádajících o výuku a výcvik
+    """
+    #TODO zjistit k čemu tenhle endpoint je
+    """
     autoskola = Autoskola.query.filter_by(id=current_user.id).first()
     vozidla = Vozidlo.query.filter_by(id_autoskoly=current_user.id).all()
 
@@ -530,7 +566,7 @@ def logs():
             
         return render_template('logs.html', logs=lst_zaznamy, autoskoly=lst_as)
 
-#TODO API metody
+#API metody
 @app.route('/create_autoskola', methods=['POST'])
 def nova_autoskola():
     """
@@ -880,21 +916,21 @@ def docx_for_signup():
         autoskola = Autoskola.query.filter_by(id=current_user.id).first() # data o autoškole, potřebuju jméno pro ukládání
 
         adresa = data['main_form']['adress'] # adresa účebny
-        datum = data['main_form']['start_of_training'] # datum začátku výcviku
+        datum = data['main_form']['start_of_training']
+        datum = datetime.strptime(datum, "%Y-%m-%d") # datum začátku výcviku
         seznam_vozidel = data['main_form']['vehicle_list'] # seznam vozidel k výcviku
         seznam_studentu = data['students'] # seznam studentů do výcviku
-        print(adresa, datum, seznam_vozidel, seznam_studentu)
         document = Document() # docx dokument
-
+        document.sections[0].right_margin = 457200
+        document.sections[0].left_margin = 457200
         document.add_heading('Seznam řidičů žádajících o zařazení do výuky a výcviku', 0) # nadpis
 
-        p = document.add_paragraph('A plain paragraph having some ')
-        p.add_run('bold').bold = True
-        p.add_run(' and some ')
-        p.add_run('italic.').italic = True
+        document.add_paragraph(f'Adresa učebny: {adresa}')
+        document.add_paragraph(f'Datum začátku výcviku: {datum.strftime("%d-%m-%Y")}')
 
-        document.add_heading('Heading, level 1', level=1)
-        document.add_paragraph('Intense quote', style='Intense Quote')
+        document.add_heading('Seznam vozidel k výcviku:', level=1)
+        for vozidlo in seznam_vozidel:
+            document.add_paragraph(vozidlo)
 
         # vytvoření tabulky a sloupců s názvem
         table = document.add_table(rows=1, cols=7)
@@ -1020,6 +1056,7 @@ def student_reject():
 @login_required
 @app.route('/api/notifications', methods=['GET'])
 def get_notifications():
+    #TODO dokumentace
     try:
         upozorneni_list = Upozorneni.query.filter_by(id_autoskoly=current_user.id)\
                                       .order_by(Upozorneni.datum_vytvoreni.desc())\
@@ -1039,6 +1076,13 @@ def get_notifications():
 
 @app.route('/logout')
 def logout():
+    #TODO dokumentace
+    if not current_user.isAdmin:
+        zaznam = Zaznam(druh='odhlásil se', kdy=datetime.now(),
+                        zprava='Autoškola se odhlásila z aplikace',
+                        id_autoskoly=current_user.id)
+        db.session.add(zaznam)
+        db.session.commit()
     logout_user()
     return redirect(url_for('home'))
 
