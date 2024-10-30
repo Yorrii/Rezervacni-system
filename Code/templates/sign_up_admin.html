@@ -1,22 +1,37 @@
 {% extends 'template.html' %}
 {% block title %}Výuka a výcvik{% endblock %}
 {% block nav %}
-    {% include 'nav_bar.html' %}
+    {% if superadmin|default(false) %}
+        {% include 'nav_bar_superadmin.html' %}
+    {% elif admin|default(false) %}
+        {% include 'nav_bar_admin.html' %}
+    {% else %}
+        {% include 'nav_bar_commisar.html' %}
+    {% endif %}
 {% endblock %}
 {% block main %}
 <main class="term-main">
     <div class="column-div">
         <div id="for-form">
             <form>
-                <div class="grid-for-3 margin-top-10 box-row small-gap">      
-                    <div >
+                <div class="grid-for-4 margin-top-10 box-row small-gap">
+                    <div>
+                        <select class="input-box3" name="driving-school" id="driving-school">
+                            <option value="" disabled selected hidden>Autoškola</option>
+                            {% for autoskola in autoskoly %}
+                                <option value="{{autoskola.id}}">{{autoskola.nazev}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
                         <input class="input-box3" type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
                     </div>
                     <div >
                         <input class="input-box3" type="date" name="start-of-training" id="start-of-training" required> 
                     </div>
                     <div >  
-                        <select class="input-box2" name="vehicle-list" id="vehicle-list" multiple required>
+                        <select class="input-box2" name="vehicle-list" id="vehicle-list"  multiple required>
+                            <option value="">------------------</option>
                             {% for vozidlo in vozidla %}
                                 <option value="{{vozidlo.znacka}}_{{vozidlo.model}}_{{vozidlo.spz}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
                             {% endfor %}
@@ -79,20 +94,20 @@
             </div>
         </div>
         <div id="Výuka_a_výcvik-text" class="center-div">
-            <p>
-                Tato stránka slouží pro zápis studentů do výuky a výcviku(VaV). V horním panelu zadáváte den zahájení VaV, adresa, kde bude výuka probíhat a seznam vozidel.<br>
+            <p style="font-family: Work Sans;">
+                Tato stránka slouží pro zápis studentů do výuky a výcviku(VaV). V horním panelu zadáváte autoškolu, den zahájení VaV, adresa, kde bude výuka probíhat a seznam vozidel.<br>
                 Do spodního panelu zapisujete informace o žácích. Tlačítkem 'Přidat další formulář' si přidáte řádek a tlačitkem 'Odebrat poslední formulář' si smažete poslední.<br> 
                 Po vyplnění všech potřebných polí tlačítkem 'Odeslat všechny formuláře' odešlete všechny formuláře.
             </p>
         </div>
     </div>
 </main>
-<script src="{{ url_for('static', filename='script_sign_up.js') }}"></script>
+<script src="{{ url_for('static', filename='script_sign_up_admin.js') }}"></script>
 <script>
     $(document).ready(function() {
         // Initialize Select2 on the select element with id="vehicle-list"
         $('#vehicle-list').select2({
-            placeholder: "Vyberte vozidla",  // Volitelný placeholder
+            placeholder: "Vyberte autoškolu",  // Volitelný placeholder
             allowClear: true  // Přidá možnost vymazání výběru
         });
     });

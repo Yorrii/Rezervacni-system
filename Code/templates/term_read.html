@@ -23,8 +23,10 @@
                             <div>{{ zak['cas']}}</div>
                             {% if zak['zaver'] == 'Y' %}
                                 <div> Splněno </div>
-                            {% else %}
+                            {% elif zak['zaver'] == 'N' %}
                                 <div> Nesplněno </div>
+                            {% else %}
+                                <div> Čekání </div>
                             {% endif %}               
                         </div>
                 {% endfor %}

@@ -16,10 +16,13 @@
                 
                 <input class='input-box' id='login_heslo' type='password' placeholder='Heslo' name='login_heslo'>
 
+                <div>{% include 'message.html' %}</div>
+
                 <button type='submit' name='potvrdit'>Přihlásit</button>
                 
                 <a class="odkaz" href="{{ url_for('forgotten_password') }}">Zapomenuté heslo</a>
             </form>
+            <div class="version">{{version}}</div>
         </div>
     </main>
 {% endblock %}

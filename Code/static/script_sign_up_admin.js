@@ -30,6 +30,7 @@ function createEmptyForm() {
                     <option value="C+E">C+E</option>
                     <option value="D">D</option>
                     <option value="D+E">D+E</option>
+                    <option value="T">T</option>
                 </select>
             </div>
             <div class="form-group">
@@ -110,3 +111,38 @@ document.getElementById('submit-forms').addEventListener('click', function(event
         window.alert(error);
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Iniciace Select2 pro druhý select
+    $('#vehicle-list').select2();
+
+    // Event listener pro první select
+    document.getElementById('driving-school').addEventListener('change', function () {
+        const selectedValue = this.value;
+
+        // Pokud není vybrána žádná hodnota, vyprázdníme druhý select
+        if (!selectedValue) {
+            $('#vehicle-list').empty();
+            return;
+        }
+
+        // API request
+        fetch(`/api/get_vehicles?value=${selectedValue}`)
+            .then(response => response.json())
+            .then(data => {
+                // Vyprázdnit stávající možnosti ve druhém selectu
+                $('#vehicle-list').empty();
+
+                // Naplnit druhý select novými daty
+                data.forEach(vozidlo => {
+                    const optionText = `${vozidlo.znacka} ${vozidlo.model} ${vozidlo.RZ}`;
+                    const newOption = new Option(optionText, vozidlo.id, false, false);
+                    $('#vehicle-list').append(newOption).trigger('change');
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching options:', error);
+            });
+    });
+});
+

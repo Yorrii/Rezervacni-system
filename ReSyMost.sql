@@ -31,8 +31,15 @@ CREATE TABLE `Komisari` (
   `email` varchar(70),
   `heslo` varchar(70),
   `jmeno` varchar(30),
-  `prijmeni` varchar(30)
+  `prijmeni` varchar(30),
+  `isAdmin` DATETIME NULL
 ) AUTO_INCREMENT=100001;
+
+CREATE TABLE `Superadmini` (
+  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `email` varchar(70),
+  `heslo` varchar(70),
+) AUTO_INCREMENT=1000001;
 
 CREATE TABLE `Zaci` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,

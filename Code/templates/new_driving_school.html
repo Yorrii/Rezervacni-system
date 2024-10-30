@@ -1,7 +1,11 @@
 {% extends "template.html" %}
 {% block title %}Nová autoškola{% endblock %}
 {% block nav %}
-    {% include 'nav_bar_admin.html' %}
+    {% if superadmin|default(false) %}
+        {% include 'nav_bar_superadmin.html' %}
+    {% else %}
+        {% include 'nav_bar_admin.html' %}
+    {% endif %}
 {% endblock %}
 {% block main %}
     <main class="calendar_main">

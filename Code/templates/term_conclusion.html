@@ -1,7 +1,13 @@
 {% extends 'template.html' %}
 {% block title %}{{termin.datum.strftime('%d.%m.%Y')}}{% endblock %}
 {% block nav %}
-    {% include 'nav_bar_admin.html' %}
+    {% if superadmin|default(false) %}
+        {% include 'nav_bar_superadmin.html' %}
+    {% elif admin|default(false) %}
+        {% include 'nav_bar_admin.html' %}
+    {% else %}
+        {% include 'nav_bar_commisar.html' %}
+    {% endif %}
 {% endblock %}
 {% block main %}
     <main class="term-main">

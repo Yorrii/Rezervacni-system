@@ -2,7 +2,13 @@
 {% extends 'template.html' %}
 {% block title %}{{termin.datum.strftime('%d.%m.%Y')}}{% endblock %}
 {% block nav %}
-    {% include 'nav_bar_admin.html' %}
+    {% if superadmin|default(false) %}
+        {% include 'nav_bar_superadmin.html' %}
+    {% elif admin|default(false) %}
+        {% include 'nav_bar_admin.html' %}
+    {% else %}
+        {% include 'nav_bar_commisar.html' %}
+    {% endif %}
 {% endblock %}
 {% block main %}
     <main class="term-main">
@@ -22,7 +28,7 @@
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
-                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>{{ zak['komisar'] }}</div>
@@ -33,7 +39,7 @@
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
-                            <div>{{ zak['narozeni']}}</div>
+                            <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="08:00" required>
@@ -180,15 +186,22 @@ document.getElementById('submit-forms').addEventListener('click', function() {
         body: JSON.stringify(data)
     })
     .then(response => {
+        // Kontrola, zda je status kód v pořádku (2xx)
         if (response.ok) {
-            location.reload();
+            return response.json();  // Pokud je odpověď OK, předpokládáme, že je v JSON formátu
         } else {
-            alert('Nastala chyba při odesílání formulářů.');
+            // Pokud není OK, vrátíme text (pro případy, kdy JSON není správně na backendu)
+            return response.text().then(text => { throw new Error(text); });
         }
+    })
+    .then(result => {
+        // Zpracování úspěšné odpovědi
+        location.reload();
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Nastala chyba při odesílání formulářů.');
+        // Zobrazí chybu z backendu nebo chybu, která nastala při zpracování
+        alert("Nastala neočekávaná chyba: " + error.message);  
     });
 });
 

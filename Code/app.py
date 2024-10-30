@@ -1,14 +1,14 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, session #mikrorámec na routování a celkovou správu webu
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user #podpůrná knihovna na správu přihlášených uživatelů
-from flask_mail import Mail, Message #podúůrná knihovna na posílání emailů
-from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo, Upozorneni #ORM modely na komunikaci s databází
+from flask_mail import Mail, Message #podpůrná knihovna na posílání emailů
+from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo, Upozorneni, Superadmin #ORM modely na komunikaci s databází
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature #knihovna na generování tokenů. Kontrola, jestli není token 'prošlí' a je autentický 'neupravený'.
 from sqlalchemy import or_ #metoda na možnost or v quary
 from docx import Document #Objekt, který generuje word dokument z kódu
 import app_logic #soubor s metodamy
 from config import Config #nastavení pro posílání emailů
 from hashlib import sha256  #hashovací metoda
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 
 app = Flask(__name__) # Vytvoření instance pro web
@@ -17,6 +17,8 @@ app.config['SECRET_KEY'] = 'Secret' #TODO zmenit klíc!!!
 # Nastavení aplikace pro spoj s databází
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost:3306/resymost2' # ://uživatel:heslo@kde_db_běží:port/název_db
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60) # nastavuje jak dlouho může být uživatel neaktivní před tím než se ukončí session
 
 app.config.from_object(Config) # Nastavení na připojení na email server
 db.init_app(app) # Spojení s databází
@@ -46,12 +48,19 @@ def home():
         email = request.form['login_email'] # načte si email
         heslo = request.form['login_heslo'] # načte si string z formu pro heslo
         if email.endswith('@mesto-most.cz'): # kontrolo jestli email nekončí @mesto-most.cz pro admina
+            superadmin = Superadmin.query.filter_by(email=email).first()
+            if superadmin:
+                if app_logic.porovnat_hesla(heslo, superadmin.heslo): 
+                    login_user(app_logic.User(superadmin.id))
+                    return redirect(url_for('calendar'))
             cil = Komisar.query.filter_by(email=email).first()  # podle emailu se najde komisař
             if cil:
                 if app_logic.porovnat_hesla(heslo, cil.heslo): # tady se porovná heslo z databáze a hashovaná forma zadaného hesla
-                    login_user(app_logic.User(cil.id))
-
-                    flash('Přihlášený komisař', category='mess_success')
+                    if cil.isAdmin: # Podmínka zjišťuje, jestli má sloupec isAdmin hodnotu 
+                        session['isAdmin'] = True
+                        login_user(app_logic.User(cil.id, True)) # Pokud ano, tak přidá komisaři isAdmin = True
+                    else:
+                        login_user(app_logic.User(cil.id)) # Pokud ne, tak přidá komisaři isAdmin = False
                     return redirect(url_for('calendar'))
                 else:
                     flash('Neplatný email nebo heslo', category='mess_error')
@@ -174,8 +183,13 @@ def create_password(token):
 @login_required
 def calendar():
     #TODO dokumentace
-    if current_user.isAdmin:
-        return render_template('main_page.html')
+    if current_user.isSuperAdmin:
+        return render_template('main_page.html', superadmin=True)
+    elif current_user.isCommissar:
+        if current_user.isAdmin:
+            return render_template('main_page.html', admin=True)
+        else:
+            return render_template('main_page.html')
     else:
         return render_template('main_page_user.html')
 
@@ -208,7 +222,7 @@ def term(id):
     else:
         session['term_id'] = id #pokud termín existuje dáme ho do sessionu protože s ním budeme ještě pracovat
 
-    if not current_user.isAdmin: 
+    if not current_user.isCommissar: 
         
         match termin.ac_flag:
             case 'N': # pokud je termín neaktivní abort 
@@ -273,11 +287,11 @@ def term(id):
                         })
                 return render_template('term_read.html', termin=termin, zaci=zaci_s)
                  
-    elif current_user.isAdmin:
+    elif current_user.isCommissar:
         volna_mista = termin.max_ridicu - Zapsany_zak.query.filter_by(id_terminu=termin.id, potvrzeni='Y').count()
         match termin.ac_flag:
             case 'Y':
-                # Vrátí všechny zapsané studenty, schromáždí je pod jejich autoškoly a zobrazí jestli jsou už přijmutí nebo ne!
+            # Vrátí všechny zapsané studenty, schromáždí je pod jejich autoškoly a zobrazí jestli jsou už přijmutí nebo ne!
                 zaci = Zapsany_zak.query \
                     .join(Zak) \
                     .join(Termin) \
@@ -304,7 +318,7 @@ def term(id):
                                                             'cas': item.zacatek
                                                         }]
                     elif autoskola.nazev in zaci_v_as:
-                         zaci_v_as[autoskola.nazev].append({
+                        zaci_v_as[autoskola.nazev].append({
                                                             'id': item.zak.id,                 
                                                             'ev_cislo': item.zak.ev_cislo,
                                                             'jmeno': item.zak.jmeno,
@@ -318,8 +332,11 @@ def term(id):
                                                         })
 
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
-                return render_template('term_admin.html', list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista)
-                
+                if current_user.isAdmin or current_user.isSuperAdmin: # Vrací html, ve kterém lze zapsat studenty a jde vidět kdo, koho zkouší
+                    return render_template('term_admin.html', list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista)
+                else: # Vrací html, ve kterém nelze zapsat studenty a nejde vidět kdo, koho zkouší
+                    #TODO pokud komisař není admin, nemá vidět kdo zkouší koho
+                    return render_template('term_komisar.html', list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista)
 
             case 'N':
                 """
@@ -369,7 +386,9 @@ def term(id):
 
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
                 volna_mista = termin.max_ridicu - len([zak for zak in zaci if zak.potvrzeni == 'Y'])
-                return render_template('zapis_studenta_adminem.html', termin=termin, list_as=srovnany_dict, komisari=komisari, volna_mista=volna_mista)
+                return render_template('zapis_studenta_adminem.html', superadmin=current_user.isSuperAdmin, admin= current_user.isAdmin,
+                                        termin=termin, list_as=srovnany_dict, komisari=komisari, volna_mista=volna_mista)
+            
             case 'R':
                 zaci = Zapsany_zak.query \
                     .join(Zak) \
@@ -398,7 +417,7 @@ def term(id):
                                                             'zaver': item.zaver
                                                         }]
                     elif autoskola.nazev in zaci_v_as:
-                         zaci_v_as[autoskola.nazev].append({
+                        zaci_v_as[autoskola.nazev].append({
                                                             'id': item.zak.id,                 
                                                             'ev_cislo': item.zak.ev_cislo,
                                                             'jmeno': item.zak.jmeno,
@@ -491,18 +510,32 @@ def new_driving_school():
         return render_template('new_driving_school.html')
     
     if request.method == 'GET':
-        return render_template('new_driving_school.html')
+        return render_template('new_driving_school.html', superadmin=current_user.isSuperAdmin, admin=current_user.isAdmin)
 
 @app.route('/teaching_training', methods=['GET', 'POST'])
 @login_required
 def teaching_training():
     """
-    #TODO zjistit k čemu tenhle endpoint je
+    Endpoint vrací stránku se žádost o zápis do výcviku
+    #TODO dodělat
     """
-    autoskola = Autoskola.query.filter_by(id=current_user.id).first()
-    vozidla = Vozidlo.query.filter_by(id_autoskoly=current_user.id).all()
+    if current_user.isCommissar:
+        ausk = Autoskola.query.all() # z db si vytahneme všechny autoškoly
 
-    return render_template('sign_up.html', vozidla=vozidla, autoskola=autoskola)
+        autoskoly = []
+        for skola in ausk:
+            autoskoly.append({
+                'id': skola.id,
+                'nazev': skola.nazev
+            })
+
+        return render_template('sign_up_admin.html', autoskoly=autoskoly, superadmin=current_user.isSuperAdmin, admin=current_user.isAdmin)
+    else:
+        autoskola = Autoskola.query.filter_by(id=current_user.id).first()
+        vozidla = Vozidlo.query.filter_by(id_autoskoly=current_user.id).all()
+        return render_template('sign_up.html', vozidla=vozidla, autoskola=autoskola)
+    
+    abort(404)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -566,7 +599,64 @@ def logs():
             
         return render_template('logs.html', logs=lst_zaznamy, autoskoly=lst_as)
 
+@app.route('/rights', methods= ['GET', 'POST'])
+@login_required
+def rozdat_prava():
+    if not current_user.isSuperAdmin:
+        abort(404)
+    
+    komisari = Komisar.query.all()
+
+    lst_komisari = []
+    for komisar in komisari:
+        lst_komisari.append({
+            'id': komisar.id,
+            'jmeno': komisar.jmeno,
+            'prijmeni': komisar.prijmeni,
+            'isAdmin': komisar.isAdmin.strftime("%d.%m.%Y") if komisar.isAdmin else None
+        })
+
+    return render_template('rights.html', komisari=lst_komisari)
+
+
 #API metody
+@app.route('/pridat_prava', methods= ['POST'])
+def pridat_prava():
+    try:
+        data = request.get_json()
+        id = data.get('id')
+        date = data.get('date')    
+
+        komisar = Komisar.query.filter_by(id=id).first()
+        if komisar:
+            komisar.isAdmin = date
+            db.session.commit()
+            return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
+        else:
+            return jsonify({"error": "Komisař nebyl nalezen"}), 404
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/odebrat_prava', methods= ['POST'])
+def odebrat_prava():
+    try:
+        data = request.get_json()
+        id = data.get("id")  # Získání id z JSON objektu
+        
+        # Najít komisaře podle id
+        komisar = Komisar.query.filter_by(id=id).first()
+        
+        if komisar:
+            komisar.isAdmin = None
+            db.session.commit()
+            return jsonify({"message": "Práva byla úspěšně odebrána"}), 200
+        else:
+            return jsonify({"error": "Komisař nebyl nalezen"}), 404
+    except Exception as e:
+        # Pokud nastane chyba, odeslat chybovou zprávu
+        return jsonify({"error": str(e)}), 400
+
 @app.route('/create_autoskola', methods=['POST'])
 def nova_autoskola():
     """
@@ -700,7 +790,7 @@ def get_calendar_dates():
     API bude vracet informace o termínech aby se zobrazili v kalendáři
 
     """
-    if current_user.isAdmin:
+    if current_user.isCommissar:
         terminy = Termin.query.all()
         
         # Serializace dat
@@ -715,7 +805,7 @@ def get_calendar_dates():
             }
             terminy_list.append(termin_data)
         return jsonify(terminy_list)
-    if not current_user.isAdmin:
+    if not current_user.isCommissar:
         # Dotaz pro aktivní termíny (ac_flag = 'Y')
         aktivni_terminy = db.session.query(Termin).filter(Termin.ac_flag == 'Y').all()
         
@@ -736,6 +826,7 @@ def get_calendar_dates():
                 "date": termin.datum.isoformat(),
                 "ac_flag": termin.ac_flag,
                 "max_ridicu": termin.max_ridicu,
+                "zapsani_zaci": len(termin.zapsani_zaci)
             })
         
         return jsonify(terminy_data)
@@ -802,6 +893,7 @@ def enroll_by_admin():
     #TODO udělat záznamy pro autoškolu i komisaře
     try:
         data = request.get_json()
+        errors = []
 
         for student in data:
             evidence_number = student.get('evidence_number')
@@ -817,10 +909,13 @@ def enroll_by_admin():
                 zapis = Zapsany_zak(typ_zkousky=license_category, druh_zkousky=exam_type,
                                     id_terminu=session.get('term_id'), id_autoskoly=zak.id_autoskoly,id_zaka=zak.id)
                 db.session.add(zapis)
-                db.session.commit()
             else:
-                print('Něco se nevyšlo')
-                return jsonify({"error": str(e)}), 400
+                errors.append(f'žáka {evidence_number} {first_name} {last_name} se nepodařilo nalézt, zkontrolujte si, že jste informace zadali správně')
+            
+        if errors:
+            return jsonify({"error": errors}), 400
+        
+        db.session.commit()
         return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
@@ -829,6 +924,9 @@ def enroll_by_admin():
 @login_required
 @app.route('/enroll', methods=['POST'])
 def enroll_drivers():
+    """
+    Endpoint pro potvrzení studenta na termín
+    """
     try:
         # Získání dat ve formátu JSON
         data = request.get_json()
@@ -847,7 +945,7 @@ def enroll_drivers():
             zapis.zacatek = time_start
             zapis.id_komisare = id_commissar
             print('zak se zapsal na termín')
-            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} byl/a zapsán/a na termín {termin.datum} v {time_start}',
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} byl/a zapsán/a na termín {termin.datum.stf} v {time_start}',
                                    id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(upozorneni)
             db.session.commit()
@@ -861,6 +959,9 @@ def enroll_drivers():
 @login_required
 @app.route('/api/add_vehicle', methods=['POST'])
 def add_vehicle():
+    """
+    Endpoint pro přidání vozidla
+    """
     znacka= request.form['znacka']
     model= request.form['model']
     spz= request.form['spz']
@@ -876,6 +977,9 @@ def add_vehicle():
 @login_required
 @app.route('/api/delete_student', methods=['POST'])
 def delete_student():
+    """
+    Endpoint pro odebrání ještě nepotvrzeného žáka z termínu autoškolou
+    """
     data = request.get_json()
     zak_id = data.get('zak_id')
     termin_id = data.get('termin_id')
@@ -926,14 +1030,14 @@ def docx_for_signup():
         document.add_heading('Seznam řidičů žádajících o zařazení do výuky a výcviku', 0) # nadpis
 
         document.add_paragraph(f'Adresa učebny: {adresa}')
-        document.add_paragraph(f'Datum začátku výcviku: {datum.strftime("%d-%m-%Y")}')
+        document.add_paragraph(f'Datum začátku výcviku: {datum.strftime("%d.%m.%Y")}')
 
         document.add_heading('Seznam vozidel k výcviku:', level=1)
         for vozidlo in seznam_vozidel:
             document.add_paragraph(vozidlo)
 
         # vytvoření tabulky a sloupců s názvem
-        table = document.add_table(rows=1, cols=7)
+        table = document.add_table(rows=1, cols=8)
         hdr_cells = table.rows[0].cells
         hdr_cells[0].text = 'Evidenčí číslo'
         hdr_cells[1].text = 'Jméno'
@@ -941,7 +1045,8 @@ def docx_for_signup():
         hdr_cells[3].text = 'Datum narození'
         hdr_cells[4].text = 'Adresa'
         hdr_cells[5].text = 'Číslo řidičského průkazu'
-        hdr_cells[6].text = 'Druh výcviku'
+        hdr_cells[6].text = 'Skupina řidičského oprávnění'
+        hdr_cells[7].text = 'Druh výcviku'
         for student in seznam_studentu: # cykl pro studenty, aby se zapsali do tabulky a zároveň jejich tvorba do db
             row_cells = table.add_row().cells
             row_cells[0].text = student['evidence_number']
@@ -951,6 +1056,7 @@ def docx_for_signup():
             row_cells[4].text = student['adress']
             row_cells[5].text = student['drivers_license'] if student['drivers_license'] else ' '
             row_cells[6].text = student['type_of_teaching'].replace('-', ' ')
+            row_cells[7].text = student['license_category']
 
             # Tady se vytvoří žák a uloží se do db
             zak = Zak(ev_cislo=student['evidence_number'],jmeno=student['first_name'],prijmeni=student['last_name'],
@@ -983,7 +1089,7 @@ def student_success():
         str: error, když dojede k chybě nebo když neexistuje termín nebo žák
         str: pokud vše proběhne v pořádku
     """
-    if not current_user.isAdmin:
+    if not current_user.isCommissar:
         abort(404)
     try:
         # Získání dat ve formátu JSON
@@ -1025,7 +1131,7 @@ def student_reject():
         str: 200, pokud vše proběhne v pořádku
         abort: 404 pokud user není admin, jelikož k metodě by měl mít přístup pouze admin
     """
-    if not current_user.isAdmin:
+    if not current_user.isCommissar:
         abort(404)
     try:
         # Získání dat ve formátu JSON
@@ -1074,21 +1180,64 @@ def get_notifications():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route('/api/get_vehicles', methods=['GET'])
+def get_vehicles():
+    """
+    API metoda, která vrací seznam vozidel jednotlivých autoškol. Podle poskytnutého id si najde vozidla s ním spojená a pošle je zpět. 
+
+    Parametry:
+        request: JSON soubor s novými studenty, adresou učebny, typem výuky, vozidli pro výuku
+
+    Vrací:
+        str: pokud při vytvoření a nebo commitu do databáze vznikne error
+        str: pokud vše proběhne v pořádku
+        docx: dokument o žádost zápisu studentů do výuky a výcviku
+    """
+    autoskola = request.args.get('value')
+    vozidla = Vozidlo.query.filter_by(id_autoskoly=autoskola).all()
+    ls_vozidla = []
+    for vozidlo in vozidla:
+        ls_vozidla.append({'id': vozidlo.id,
+                           'znacka':vozidlo.znacka,
+                           'model': vozidlo.model,
+                           'RZ': vozidlo.spz
+                          })
+    return jsonify(ls_vozidla)
+
+@app.errorhandler(404)
+def error404(e):
+    return render_template('404.html'), 404
+
 @app.route('/logout')
 def logout():
     #TODO dokumentace
-    if not current_user.isAdmin:
+    if not current_user.isCommissar:
         zaznam = Zaznam(druh='odhlásil se', kdy=datetime.now(),
                         zprava='Autoškola se odhlásila z aplikace',
                         id_autoskoly=current_user.id)
         db.session.add(zaznam)
         db.session.commit()
+    session.clear()
     logout_user()
     return redirect(url_for('home'))
 
+@app.context_processor
+def inject_globals():
+    return {
+        'version': '0.8.1'
+    }
+
+@app.before_request # tahle metoda se spustí před každým requestem, brání v prodloužení sessionu pro def get_notification():
+def dont_extend_session():
+    # Zkontrolujte, zda je požadavek na specifický endpoint
+    if request.endpoint == '/api/notifications' and current_user.is_authenticated:
+        session.permanent = False  # Dočasně vypneme permanentní session pro tento endpoint
+
 @loginManager.user_loader
 def load_user(user_id):
-    return app_logic.User(user_id)
+    """#TODO"""
+    is_admin = session.get('isAdmin', False)
+    return app_logic.User(user_id, is_admin)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -33,15 +33,15 @@ function renderCalendar(date, events = []) {
         const event = events.find(event => event.date === dateString);
         if (event) {
             // Nastavení barvy podle hodnoty 'ac_flag'
-            if (event.ac_flag === 'Y') {
-                dayDiv.style.backgroundColor = "#17f00c"; // Zelená pro aktivní
-            } else if (event.ac_flag === 'N') {
-                dayDiv.style.backgroundColor = "#f03329"; // Červená pro neaktivní
+            if (event.ac_flag === 'R') {
+                dayDiv.style.backgroundColor =  "#bcf5f1"; // Modrá pro proběhlé termíny      
+            } else if (event.max_ridicu-event.zapsani_zaci <= 0) {
+                dayDiv.style.backgroundColor = "#f03329"; // Červená pro plné termíny
             } else {
-                dayDiv.style.backgroundColor = "#bcf5f1"; // Světle modrá pro waiting
+                dayDiv.style.backgroundColor = "#17f00c"; // Zelená pro aktivní termíny
             }
             dayDiv.classList.add("event-day"); // Přidání třídy pro další styly
-            // Přidání event listeneru pro přesměrování
+                // Přidání event listeneru pro přesměrování
             dayDiv.addEventListener("click", () => {
                 window.location.href = `/term/${event.id}`;
             });

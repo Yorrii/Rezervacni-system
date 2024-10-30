@@ -7,23 +7,33 @@
 <main class="term-main">
     <div class="column-div">
         <div class='user-info'>
-            <div>{{ autoskola.nazev }}</div>
+            <h2 class="school-name">{{ autoskola.nazev }}</h2>
         </div>
-        <div class="contain-two-divs">
+        <div class="grid-for-2">
             <div class="vehicle-list">
                 {% for vozidlo in vozidla %}
-                    <div class="vehicle-column">{{vozidlo.znacka}} {{ vozidlo.model }} {{vozidlo.spz}}</div>
+                    <div class="grid-for-3">
+                        <div class="center-div">{{vozidlo.znacka}}</div>
+                        <div class="center-div">{{vozidlo.model}}</div>
+                        <div class="center-div">{{vozidlo.spz}}</div>
+                    </div>
                 {% endfor %}
             </div>
             <div class="vehicle-add">
                 <form action="/api/add_vehicle" id="vehicle-form" autocomplete="off" method="post">
-                    <label for="znacka">Značka:</label>
-                    <input type="text" name="znacka" id="znacka">
-                    <label for="model">Model:</label>
-                    <input type="text" name="model" id="model">
-                    <label for="spz">Spz:</label>
-                    <input type="text" name="spz" id="spz">
-                    <button type="submit" form="vehicle-form">Přidat</button>
+                    <div class="center-div margin-top-10">
+                        <label for="znacka">Značka:</label>
+                        <input type="text" name="znacka" id="znacka">
+                    </div>
+                    <div class="center-div margin-top-10">
+                        <label for="model">Model:</label>
+                        <input type="text" name="model" id="model">
+                    </div>
+                    <div class="center-div margin-top-10">
+                        <label for="spz">RZ:</label>
+                        <input type="text" name="spz" id="spz">
+                    </div>
+                    <button class="form-button margin-top-10 margin-bot-10" type="submit" form="vehicle-form">Přidat</button>
                 </form>
             </div>  
         </div>

@@ -17,9 +17,16 @@ def porovnat_hesla(heslo, db_heslo):
     return True if hashlib.sha256(heslo.encode('utf-8')).hexdigest() == db_heslo else False
 
 class User(UserMixin):
-    def __init__(self, id):
+    def __init__(self, id, isAdmin=False):
         self.id = id
-        if int(self.id) > 100000:
+        if int(self.id) > 1000000: # pokud je superadmin
+            self.isSuperAdmin = True
+            self.isCommissar = True
             self.isAdmin = True
-        else:
-            self.isAdmin = False
+        elif int(self.id) > 100000: # pokud je komisař
+            self.isSuperAdmin = False 
+            self.isCommissar = True
+            self.isAdmin = isAdmin # pokud má admin práva
+        else: # pro autoškolu
+            self.isSuperAdmin = False
+            self.isCommissar = False

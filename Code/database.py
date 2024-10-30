@@ -62,6 +62,18 @@ class Komisar(db.Model):
     heslo = db.Column('heslo', db.String(70), nullable=True)
     jmeno = db.Column('jmeno', db.String(70), nullable=True)
     prijmeni = db.Column('prijmeni', db.String(70), nullable=True)
+    isAdmin = db.Column('isAdmin', db.DateTime, nullable=True)
+
+
+class Superadmin(db.Model):
+    """
+    Třída Komisar je model reprezentující tabulku Komisari v DB
+    """
+    __tablename__ = 'Superadmini'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column('email', db.String(70), nullable=True)
+    heslo = db.Column('heslo', db.String(70), nullable=False)
 
 
 class Zapsany_zak(db.Model):

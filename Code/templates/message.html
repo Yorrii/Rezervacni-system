@@ -1,15 +1,15 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% for category, message in messages %}
 {% if category == 'mess_success' %}
-<div class="mess_success" role="status">
+<div class="mess_success margin-top-10" role="status">
     {{ message | safe }}
 </div>
 {% elif category == 'mess_error' %}
-<div class="mess_error" role="status">
+<div class="mess_error margin-top-10" role="status">
     {{ message | safe }}
 </div>
 {% else %}
-<div class="mess_default" role="status">
+<div class="mess_default margin-top-10" role="status">
     {{ message | safe }}
 </div>
 {% endif %}

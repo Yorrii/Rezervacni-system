@@ -1,19 +1,4 @@
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
-<svg fill="#22d825" width="800px" height="800px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" stroke="#22d825">
-
-  <g id="SVGRepo_bgCarrier" stroke-width="0"/>
-  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-  <g id="SVGRepo_iconCarrier">
-    <title>ionicons-v5-e</title>
-    
-    <!-- Kruh -->
-    <path d="M256,48C141.31,48,48,141.31,48,256s93.31,208,208,208,208-93.31,208-208S370.69,48,256,48Z" 
-          fill="#22d825" stroke="#22d825" stroke-width="16"/>
-    
-    <!-- Checkmark -->
-    <path d="M218,360.38L137.4,270.81l23.79-21.41l56,62.22L350,153.46l24.54,20.54L218,360.38Z" 
-          fill="#ffffff" stroke="#ffffff" stroke-width="16"/>
-  </g>
-
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none" width="100" height="100">
+  <circle cx="16" cy="16" r="15" fill="#22d825" stroke="none"/>
+  <path d="M10 16.5l4.5 4.5 7-10" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

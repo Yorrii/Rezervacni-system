@@ -1,0 +1,93 @@
+{% extends "template.html" %}
+{% block title %}Správa práv{% endblock %}
+{% block nav %}
+        {% include 'nav_bar_superadmin.html' %}
+{% endblock %}
+{% block main %}
+    <main class="calendar_main">
+        <div class="column-div">    
+                <div class="rights-box">
+                    {% for komisar in komisari %}
+                        <div class="grid-for-4 margin-top-10 small-gap margin-bot-10">
+                            <div class="center-div">{{komisar['jmeno']}}</div>
+                            <div class="center-div">{{komisar['prijmeni']}}</div>
+                            {% if komisar['isAdmin'] %}
+                                <div class="center-div">{{komisar['isAdmin']}}</div>
+                            {% else %}
+                            <div class="center-div">
+                                <input class="input-box3" type="datetime-local" name="time-{{komisar['id']}}" id="time-{{komisar['id']}}" required> 
+                            </div>
+                            {% endif %}
+                            {% if komisar['isAdmin'] %}
+                            <div class="center-div">
+                                <button class="no-fill" onclick="removeRights('{{ komisar['id'] }}')"><img src="../static/images/cross.svg" alt="cross" height="20px" width="20px"></button>
+                            </div>
+                            {% else %}
+                            <div class="center-div">
+                                <button class="no-fill " onclick="giveRights('{{ komisar['id'] }}')"><img src="../static/images/checkmark.svg" alt="checkmark" height="23px" width="23px"></button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+        </div>
+    </main>
+    <script>
+        function removeRights(komisarId) {
+            fetch('/odebrat_prava', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: komisarId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Chyba při odebírání práv');
+                }
+                return response.json();
+            })
+            .then(data => {
+                location.reload();
+                console.log(data); // Pro debugování nebo další logiku
+            })
+            .catch(error => {
+                console.error('Došlo k chybě:', error);
+                alert("Došlo k chybě při odebírání práv.");
+            });
+        }
+
+        function giveRights(komisarId) {
+            // Najdi input element s ID `time-{komisarId}`
+            const dateInput = document.getElementById(`time-${komisarId}`);
+            const dateValue = dateInput ? dateInput.value : null;
+
+            if (!dateValue) {
+                alert("Vyberte prosím datum.");
+                return;
+            }
+
+            fetch('/pridat_prava', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: komisarId, date: dateValue })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Chyba při přidávání práv');
+                }
+                return response.json();
+            })
+            .then(data => {
+                location.reload();
+                console.log(data); // Pro debugování nebo další logiku
+            })
+            .catch(error => {
+                console.error('Došlo k chybě:', error);
+                alert("Došlo k chybě při přidávání práv.");
+            });
+        }
+    </script>
+{% endblock %}

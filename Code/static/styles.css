@@ -79,6 +79,7 @@ main{
 
 .log_div {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     /*margin: auto;*/
@@ -87,6 +88,13 @@ main{
     width: 25%;
     border-radius: 10px;
     background-color: #C6DAF2;
+}
+
+.version {
+    margin-left: auto;
+    margin-right: 2%;
+    font-family: 'Work Sans';
+    color: #90b7e7;  
 }
 
 
@@ -410,6 +418,16 @@ button:hover {
     font-family: 'Work Sans';
 }
 
+.student-line-admin-grid-8 input, .student-line-admin-grid-8 select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
 .student-line-admin-grid-8 > *{
     text-align: center;
 }
@@ -440,7 +458,6 @@ button:hover {
 .logs-container {
     display: flex;
     flex-direction: column; /* Zajistí, že logy budou pod sebou */
-    gap: 10px; /* Mezera mezi jednotlivými logy */
     align-items: center; /* Centrovaní obsahu na střed */
     width: 100%;
     background-color: #C6DAF2;
@@ -452,10 +469,11 @@ button:hover {
     grid-template-columns: 15% 20% 10% 1fr;
     gap: 10px;
     width: 100%; /* Nastaví pevnou šířku pro každý log */
-    padding: 10px;
+    padding: 2px;
     box-sizing: border-box;
     text-align: center;
     font-family: 'Work Sans';
+    border-bottom: 1px solid #000;
 }
 
 .log-zprava:nth-child(4) {
@@ -541,7 +559,7 @@ button:hover {
     flex-direction: row;
     background-color: #C6DAF2;
     font-family: 'Work Sans';
-    width: 100%;
+    width: 60%;
     margin-top: 30px;
     border-radius: 4px;
     align-items: center;
@@ -551,6 +569,14 @@ button:hover {
 .grid-for-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    margin-top: 1%;
+    justify-content: center;
+}
+
+.grid-for-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     align-items: center;
     margin-top: 1%;
     justify-content: center;
@@ -588,6 +614,23 @@ button:hover {
     border-radius: 4px;
     text-align: center;
     box-sizing: border-box;
+}
+
+.grid-for-2 {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: 3px;
+    margin-top: 30px;
+    align-items: center;
+}
+
+.grid-for-2 > * {
+    background-color: #C6DAF2;
+    border-radius: 5px;
+    font-family: 'Work Sans';
+    height: 100%;
+    padding: 3px;
 }
 
 .center-div {
@@ -654,4 +697,48 @@ button:hover {
     display: flex;
     align-items: center;
     text-align: center;
+}
+
+h3.error {
+    margin-top: 1%;
+    font-family: 'Work Sans';
+    color: white;
+    font-style: italic;
+    font-size: 2rem;
+    text-shadow: 8px 10px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1.error {
+    color: white;
+    font-family: 'Work Sans';
+    font-size: 10rem;
+    font-style: italic;
+    text-shadow: 13px 9px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 0px;
+}
+
+.school-name {
+    color: black;
+    font-family: 'Work Sans';
+    font-size: 2rem;
+    font-style: italic;
+    text-shadow: 13px 9px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+.vehicle-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.rights-box {
+    display: flex;
+    flex-direction: column;
+    background-color: #C6DAF2;
+    font-family: 'Work Sans';
+    margin-top: 30px;
+    border-radius: 4px;
 }
