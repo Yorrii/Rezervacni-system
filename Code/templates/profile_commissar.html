@@ -1,0 +1,65 @@
+{% extends 'template.html' %}
+{% block title %}Profil{% endblock %}
+{% block nav %}
+    {% if superadmin|default(false) %}
+        {% include 'nav_bar_superadmin.html' %}
+    {% elif admin|default(false) %}
+        {% include 'nav_bar_admin.html' %}
+    {% else %}
+        {% include 'nav_bar_commisar.html' %}
+    {% endif %}
+{% endblock %}
+{% block main %}
+<main class="term-main">
+    <div class="column-div">
+        <div id="for-form">
+            <form>
+                <div class="grid-for-4 margin-top-10 box-row small-gap">
+                    <div>
+                        <input class="input-box4" type="text" name="name" id="name" placeholder="{{autoskola['nazev']}}" required> 
+                    </div>
+                    <div>
+                        <input class="input-box4" type="email" name="email" id="email" placeholder="{{autoskola['email']}}" required> 
+                    </div>
+                    <div>
+                        <input class="input-box4" type="text" name="adress" id="adress" placeholder="{{autoskola['adresa']}}" required> 
+                    </div>
+                    <div>
+                        <input class="input-box4" type="text" name="datovka" id="datovka" placeholder="{{autoskola['datovka']}}" required> 
+                    </div>
+                </div>
+            </form>        
+        </div>
+        <div class="grid-for-2" style="gap: 2%;"> <!-- Tohle bude div, který v sobě bude držet okénko pro vozidla a studenty -->
+            <div style="width: 100%;"> <!-- Vozidla -->
+                <div class="grid-for-3 vycentrovat-text">
+                    <div style="font-weight: bold;">Značka</div>
+                    <div style="font-weight: bold;">Model</div>
+                    <div style="font-weight: bold;">Registrační značka</div>
+                </div>
+                {% for vozidlo in vozidla %}
+                    <div class="grid-for-3 vycentrovat-text">
+                        <div>{{vozidlo['znacka']}}</div>
+                        <div>{{vozidlo['model']}}</div>
+                        <div>{{vozidlo['rz']}}</div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div style="width: 100%;"> <!-- Žáci -->
+                <div class="grid-for-3 vycentrovat-text">
+                    <div style="font-weight: bold;">Evidenční číslo</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                </div>
+                {% for zak in zaci %}
+                    <div class="grid-for-3 vycentrovat-text">
+                        <div>{{zak['ev']}}</div>
+                        <div>{{zak['jmeno']}}</div>
+                        <div>{{zak['prijmeni']}}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

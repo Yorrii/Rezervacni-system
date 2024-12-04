@@ -39,6 +39,8 @@ CREATE TABLE `Superadmini` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `email` varchar(70),
   `heslo` varchar(70),
+  `jmeno` varchar(30),
+  `prijmeni` varchar(30)
 ) AUTO_INCREMENT=1000001;
 
 CREATE TABLE `Zaci` (
@@ -49,6 +51,7 @@ CREATE TABLE `Zaci` (
   `datum_narozeni` date,
   `adresa` varchar(255),
   `cislo_prukazu` varchar(20),
+  `splnil` boolean DEFAULT FALSE,
   `id_autoskoly` int
 );
 
@@ -61,7 +64,7 @@ CREATE TABLE `Zapsani_zaci` (
   `id_terminu` int,
   `id_komisare` int,
   `id_autoskoly` int,
-  `id_zaka` int
+  `id_zaka` int,
   PRIMARY KEY (`id_terminu`, `id_zaka`)
 );
 
@@ -71,7 +74,7 @@ CREATE TABLE `Vozidla` (
     `model` VARCHAR(100) NOT NULL,
     `spz` VARCHAR(10),
     `id_autoskoly` INT,
-    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id)
+    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id) ON DELETE CASCADE
 );
 
 CREATE TABLE `Upozorneni` (
@@ -80,7 +83,7 @@ CREATE TABLE `Upozorneni` (
     `datum_vytvoreni` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `stav` ENUM('Y', 'N') DEFAULT 'N',
     `id_autoskoly` INT,
-    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id) ON DELETE CASCADE
+    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id) 
 );
 
 
@@ -102,16 +105,26 @@ SET GLOBAL event_scheduler = ON;
 
 CREATE EVENT IF NOT EXISTS `aktualizace_active_flag`
 ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_DATE + INTERVAL 1 DAY + INTERVAL 1 HOUR
 DO
   UPDATE `Terminy`
   SET `active_flag` = 'Y'
-  WHERE `datum` BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 14 DAY)
+  WHERE `datum` BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 28 DAY)
   AND `active_flag` != 'Y';
 
 CREATE EVENT IF NOT EXISTS `nastavit_flag_na_R`
 ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_DATE + INTERVAL 1 DAY + INTERVAL 1 HOUR
 DO
   UPDATE `Terminy`
   SET `active_flag` = 'R'
   WHERE `datum` < CURDATE()
   AND `active_flag` != 'R';
+
+CREATE EVENT IF NOT EXISTS `aktualizace_prav`
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_DATE + INTERVAL 1 DAY + INTERVAL 1 HOUR
+DO
+  UPDATE `Komisari`
+  SET `isAdmin` = NULL
+  WHERE `isAdmin` <= NOW();

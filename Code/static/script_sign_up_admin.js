@@ -67,6 +67,7 @@ document.getElementById('submit-forms').addEventListener('click', function(event
     // Shromáždění údajů z hlavního formuláře
     const mainForm = document.querySelector('#for-form form');
     const mainFormData = {
+        driving_school_id: document.querySelector('#driving-school').value,
         adress: mainForm.querySelector('#adress').value,
         start_of_training: mainForm.querySelector('#start-of-training').value,
         vehicle_list: Array.from(mainForm.querySelector('#vehicle-list').selectedOptions).map(option => option.value),

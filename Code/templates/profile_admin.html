@@ -1,0 +1,60 @@
+{% extends 'template.html' %}
+{% block title %}Profil{% endblock %}
+{% block nav %}
+    {% if superadmin|default(false) %}
+        {% include 'nav_bar_superadmin.html' %}
+    {% elif admin|default(false) %}
+        {% include 'nav_bar_admin.html' %}
+    {% else %}
+        {% include 'nav_bar_commisar.html' %}
+    {% endif %}
+{% endblock %}
+{% block main %}
+<main class="term-main">
+    <div class="column-div">
+        <div class="log_div">
+            <form class="margin-top-10" method="post">
+                
+                <select class="input-box3" name="driving-school" id="driving-school">
+                    <option value="" disabled selected hidden>Autoškola</option>
+                    {% for autoskola in autoskoly %}
+                        <option value="{{autoskola.id}}">{{autoskola.nazev}}</option>
+                    {% endfor %}
+                </select>
+                
+                
+                <button id="submit-button" class="margin-bot-10" style="height: 40px; width: 20%;" type="submit" name="potvrdit" disabled>Zobrazit</button>
+                
+            </form>
+        </div>
+    </div>
+</main>
+
+<style>
+    #submit-button:disabled {
+        background-color: #355a3c; /* Light grey background */
+        color: #ffffff; /* Darker grey text */
+        cursor: not-allowed; /* Indicates non-clickable */
+    }
+
+    #submit-button:disabled:hover {
+        background-color: #355a3c; /* Same as disabled background */
+        color: #ffffff; /* Same as disabled text */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectElement = document.getElementById('driving-school');
+        const submitButton = document.getElementById('submit-button');
+
+        selectElement.addEventListener('change', function() {
+            if (selectElement.value) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -14,96 +14,126 @@
     <main class="term-main">
         <div class="column-div">
             <div class="term-container">       
-                <h3>{{termin.datum.strftime('%d.%m.%Y')}}</h3>
-                <h3>Počet řidičů: {{termin.max_ridicu}}</h3>
+                <h3 id="datum">{{termin.datum.strftime('%d.%m.%Y')}}</h3>
+                <h3 id="max_r">Počet řidičů: {{termin.max_ridicu}}</h3>
                 <h3 id="volna_mista">Volná místa: {{volna_mista}}</h3> 
             </div>
         {% for nazev, students in list_as.items() %}
             <div class="students-container-admin" id="{{nazev}}">
                 <div class="nazev">{{nazev}}</div>
-                {% for zak in students %}
-                    {% if zak['potvrzeni'] == 'Y' %}
-                        <div class="grid-for-9" id="zak_{{ zak['id'] }}">
-                            <div>zapsany</div>
-                            <div>{{ zak['ev_cislo']}}</div>
-                            <div>{{ zak['jmeno']}}</div>
-                            <div>{{ zak['prijmeni']}}</div>
-                            <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
-                            <div>{{ zak['typ_zkousky']}}</div>
-                            <div>{{ zak['druh_zkousky']}}</div>
-                            <div>{{ zak['komisar'] }}</div>
-                            <div>{{ zak['cas']}}</div>         
-                        </div>
-                    {% else %}
-                        <div class="grid-for-9" id="zak_{{ zak['id'] }}">                       
-                            <div>{{ zak['ev_cislo']}}</div>
-                            <div>{{ zak['jmeno']}}</div>
-                            <div>{{ zak['prijmeni']}}</div>
-                            <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
-                            <div>{{ zak['typ_zkousky']}}</div>
-                            <div>{{ zak['druh_zkousky']}}</div>
-                            <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="08:00" required>
-                            <select name="commissar" id="commissar-for-zak_{{zak['id']}}" required>
-                                {% for komisar in komisari %}
-                                    <option value="{{komisar['id']}}">{{komisar['jmeno']}} {{komisar['prijmeni']}}</option>
-                                {% endfor %}
-                            </select>
-                            <button class="form-button" onclick="enrollStudent('{{ zak['id'] }}')">Přihlásit</button>         
-                        </div>
-                    {% endif %}
-                {% endfor %}
+                <div style="padding-right: 2%;">
+                    <button class="document-button" onclick="makeDocument('{{ nazev }}', '{{termin.datum}}')">Dokument</button>
+                </div>
+                {% if superadmin or admin %}
+                    {% for zak in students %}
+                        {% if zak['potvrzeni'] == 'Y' %}
+                            <div class="grid-for-8" id="zak_{{ zak['id'] }}">
+                                <div>{{ zak['ev_cislo']}}</div>
+                                <div>{{ zak['jmeno']}}</div>
+                                <div>{{ zak['prijmeni']}}</div>
+                                <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                                <div>{{ zak['typ_zkousky']}}</div>
+                                <div>{{ zak['druh_zkousky']}}</div>
+                                <div>{{ zak['komisar'] }}</div>
+                                <div>{{ zak['cas']}}</div>       
+                            </div>
+                        {% else %}    
+                            <div class="grid-for-9" id="zak_{{ zak['id'] }}">                       
+                                <div>{{ zak['ev_cislo']}}</div>
+                                <div>{{ zak['jmeno']}}</div>
+                                <div>{{ zak['prijmeni']}}</div>
+                                <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                                <div>{{ zak['typ_zkousky']}}</div>
+                                <div>{{ zak['druh_zkousky']}}</div>
+                                <input type="time" name="time-start" id="time-zak_{{zak['id']}}" placeholder="začátek" value="08:00" required>
+                                <select name="commissar" id="commissar-for-zak_{{zak['id']}}" required>
+                                    {% for komisar in komisari %}
+                                        <option value="{{komisar['id']}}">{{komisar['jmeno']}} {{komisar['prijmeni']}}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="form-button" onclick="enrollStudent('{{ zak['id'] }}')">Přihlásit</button>         
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {% for zak in students %}
+                        {% if zak['potvrzeni'] == 'Y' %}
+                            <div class="grid-for-7" id="zak_{{ zak['id'] }}">
+                                <div>{{ zak['ev_cislo']}}</div>
+                                <div>{{ zak['jmeno']}}</div>
+                                <div>{{ zak['prijmeni']}}</div>
+                                <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                                <div>{{ zak['typ_zkousky']}}</div>
+                                <div>{{ zak['druh_zkousky']}}</div>
+                                <div> Zapsaný </div>       
+                            </div>
+                        {% else %}    
+                            <div class="grid-for-7" id="zak_{{ zak['id'] }}">                       
+                                <div>{{ zak['ev_cislo']}}</div>
+                                <div>{{ zak['jmeno']}}</div>
+                                <div>{{ zak['prijmeni']}}</div>
+                                <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                                <div>{{ zak['typ_zkousky']}}</div>
+                                <div>{{ zak['druh_zkousky']}}</div>
+                                <div> Čeká </div>        
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             </div>
         {% endfor %}
         <!-- Pod tímhle komentem je form na zápis studentů -->
-        <div class="form-container">
-            <div id="form-list">
-                <form class="exam-form">
-                    <div class="form-line">
-                        <div class="form-group">
-                            <input type="text" name="evidence_number" id="evidence_number" placeholder="E.č" required>
+        {% if volna_mista > 0 %}
+            <div class="form-container">
+                <div id="form-list">
+                    <form class="exam-form">
+                        <div class="form-line">
+                            <div class="form-group">
+                                <input type="text" name="evidence_number" id="evidence_number" placeholder="E.č" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="date" name="birth_date" id="birth_date" required>
+                            </div>
+                            <div class="form-group">
+                                <select name="license_category" id="license_category">
+                                    <option value="A">A</option>
+                                    <option value="B" selected>B</option>
+                                    <option value="C">C</option>
+                                    <option value="C+E">C+E</option>
+                                    <option value="D">D</option>
+                                    <option value="D+E">D+E</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select name="exam_type" id="exam_type">
+                                    <option value="Řádná_zkouška" selected>Řádná zkouška</option>
+                                    <option value="Opravná_zkouška-test+jízda">Opravná zkouška (jízda+test)</option>
+                                    <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
+                                    <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
+                                    <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
+                                    <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="date" name="birth_date" id="birth_date" required>
-                        </div>
-                        <div class="form-group">
-                            <select name="license_category" id="license_category">
-                                <option value="A">A</option>
-                                <option value="B" selected>B</option>
-                                <option value="C">C</option>
-                                <option value="C+E">C+E</option>
-                                <option value="D">D</option>
-                                <option value="D+E">D+E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <select name="exam_type" id="exam_type">
-                                <option value="Řádná_zkouška" selected>Řádná zkouška</option>
-                                <option value="Opravná_zkouška-test+jízda">Opravná zkouška (jízda+test)</option>
-                                <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
-                                <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
-                                <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
-                                <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="buttons center-div margin-top-10">
+                    <button class="form-button" type="button" id="add-form">Přidat další formulář</button>
+                    <button class="form-button" type="button" id="remove-form">Odebrat poslední formulář</button>
+                </div>
+                <div class="buttons center-div margin-top-10 margin-bot-10">
+                    <button class="form-button" type="submit" id="submit-forms">Odeslat všechny formuláře</button>
+                </div>
             </div>
-            <div class="buttons center-div margin-top-10">
-                <button class="form-button" type="button" id="add-form">Přidat další formulář</button>
-                <button class="form-button" type="button" id="remove-form">Odebrat poslední formulář</button>
-            </div>
-            <div class="buttons center-div margin-top-10 margin-bot-10">
-                <button class="form-button" type="submit" id="submit-forms">Odeslat všechny formuláře</button>
-            </div>
-        </div>
-        </div>
-    </main>
+        {% endif %}
+    </div>
+</main>
     <script>
         function createEmptyForm() {
     const form = document.createElement('form');
@@ -201,7 +231,8 @@ document.getElementById('submit-forms').addEventListener('click', function() {
     .catch(error => {
         console.error('Error:', error);
         // Zobrazí chybu z backendu nebo chybu, která nastala při zpracování
-        alert("Nastala neočekávaná chyba: " + error.message);  
+        alert("Nastala neočekávaná chyba: " + error.message);
+        location.reload();  
     });
 });
 
@@ -236,6 +267,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+async function makeDocument(nazev, datum) {
+    const name = nazev;
+    const date = datum;
+
+    try {
+        const response = await fetch('/api/generate_doc', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, date })
+        });
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}_${date}_document.docx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } else {
+            alert("Došlo k chybě při generování dokumentu.");
+        }
+    } catch (error) {
+        console.error("Chyba:", error);
+    }
+}
 
 function enrollStudent(zakId) {
     const studentDiv = document.getElementById(`zak_${zakId}`);

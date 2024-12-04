@@ -1,7 +1,13 @@
 {% extends "template.html" %}
 {% block title %}Login{% endblock %}
 {% block nav %}
-    <nav class="navbar">
+    <nav class="nav_bar-desktop">
+        <div class="navbar-left">
+            <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
+            <p>Rezervační<br/>systém Most</p>
+        </div>
+    </nav>
+    <nav class="nav_bar-mobile">
         <div class="navbar-left">
             <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
             <p>Rezervační<br/>systém Most</p>
@@ -21,8 +27,9 @@
                 <button type='submit' name='potvrdit'>Přihlásit</button>
                 
                 <a class="odkaz" href="{{ url_for('forgotten_password') }}">Zapomenuté heslo</a>
+                <div class="version">{{version}}</div>
             </form>
-            <div class="version">{{version}}</div>
+           
         </div>
     </main>
 {% endblock %}

@@ -20,6 +20,10 @@
         {% for nazev, students in list_as.items() %}
             <div class="students-container-admin" id="{{nazev}}">
                 <div class="nazev">{{nazev}}</div>
+                <div style="padding-right: 2%;">
+                    <button class="document-button" onclick="makeDocument('{{ nazev }}', '{{termin.datum}}')">Dokument</button>
+                </div>
+                <div class="students-container-admin" id="{{nazev}}" style="margin-top: 0px;"> 
                 {% for zak in students %} 
                         <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">                       
                             <div>{{ zak['ev_cislo']}}</div>
