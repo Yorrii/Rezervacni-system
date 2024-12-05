@@ -1,0 +1,19 @@
+blinker==1.8.2: License information not available (list index out of range)
+click (8.1.7): BSD-3-Clause
+colorama==0.4.6: License information not available (The 'colorama' distribution was not found and is required by the application)
+Flask==3.0.3: License information not available (list index out of range)
+Flask-Login (0.6.3): MIT
+Flask-Mail==0.10.0: License information not available (The 'Flask-Mail' distribution was not found and is required by the application)
+Flask-SQLAlchemy==3.1.1: License information not available (The 'Flask-SQLAlchemy' distribution was not found and is required by the application)
+greenlet==3.0.3: License information not available (The 'greenlet' distribution was not found and is required by the application)
+itsdangerous==2.2.0: License information not available (list index out of range)
+Jinja2==3.1.4: License information not available (list index out of range)
+lxml (5.3.0): BSD-3-Clause
+MarkupSafe (2.1.5): BSD-3-Clause
+mysqlclient==2.2.4: License information not available (The 'mysqlclient' distribution was not found and is required by the application)
+pdoc==15.0.0: License information not available (The 'pdoc' distribution was not found and is required by the application)
+pygments (2.18.0): BSD-2-Clause
+python-docx (0.8.11): The MIT License (MIT)
+SQLAlchemy==2.0.32: License information not available (The 'SQLAlchemy' distribution was not found and is required by the application)
+typing_extensions==4.12.2: License information not available (list index out of range)
+Werkzeug==3.0.3: License information not available (list index out of range)

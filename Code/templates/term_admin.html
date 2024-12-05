@@ -24,7 +24,7 @@
                 </div>
                 {% for zak in students %}
                     {% if zak['potvrzeni'] == 'Y' %}
-                        <div class="student-line-admin-grid-8" id="zak_{{ zak['id'] }}">
+                        <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
@@ -32,7 +32,10 @@
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>{{ zak['komisar'] }}</div>
-                            <div>{{ zak['cas']}}</div>         
+                            <div>{{ zak['cas']}}</div>
+                            <div>
+                                <button onclick="deleteStudent('{{ zak['id'] }}')">Odstranit</button>
+                            </div>         
                         </div>
                     {% else %}
                         <div class="student-line-admin-grid-8" id="zak_{{ zak['id'] }}">                       
@@ -109,6 +112,29 @@
     </main>
     <script src="{{ url_for('static', filename='term_admin.js') }}"></script>
     <script>
+    async function deleteStudent(studentId) {
+        try {
+            const response = await fetch('/api/delete_student_in_term', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: studentId })
+            });
+            if (response.ok) {
+                alert('Student byl úspěšně odstraněn.');
+                // Aktualizace stránky nebo odstranění divu
+                window.location.reload()
+            } else {
+                const error = await response.json();
+                alert(`Chyba: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Nastala chyba při odesílání požadavku.');
+        }
+    }
+
     function createEmptyForm() {
         const form = document.createElement('form');
         form.className = 'exam-form';

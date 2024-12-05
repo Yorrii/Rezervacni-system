@@ -49,6 +49,27 @@
                         <div>{{vozidlo['rz']}}</div>
                     </div>
                 {% endfor %}
+                {% if admin %}
+                <form action="/api/add_vehicle/{{autoskola['id']}}" id="vehicle-form" autocomplete="off" method="post">
+                    <div class="grid-for-3">
+                        <div class="center-div margin-top-10">
+                            <label for="znacka">Značka:</label>
+                            <input type="text" name="znacka" id="znacka" required>
+                        </div>
+                        <div class="center-div margin-top-10">
+                            <label for="model">Model:</label>
+                            <input type="text" name="model" id="model" required>
+                        </div>
+                        <div class="center-div margin-top-10">
+                            <label for="spz">RZ:</label>
+                            <input type="text" name="spz" id="spz" required>
+                        </div>
+                    </div>
+                    <div class="center-div">
+                        <button class="form-button margin-top-10 margin-bot-10" type="submit" form="vehicle-form">Přidat</button>
+                    </div>
+                </form>
+                {% endif %}
             </div>
             <div style="width: 100%;"> <!-- Žáci -->
                 <div class="grid-for-3 vycentrovat-text">

@@ -1459,8 +1459,9 @@ def enroll_drivers():
         return jsonify({"error": str(e)}), 400   
 
 @login_required
-@app.route('/api/add_vehicle', methods=['POST'])
-def add_vehicle():
+@app.route('/api/add_vehicle', defaults={'id': None}, methods=['POST'])
+@app.route('/api/add_vehicle/<id>', methods=['POST'])
+def add_vehicle(id):
     """
     Přidání vozidla.
 
@@ -1478,18 +1479,57 @@ def add_vehicle():
                 - `spz` (str): SPZ vozidla.
             - Uloží záznam do databáze.
     """
+    id_as = None
+
+    # Kontrola, zda current_user je admin a bylo poskytnuto ID
+    if hasattr(current_user, 'isAdmin') and current_user.isAdmin and id:
+        id_as = id
+    # Pokud není admin a ID není poskytováno, použít current_user.id
+    elif not hasattr(current_user, 'isAdmin') or not current_user.isAdmin:
+        if id is None:
+            id_as = current_user.id
+        else:
+            return jsonify({"error": "Access denied: Only admins can specify an ID"}), 403
+    
     znacka= request.form['znacka']
     model= request.form['model']
     spz= request.form['spz']
     try:
-        vozidlo = Vozidlo(znacka=znacka, model=model, spz=spz, id_autoskoly= current_user.id)
+        vozidlo = Vozidlo(znacka=znacka, model=model, spz=spz, id_autoskoly= id_as)
         db.session.add(vozidlo)
         db.session.commit()
+        
         return redirect(url_for('profile'))
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
     
+@app.route('/api/delete_student_in_term', methods=['POST'])
+@login_required
+def delete_student_in_term():
+
+    if not current_user.isAdmin:
+        abort(404)
+
+    data = request.get_json()
+    student_id = data.get('id')
+    term_id = session.get('term_id')
+
+    if not student_id or not term_id:
+        return jsonify({"message": "Missing student ID or tern ID"}), 400
+    
+    try:
+        # Logika pro odstranění studenta z databáze
+        zapsany_zak = Zapsany_zak.query.filter_by(id_zaka=student_id, id_terminu=term_id).first()
+
+        if not zapsany_zak:
+            return jsonify({"message": "Record not found"}), 404
+
+        db.session.delete(zapsany_zak)
+        db.session.commit()
+        return jsonify({"message": "Student successfully deleted"}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 @login_required
 @app.route('/api/delete_student', methods=['POST'])
