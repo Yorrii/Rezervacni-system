@@ -1828,6 +1828,7 @@ def change_notifications():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@login_required
 @app.route('/api/get_vehicles', methods=['GET'])
 def get_vehicles():
     """
@@ -1852,6 +1853,39 @@ def get_vehicles():
                           })
     return jsonify(ls_vozidla)
 
+@login_required
+@app.route('/api/change_info_ds', methods=['POST'])
+def change_info():
+    """#TODO"""
+    try:
+        # Načti JSON data z požadavku
+        data = request.get_json()
+
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        # Najdi první záznam autoškoly (předpoklad, že je jedna autoškola, případně modifikujte)
+        autoskola = Autoskola.query.first()
+        if not autoskola:
+            return jsonify({"error": "Autoskola not found"}), 404
+
+        # Aktualizuj pouze poskytnutá pole
+        if 'name' in data:
+            autoskola.nazev = data['name']
+        if 'email' in data:
+            autoskola.email = data['email']
+        if 'adress' in data:
+            autoskola.adresa_u = data['adress']
+        if 'datovka' in data:
+            autoskola.da_schranka = data['datovka']
+
+        # Ulož změny do databáze
+        db.session.commit()
+
+        return jsonify({"message": "Autoskola updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
 @app.errorhandler(404)
 def error404(e):
     return render_template('404.html'), 404
@@ -1859,18 +1893,19 @@ def error404(e):
 @app.route('/logout')
 def logout():
     #TODO dokumentace
-    if not current_user.isCommissar:
-        zaznam = Zaznam(druh='odhlásil se', kdy=datetime.now(), zprava='Autoškola se odhlásila z aplikace', id_autoskoly=current_user.id)
-        db.session.add(zaznam)
-        db.session.commit()
-    session.clear()
-    logout_user()
+    if current_user.is_authenticated:
+        if not current_user.isCommissar:
+            zaznam = Zaznam(druh='odhlásil se', kdy=datetime.now(), zprava='Autoškola se odhlásila z aplikace', id_autoskoly=current_user.id)
+            db.session.add(zaznam)
+            db.session.commit()
+        session.clear()
+        logout_user()
     return redirect(url_for('home'))
 
 @app.context_processor
 def inject_globals():
     return {
-        'version': '0.8.1'
+        'version': '0.9.1'
     }
 
 @app.before_request # tahle metoda se spustí před každým requestem, brání v prodloužení sessionu pro def get_notification():

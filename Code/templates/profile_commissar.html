@@ -27,6 +27,11 @@
                     <div>
                         <input class="input-box4" type="text" name="datovka" id="datovka" placeholder="{{autoskola['datovka']}}" required> 
                     </div>
+                    {% if admin %}
+                        <div>
+                            <button id="submit-button">Změnit</button>
+                        </div>
+                    {% endif %}
                 </div>
             </form>        
         </div>
@@ -62,4 +67,65 @@
         </div>
     </div>
 </main>
+<script>
+    // Najdi tlačítko a přidej mu event listener
+const submitButton = document.getElementById('submit-button'); // Ujistěte se, že tlačítko má tento ID
+
+submitButton.addEventListener('click', async () => {
+    // Najdi všechna pole formuláře
+    const nameField = document.getElementById('name');
+    const emailField = document.getElementById('email');
+    const adressField = document.getElementById('adress');
+    const datovkaField = document.getElementById('datovka');
+
+    // Vytvoř prázdný objekt pro JSON
+    const dataToSend = {};
+
+    // Zkontroluj každé pole, zda je vyplněné, a pokud ano, přidej ho do objektu
+    if (nameField.value.trim() !== '') {
+        dataToSend.name = nameField.value;
+    }
+
+    if (emailField.value.trim() !== '') {
+        dataToSend.email = emailField.value;
+    }
+
+    if (adressField.value.trim() !== '') {
+        dataToSend.adress = adressField.value;
+    }
+
+    if (datovkaField.value.trim() !== '') {
+        dataToSend.datovka = datovkaField.value;
+    }
+
+    // Zkontroluj, zda je objekt JSON prázdný
+    if (Object.keys(dataToSend).length === 0) {
+        alert('Prosím, vyplňte alespoň jedno pole.');
+        return;
+    }
+
+    try {
+        // Odešli JSON pomocí fetch
+        const response = await fetch('/api/change_info_ds', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert('Informace byly úspěšně aktualizovány!');
+            window.location.reload()
+        } else {
+            alert('Nastala chyba při odesílání dat: ' + response.status);
+        }
+    } catch (error) {
+        console.error('Chyba:', error);
+        alert('Nastala chyba při odesílání dat.');
+    }
+});
+
+</script>
 {% endblock %}

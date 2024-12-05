@@ -11,6 +11,11 @@
         </div>
         <div class="grid-for-2">
             <div class="vehicle-list">
+                <div class="grid-for-3 vycentrovat-text">
+                    <div style="font-weight: bold;">Značka</div>
+                    <div style="font-weight: bold;">Model</div>
+                    <div style="font-weight: bold;">Registrační značka</div>
+                </div>
                 {% for vozidlo in vozidla %}
                     <div class="grid-for-3">
                         <div class="center-div">{{vozidlo.znacka}}</div>
