@@ -1507,7 +1507,23 @@ def add_vehicle(id):
 @app.route('/api/delete_student_in_term', methods=['POST'])
 @login_required
 def delete_student_in_term():
+    """
+    Vymazaní studenta, který už je zapsán a potvrzen na termínu.
 
+    Endpoint přidá nové vozidlo do systému. 
+
+    Vrací:
+        - `200`: Přesměrování na profil po úspěšném přidání.
+        - `400`: Chyba při zpracování.
+
+    Metody:
+        - POST:
+            - Přijímá formulářová data:
+                - `znacka` (str): Značka vozidla.
+                - `model` (str): Model vozidla.
+                - `spz` (str): SPZ vozidla.
+            - Uloží záznam do databáze.
+    """
     if not current_user.isAdmin:
         abort(404)
 
@@ -1521,10 +1537,13 @@ def delete_student_in_term():
     try:
         # Logika pro odstranění studenta z databáze
         zapsany_zak = Zapsany_zak.query.filter_by(id_zaka=student_id, id_terminu=term_id).first()
-
+        zak = Zak.query.filter_by(id=student_id).first()
+        termin = Termin.query.filter_by(id= term_id).first()
         if not zapsany_zak:
             return jsonify({"message": "Record not found"}), 404
 
+        upozorneni = Upozorneni(zprava=f"Student/ka {zak.jmeno} {zak.prijmeni}  byl/a odebrán/a z termínu {termin.datum}.", id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+        db.session.add(upozorneni)
         db.session.delete(zapsany_zak)
         db.session.commit()
         return jsonify({"message": "Student successfully deleted"}), 200
@@ -1644,7 +1663,7 @@ def docx_for_signup():
         db.session.commit()
         document.add_page_break()
 
-        document.save(f'Zapis_studentu/{autoskola.nazev}_{date.today().strftime("%d-%m-%Y")}.docx') # ukládání dokumentu
+        document.save(f"Zapis_studentu/{autoskola.nazev}_{date.today().strftime('%d-%m-%Y')}.docx") # ukládání dokumentu
         return jsonify({"message": "Data přijata úspěšně"}), 200   
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
@@ -1734,7 +1753,7 @@ def student_success():
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             zapis.zaver = 'Y'
             zak.splnil = True
-            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} úspěšně splnil termín.', id_autoskoly= zak.id_autoskoly)
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} úspěšně splnil termín.', id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(zapis)
             db.session.add(upozorneni)
             db.session.commit()
@@ -1774,7 +1793,7 @@ def student_reject():
         if zak and termin:
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             zapis.zaver = 'N'
-            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} neuspěl u termínu.', id_autoskoly= zak.id_autoskoly)
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} neuspěl u termínu.', id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(upozorneni)
             db.session.add(zapis)
             db.session.commit()
