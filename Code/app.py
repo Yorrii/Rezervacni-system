@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature 
 from sqlalchemy import or_, desc #metoda na možnost or v quary
 from docx import Document #Objekt, který generuje word dokument z kódu
 import app_logic #soubor s metodamy
-from config_copy import Config #nastavení pro posílání emailů
+from config import Config #nastavení pro posílání emailů
 from io import BytesIO 
 from hashlib import sha256  #hashovací metoda
 from datetime import date, datetime, timedelta
