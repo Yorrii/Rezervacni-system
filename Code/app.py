@@ -10,6 +10,7 @@ from config import Config #nastavení pro posílání emailů
 from io import BytesIO 
 from hashlib import sha256  #hashovací metoda
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 app = Flask(__name__) # Vytvoření instance pro web
 app.config['SECRET_KEY'] = Config.SECRET_KEY
@@ -1663,7 +1664,15 @@ def docx_for_signup():
         db.session.commit()
         document.add_page_break()
 
-        document.save(f"Zapis_studentu/{autoskola.nazev}_{date.today().strftime('%d-%m-%Y')}.docx") # ukládání dokumentu
+        # Název složky a souboru
+        folder_path = "Zapis_studentu"
+        file_name = f"{autoskola.nazev.replace(" ", "_")}_{date.today().strftime('%d-%m-%Y')}.docx"
+
+        # Kontrola a vytvoření složky
+        Path(folder_path).mkdir(parents=True, exist_ok=True)
+
+
+        document.save(f"{folder_path}/{file_name}") # ukládání dokumentu
         return jsonify({"message": "Data přijata úspěšně"}), 200   
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
