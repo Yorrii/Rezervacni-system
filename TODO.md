@@ -10,7 +10,9 @@
 
 ### BUGI
     SD - Autoškola může zapsat na termín více, než je volný počet míst(i když je termín plný, může přidat žáky po jednom)
-    - Komisař může na termín povolit více, než je počet volných míst. 
+    - Komisař může na termín povolit více, než je počet volných míst.
+    - Pokud se při VaV nebo přihlášení na zkoušku nechá jeden řádek prázdný, tak je problém.
+    - V DB může vzniknout duplikát jenom s jiným id. Kontrolovat jestli už žák s takovým E.č. je v autoškole pokud ano, nenechat zapsat. 
 
 ### Uživatel
     - upravit profil(vozidla, učebny), správa vozidel
@@ -39,6 +41,7 @@
     - dodělat profil
     - sepsat requirementy(D) a licence
     D - přidat vlaječku jestli student už uspěl u zkoušky
+    D - předělat zapisovací formulář na zkoušku (chtějí vybrat autoškolu, napsat e.č. a zbytek se doplní sám, pak si jen dopíšou komisaře, druh zkoušky a čas)
 
     
     
