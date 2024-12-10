@@ -3,14 +3,14 @@ CREATE DATABASE IF NOT EXISTS ReSyMost;
 USE ReSyMost;
 
 CREATE TABLE `Terminy` (
-  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `datum` date,
   `active_flag` enum('Y','N','R') DEFAULT 'N',
   `max_ridicu` tinyint
 );
 
 CREATE TABLE `Autoskoly` (
-  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `nazev` varchar(50),
   `datova_schranka` varchar(100),
   `email` varchar(70),
@@ -18,16 +18,17 @@ CREATE TABLE `Autoskoly` (
   `adresa_ucebny` varchar(100)
 ) AUTO_INCREMENT=1;
 
-CREATE TABLE `Zaznamy` (
-  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+CREATE TABLE `Logy` (
+  `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `druh` enum('zápis','odpis','přidání','odebrání', 'přihlásil se', 'odhlásil se'),
   `kdy` datetime,
   `zprava` text,
-  `id_autoskoly` int
+  `id_autoskoly` INT,
+  CONSTRAINT `fk_logy_autoskoly` FOREIGN KEY (`id_autoskoly`) REFERENCES `Autoskoly` (`id`)
 );
 
 CREATE TABLE `Komisari` (
-  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `email` varchar(70),
   `heslo` varchar(70),
   `jmeno` varchar(30),
@@ -36,15 +37,24 @@ CREATE TABLE `Komisari` (
 ) AUTO_INCREMENT=100001;
 
 CREATE TABLE `Superadmini` (
-  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `email` varchar(70),
   `heslo` varchar(70),
   `jmeno` varchar(30),
   `prijmeni` varchar(30)
 ) AUTO_INCREMENT=1000001;
 
+CREATE TABLE `Vozidla` (
+    `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    `znacka` VARCHAR(100) NOT NULL,
+    `model` VARCHAR(100) NOT NULL,
+    `spz` VARCHAR(10),
+    `vozidla_id_autoskoly` INT,
+    CONSTRAINT `fk_vozidla_autoskoly` FOREIGN KEY (`vozidla_id_autoskoly`) REFERENCES `Autoskoly` (`id`)
+);
+
 CREATE TABLE `Zaci` (
-  `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `evidencni_cislo` varchar(30),
   `jmeno` varchar(30),
   `prijmeni` varchar(30),
@@ -52,7 +62,8 @@ CREATE TABLE `Zaci` (
   `adresa` varchar(255),
   `cislo_prukazu` varchar(20),
   `splnil` boolean DEFAULT FALSE,
-  `id_autoskoly` int
+  `zaci_id_autoskoly` INT,
+  CONSTRAINT `fk_zaci_autoskoly` FOREIGN KEY (`zaci_id_autoskoly`) REFERENCES `Autoskoly` (`id`)
 );
 
 CREATE TABLE `Zapsani_zaci` (
@@ -61,20 +72,15 @@ CREATE TABLE `Zapsani_zaci` (
   `druh_zkousky` enum('Řádná zkouška','Opravná zkouška-test+jízda','Opravná zkouška-jízda','Opravná zkouška-technika','Opravná zkouška-technika+jízda','Profesní způsobilost-test'),
   `zaver` enum('Y', 'N', 'W') DEFAULT 'W',
   `zacatek` time,
-  `id_terminu` int,
-  `id_komisare` int,
-  `id_autoskoly` int,
-  `id_zaka` int,
-  PRIMARY KEY (`id_terminu`, `id_zaka`)
-);
-
-CREATE TABLE `Vozidla` (
-    `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    `znacka` VARCHAR(100) NOT NULL,
-    `model` VARCHAR(100) NOT NULL,
-    `spz` VARCHAR(10),
-    `id_autoskoly` INT,
-    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id) ON DELETE CASCADE
+  `id_terminu` INT,
+  `id_komisare` INT,
+  `z_zaci_id_autoskoly` INT,
+  `id_zaka` INT,
+  PRIMARY KEY (`id_terminu`, `id_zaka`),
+  CONSTRAINT `fk_zapsani_zaci_terminy` FOREIGN KEY (`id_terminu`) REFERENCES `Terminy` (`id`),
+  CONSTRAINT `fk_zapsani_zaci_komisari` FOREIGN KEY (`id_komisare`) REFERENCES `Komisari` (`id`),
+  CONSTRAINT `fk_zapsani_zaci_autoskoly` FOREIGN KEY (`z_zaci_id_autoskoly`) REFERENCES `Autoskoly` (`id`),
+  CONSTRAINT `fk_zapsani_zaci_zaci` FOREIGN KEY (`id_zaka`) REFERENCES `Zaci` (`id`)
 );
 
 CREATE TABLE `Upozorneni` (
@@ -82,24 +88,9 @@ CREATE TABLE `Upozorneni` (
     `zprava` VARCHAR(200) NOT NULL,
     `datum_vytvoreni` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `stav` ENUM('Y', 'N') DEFAULT 'N',
-    `id_autoskoly` INT,
-    FOREIGN KEY (id_autoskoly) REFERENCES Autoskoly(id) 
+    `upozorneni_id_autoskoly` INT,
+    CONSTRAINT `fk_upozorneni_autoskoly` FOREIGN KEY (`upozorneni_id_autoskoly`) REFERENCES `Autoskoly` (`id`) 
 );
-
-
-ALTER TABLE `Zaznamy` ADD FOREIGN KEY (`id_autoskoly`) REFERENCES `Autoskoly` (`id`);
-
-ALTER TABLE `Zaci` ADD FOREIGN KEY (`id_autoskoly`) REFERENCES `Autoskoly` (`id`);
-
-ALTER TABLE `Zapsani_zaci` ADD FOREIGN KEY (`id_terminu`) REFERENCES `Terminy` (`id`);
-
-ALTER TABLE `Zapsani_zaci` ADD FOREIGN KEY (`id_komisare`) REFERENCES `Komisari` (`id`);
-
-ALTER TABLE `Zapsani_zaci` ADD FOREIGN KEY (`id_autoskoly`) REFERENCES `Autoskoly` (`id`);
-
-ALTER TABLE `Zapsani_zaci` ADD FOREIGN KEY (`id_zaka`) REFERENCES `Zaci` (`id`);
-
-ALTER TABLE `Vozidla` ADD FOREIGN KEY (`id_autoskoly`) REFERENCES `Autoskoly` (`id`);
 
 SET GLOBAL event_scheduler = ON;
 

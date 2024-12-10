@@ -130,7 +130,7 @@ def forgotten_password():
 
             msg = Message(
                 subject="Resetování hesla",
-                sender='Rezervační systém Most',
+                sender='ReTesty@mesto-most.cz',
                 recipients=[str(email)],
                 body=f'Klikněte na tento odkaz pro resetování hesla: {reset_url}. Odkaz bude aktivní po dobu dvou hodin.',
                 html=f'<p>Klikněte na tento odkaz pro resetování hesla:</p><a href="{reset_url}">Resetovat heslo</a>'
@@ -618,8 +618,17 @@ def profile_admin(id):
 
         return render_template('profile_commissar.html', superadmin=current_user.isSuperAdmin, admin=current_user.isAdmin, autoskola=autoskola_dic, vozidla=vozidla_lst, zaci=zaci_lst)
 
-    except Exception as e: 
-        return f'Ahoj :) {id}'
+    except Exception as e:
+        string = "" 
+        if not autoskola:
+             string += " není autoškola,"
+        elif not vozidla:
+            string += " nejsou vozidla,"
+        elif not zaci:
+            string += " nejsou zaci,"
+        else:
+            string += " Něco je špatně jinde"
+        return string
 
 @app.route('/new_driving_school', methods=['GET', 'POST'])
 @login_required
@@ -672,7 +681,7 @@ def new_driving_school():
         abort(404)
     if request.method == 'POST':
         nazev = request.form.get('nazev')
-        dat_schranka = request.form.get('email')
+        dat_schranka = request.form.get('datova-schranka')
         email =  request.form.get('email')
         
         autoskola = Autoskola.query.filter_by(email=email).first()
@@ -689,7 +698,7 @@ def new_driving_school():
 
             msg = Message(
                 subject="Odkaz na vytvoření hesla",
-                sender='Rezervační systém Most',
+                sender='ReTesty@mesto-most.cz',
                 recipients=[str(email)],
                 body=f'Kliknutím na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}. Odkaz bude aktivní po dobu dvou dní.',
                 html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a>'
@@ -709,7 +718,7 @@ def new_driving_school():
 
             msg = Message(
                 subject="Odkaz na vytvoření hesla",
-                sender='Rezervační systém Most',
+                sender='ReTesty@mesto-most.cz',
                 recipients=[str(email)],
                 body=f'Klikněte na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}',
                 html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a>'
