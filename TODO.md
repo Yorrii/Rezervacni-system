@@ -33,15 +33,16 @@
     D - dopsat do mailu info
     D - přidat form na zápis žáků adminem pro termíny v term_admin a term_komisar
     - udělat ukládání souborů pro výuku a výcvik tak aby se nepřepisovali soubory
-    - přidat superadminovi možnost upravovat profili autoškol
+    D - přidat superadminovi možnost upravovat profili autoškol
     - py -m pdoc --output-dir Code/templates/dokumentace Code/app Code/app_logic Code/database
 
 ### 04.12.2024
-    - dodělat tlačítko na odevrání studenta když už je zapsaný (třeba z důvodu nemoci)
-    - dodělat profil
-    - sepsat requirementy(D) a licence
+    D - dodělat tlačítko na odevrání studenta když už je zapsaný (třeba z důvodu nemoci)
+    D - dodělat profil
+    D - sepsat requirementy(D) a licence
     D - přidat vlaječku jestli student už uspěl u zkoušky
-    D - předělat zapisovací formulář na zkoušku (chtějí vybrat autoškolu, napsat e.č. a zbytek se doplní sám, pak si jen dopíšou komisaře, druh zkoušky a čas)
+    - předělat zapisovací formulář na zkoušku (chtějí vybrat autoškolu, napsat e.č. a zbytek se doplní sám, pak si jen dopíšou komisaře, druh zkoušky a čas)
+    - ve VaV přepsat kolonku, kde se píše adresa účebny tak, aby se zobrazovala účebna z DB.
 
     
     

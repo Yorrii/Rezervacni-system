@@ -721,6 +721,35 @@ button:hover {
     padding: 3px;
 }
 
+.div-select{
+    background-color: #C6DAF2;
+    border-radius: 5px;
+    height: fit-content;
+    width: fit-content;
+    padding: 5px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.div-select > *{
+    font-family: 'Work Sans';
+}
+
+.grid-for-2-select {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+    align-items: center;
+}
+
+.grid-for-2-select > * {
+    font-family: 'Work Sans';
+    height: 100%;
+    padding: 3px;
+}
+
 .center-div {
     display: flex;
     justify-content: center;

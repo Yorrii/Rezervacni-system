@@ -43,56 +43,144 @@
             </div>
         {% endif %}
         {% if volna_mista > 0 %}
-            <div class="form-container">
-                <div id="form-list">
-                    <form class="exam-form">
-                        <div class="form-line">
-                            <div class="form-group">
-                                <input type="text" name="evidence_number" id="evidence_number" placeholder="E.č" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="first_name" id="first_name" placeholder="Jméno" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="last_name" id="last_name" placeholder="Příjmení" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="date" name="birth_date" id="birth_date" required>
-                            </div>
-                            <div class="form-group">
-                                <select name="license_category" id="license_category">
-                                    <option value="A">A</option>
-                                    <option value="B" selected>B</option>
-                                    <option value="C">C</option>
-                                    <option value="C+E">C+E</option>
-                                    <option value="D">D</option>
-                                    <option value="D+E">D+E</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select name="exam_type" id="exam_type">
-                                    <option value="Řádná_zkouška" selected>Řádná zkouška</option>
-                                    <option value="Opravná_zkouška-test+jízda">Opravná zkouška (jízda+test)</option>
-                                    <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
-                                    <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
-                                    <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
-                                    <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
+            <div class="students-container-admin" style="display: none;" id="result">
+                <div id="result-content"></div> <!-- Sekce pro data -->
+                <div class="center-div">
+                    <button type="button" onclick="sendAllStudentIds()" id="sendButton">Odeslat ID</button>
                 </div>
-                <div class="buttons center-div margin-top-10">
-                    <button class="form-button" type="button" id="add-form">Přidat další formulář</button>
-                    <button class="form-button" type="button" id="remove-form">Odebrat poslední formulář</button>
+            </div>
+            <div class="div-select">
+                <div>
+                    <label for="evidencniCislo">Evidenční číslo:</label>
+                    <input class="input-box3" type="text" id="evidencniCislo">
                 </div>
-                <div class="buttons center-div margin-top-10 margin-bot-10">
-                    <button class="form-button" type="submit" id="submit-forms">Odeslat všechny formuláře</button>
+                <div class="center-div" style="margin-top: 10px;">
+                    <button type="button" onclick="fetchStudent()">Odeslat</button>
                 </div>
             </div>
         {% endif %}
     </div>
 </main>
-    <script src="{{ url_for('static', filename='script_term.js') }}"></script>
     <script src="{{ url_for('static', filename='deferScript_term.js') }}" defer></script>
+<script>
+    async function sendAllStudentIds() {
+            const resultSection = document.getElementById("result");
+            const studentDivs = resultSection.querySelectorAll('[data-student-id]');
+
+            // Mapování ID a hodnot z selectů
+            const studentsData = Array.from(studentDivs).map(div => {
+                const studentId = div.getAttribute('data-student-id');
+                const licenseCategory = div.querySelector('[name="license_category"]').value;
+                const examType = div.querySelector('[name="exam_type"]').value;
+
+                return {
+                    id: studentId,
+                    license_category: licenseCategory,
+                    exam_type: examType
+                };
+            });
+
+            try {
+                const response = await fetch('/api/add_drivers_as', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ students: studentsData }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Chyba při odesílání dat studentů.');
+                }
+
+                alert('Data studentů byla úspěšně odeslána.');
+                window.location.reload()
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+    let list_ev = [];
+
+    async function fetchStudent() {
+        // Get selected values
+        const evidencniCislo = document.getElementById("evidencniCislo").value;
+
+
+        if (!evidencniCislo) {
+            alert("Prosím, vyplňte pole.");
+            return;
+        }
+
+        if (list_ev.includes(evidencniCislo)) {
+        alert("Toto evidenční číslo již bylo zadáno.");
+        return;
+        }
+
+        list_ev.push(evidencniCislo);
+
+        try {
+            const response = await fetch("/api/get_student_as", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    evidencniCislo: evidencniCislo,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorMessage = await response.json();
+                alert(errorMessage.error || 'Nastala chyba při získávání údajů o studentovi.');
+                return;
+            }
+
+            const data = await response.json();
+
+            // Format the date to dd.mm.yyyy
+            const formattedDate = new Date(data.dat_nar).toLocaleDateString('cs-CZ');
+            data.dat_nar = formattedDate;
+
+            // Přidání záznamu do `result-content` na začátek
+    const resultSection = document.getElementById("result");
+    const resultContent = document.getElementById("result-content");
+    resultSection.style.display = 'block';
+
+    const studentHTML = `
+        <div data-student-id="${data.id}" class="grid-for-6">
+            <p style= margin-top:3px;margin-bottom:3px;>${data.ev_cislo}</p>
+            <p style= margin-top:3px;margin-bottom:3px;>${data.jmeno}</p>
+            <p style= margin-top:3px;margin-bottom:3px;>${data.prijmeni}</p>
+            <p style= margin-top:3px;margin-bottom:3px;>${data.dat_nar}</p>
+            <div class="form-group">
+                <select name="license_category" id="license_category">
+                    <option value="A">A</option>
+                    <option value="B" selected>B</option>
+                    <option value="C">C</option>
+                    <option value="C+E">C+E</option>
+                    <option value="D">D</option>
+                    <option value="D+E">D+E</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select name="exam_type" id="exam_type">
+                    <option value="Řádná_zkouška" selected>Řádná zkouška</option>
+                    <option value="Opravná_zkouška-test+jízda">Opravná zkouška (jízda+test)</option>
+                    <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
+                    <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
+                    <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
+                    <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
+                </select>
+            </div>
+        </div>
+    `;
+    resultContent.insertAdjacentHTML('afterbegin', studentHTML); // Přidání na začátek
+        } catch (error) {
+            alert(error.message);
+            messageBox.style.color = 'red';
+            messageBox.style.marginTop = '20px';
+        }
+    }
+</script>
 {% endblock %}

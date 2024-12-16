@@ -35,6 +35,7 @@ class User(UserMixin):
             self.isAdmin = isAdmin # pokud má admin práva
         else: # pro autoškolu
             self.isSuperAdmin = False
+            self.isAdmin = False
             self.isCommissar = False
 
 
