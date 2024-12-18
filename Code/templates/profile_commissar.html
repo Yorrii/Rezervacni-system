@@ -16,15 +16,19 @@
             <form>
                 <div class="grid-for-4 margin-top-10 box-row small-gap">
                     <div>
+                        <label class="center-div" for="nazev">Název: </label>
                         <input class="input-box4" type="text" name="name" id="name" placeholder="{{autoskola['nazev']}}" required> 
                     </div>
                     <div>
+                        <label class="center-div" for="email">Email: </label>
                         <input class="input-box4" type="email" name="email" id="email" placeholder="{{autoskola['email']}}" required> 
                     </div>
                     <div>
+                        <label class="center-div" for="adress">Adresa: </label>
                         <input class="input-box4" type="text" name="adress" id="adress" placeholder="{{autoskola['adresa']}}" required> 
                     </div>
                     <div>
+                        <label class="center-div" for="datovka">Datovka: </label>
                         <input class="input-box4" type="text" name="datovka" id="datovka" placeholder="{{autoskola['datovka']}}" required> 
                     </div>
                     {% if admin %}
@@ -71,7 +75,7 @@
                 </form>
                 {% endif %}
             </div>
-            <div style="width: 100%;"> <!-- Žáci -->
+            <div style="width: 100%; overflow-y: scroll;"> <!-- Žáci -->
                 <div class="grid-for-3 vycentrovat-text">
                     <div style="font-weight: bold;">Evidenční číslo</div>
                     <div style="font-weight: bold;">Jméno</div>

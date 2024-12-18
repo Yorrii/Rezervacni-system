@@ -1,0 +1,499 @@
+/* css pro malé displaye a notebooky */
+html {
+    width: 100%;
+    height: 100%;
+    font-family: 'Work Sans';
+}
+
+body {
+    background-color: #425CC7;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+main{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:focus {
+    outline: none;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+label{
+    font-family: 'Work Sans';
+}
+
+/* navzdory jménu se jedná o styl navigačního baru */
+/* css pro navigační bar */
+.nav_bar-desktop {
+    background-color: #FFFFFF;
+    width: 100%;
+    height: 10%;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav_bar-desktop img {
+    padding: 20px;
+}
+
+.nav_bar-desktop p {
+    font-family: 'Work Sans';
+    font-size: 20px;
+    margin: 0;
+}
+
+.bell-div{
+    margin-left: auto;
+    margin-right: 5px;
+    padding: 10px;
+}
+
+#bellIcon {
+    stroke: black; /* Výchozí barva */
+    transition: stroke 0.3s ease;
+}
+
+#bellIcon.has-new-notifications {
+    stroke: orange;  /* Zvýrazní zvoneček žlutou barvou */
+    animation: pulse 1s infinite; /* Přidá pulzující efekt (volitelné) */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center; /* Aby byly logo a text vertikálně vyrovnané */
+}
+
+.notification-popup {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border-radius: 5px;
+    width: fit-content;
+    top: 10.5%;
+    right: 40px;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-popup.visible {
+    display: block;
+}
+
+.unordered-list {
+    list-style-type: none;
+    font-family: 'Work Sans';
+    font-size: 12px;
+    padding: 10px;
+    width: fit-content;
+}
+
+.unordered-list > * {
+    margin-top: 15px;
+}
+
+/* 'Hamburger menu pro mobilní platformy' */
+.menu-toggle {
+    display: block; /* Zobrazení na menších obrazovkách */
+    background: transparent; /* Průhledné pozadí */
+    border: none; /* Žádný okraj */
+    color: black; /* Barva ikonky */
+    font-size: 2.1rem; /* Velikost ikonky */
+    cursor: pointer; /* Ukazatel ruky */
+    padding: 10px;
+}
+
+.navbar-links {
+    display: none;
+    background-color: white;
+    position: absolute;
+    width: 30%;
+    top: 10.5%;
+    right: 10px;
+    flex-direction: column;
+    border-radius: 4px;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-links.show {
+    display: flex; /* Zobrazení navigace */
+}
+
+.menu-toggle:focus,
+.menu-toggle:active {
+    outline: none; /* Žádný okraj při kliknutí */
+    background: rgba(0, 0, 0, 0.1); /* Jemné průhledné pozadí při aktivaci */
+}
+
+/* css pro login */
+.mess_success {
+    font-family: 'Work Sans';
+    font-weight: bold;
+    font-size: 10px;
+    color: #00A541;
+    margin-top: 3%;
+    align-items: center;
+}
+
+.mess_error {
+    font-family: 'Work Sans';
+    font-weight: bold;
+    font-size: 10px;
+    color: #e93609;       
+    margin-top: 3%;
+    align-items: center;
+}
+
+.log_div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /*margin: auto;*/
+    margin-top: 30px;
+    height: fit-content;
+    width: 50%;
+    border-radius: 6px;
+    background-color: #C6DAF2;
+    flex-shrink: 0;
+}
+
+.version {
+    margin-left: auto;
+    margin-right: 2%;
+    font-family: 'Work Sans';
+    color: #90b7e7;  
+}
+
+
+.log_div form {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    width: 100%;
+    height: 100%;    
+}
+
+.input-box {
+    border-color: #FFFFFF;
+    border-radius: 10px;
+    width: 80%;
+    height: 30px;
+    margin-top: 4%;
+    margin-bottom: 1%;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    font-size: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.log_div button {
+    background-color: #00A541;
+    font-family: 'Work Sans';
+    font-size: 100%;
+    color: #FFFFFF;
+    border-radius: 4px;
+    margin-top: 5%;
+    width: 70%;
+    max-width: 200px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.log_div .odkaz {
+    font-family: 'Work Sans';
+    font-size: 60%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    color:#425CC7;
+}
+
+/* css pro kalendář */
+.calendar_main {
+    display: flex;
+    justify-content: center;    
+}
+
+.calendar_main_user{
+    display: flex;
+    justify-content: center;
+}
+
+.calendar {
+    width: 480px;
+    height: 70%;
+    background-color: #fff;
+    padding: 20px;
+    margin: 2%;
+    margin-top: 3%;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.calendar_menu {
+    display: none;
+    background-color: #fff;
+    padding: 20px;
+    margin: 2%;
+    border-radius: 4px;
+    height: 70%;
+    width: 20%;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+}
+
+.header {
+    font-family: 'Work Sans';
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 5%;
+}
+
+.weekdays {
+    height: 5%;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1%;
+    align-items: center;
+    margin-top: 1%;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    height: 90%;
+    width: 100%;
+    gap: 1%;
+}
+
+.weekdays div, .days div {
+    text-align: right;
+    vertical-align: text-top;
+    padding: 1%;
+}
+
+.days div {
+    background-color: #e4e4e4;
+    border-radius: 5px;
+    height: 94%;
+    padding: 1%;
+    margin: 1%;
+}
+
+.day {
+    height: 100%;
+}
+
+/* css pro termíny- autoškola(uživatel) */
+.term-main {
+    display: flex;
+    justify-content: center; /* Horizontální zarovnání na střed */
+}
+
+.column-div {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
+}
+
+.term-container {
+    font-family: 'Work Sans';
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 15px;
+    border-radius: 4px;
+    width: 100%;
+    align-items: center;
+    background-color: #C6DAF2;
+    padding: 7px;
+}
+
+.term-container > h3{
+    margin: 0%;
+}
+
+.students-container_button {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    align-items: center;
+    padding: 7px;
+    margin-top: 15px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+}
+
+.student-line {
+    font-family: 'Work Sans';
+    display: contents;
+    flex-wrap: wrap; /* Zalomení na další řádek, pokud se nevejdou do jednoho řádku */
+    padding: 5px;
+    margin: 2px;
+    gap: 0px; /* Mezera mezi jednotlivými elementy */
+    align-items: center;
+    justify-content: center;
+}
+
+.student-line div {
+    margin: 0;
+    padding: 5px;
+    display: flex;
+    align-items: center; /* Vertically center the text */
+    justify-content: center; /* Horizontally center the text */
+}
+
+.student-line > * {
+    flex: auto; /* Každý dětský element zabere stejný podíl prostoru */
+    margin:  3px; /* Přidá mezery mezi elementy */
+    text-align: center; /* Zarovná obsah elementu na střed */
+}
+
+.delete-student { /* tlačítko na mazání studentů čekající na zápis */
+    margin-right: 2px;
+    margin-left: 2px;
+    height: 75%;
+    max-height: 40px;
+    font-family: 'Work Sans';
+    background-color: #db0d0d;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.div-select{
+    background-color: #C6DAF2;
+    border-radius: 4px;
+    height: fit-content;
+    width: fit-content;
+    padding: 7px;
+    margin-top: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.center-div {
+    display: flex;
+    justify-content: center;
+    align-items: middle;
+}
+
+.input-box3 {
+    border-radius: 4px;
+    padding: 0px;
+    margin-left: 4px;
+    background-color: #FFFFFF;
+    height: 20px;
+    width: 22vh;
+    font-size: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.students-container-admin {
+    display: inline-block;
+    padding: 7px;
+    margin-top: 15px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%;
+}
+
+.grid-for-6 {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 3px;
+    margin: 5px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-6 > * {
+    text-align: center;
+}
+
+.grid-for-6 input, .grid-for-6 select {
+    font-size: 14px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.form-group input[type="text"]{
+    width: 80%;
+}
+
+.form-group input,
+.form-group select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+    max-width: 20vh;
+}
+
+.student-line-admin-grid-8 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-8 input, .student-line-admin-grid-8 select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.student-line-admin-grid-8 > *{
+    text-align: center;
+}

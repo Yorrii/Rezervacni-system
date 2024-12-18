@@ -425,7 +425,16 @@ def term(id):
                     .all()
                 
                 komisari = Komisar.query.all() #vrací list objektů Komisar
-                
+                autoskoly = Autoskola.query.all() #vrací list objektů Autoškola, který se v html přidá do selectu
+
+                autoskoly_lst = []
+
+                for autoskola in autoskoly:
+                    autoskoly_lst.append({
+                        'id': autoskola.id,
+                        'nazev': autoskola.nazev
+                    })
+
                 zaci_v_as = {} # zde se jako klíče budou dávat název autoškol a hodnota bude list žáků
                 for item in zaci:
                     autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
@@ -460,10 +469,9 @@ def term(id):
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
                 print(srovnany_dict)
                 if current_user.isAdmin or current_user.isSuperAdmin: # Vrací html, ve kterém lze zapsat studenty a jde vidět kdo, koho zkouší
-                    return render_template('term_admin.html', superadmin=current_user.isSuperAdmin, admin= current_user.isAdmin, list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista)
+                    return render_template('term_admin.html', superadmin=current_user.isSuperAdmin, admin= current_user.isAdmin, list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista, autoskoly=autoskoly_lst)
                 else: # Vrací html, ve kterém nelze zapsat studenty a nejde vidět kdo, koho zkouší
-                    #TODO pokud komisař není admin, nemá vidět kdo zkouší koho
-                    return render_template('term_komisar.html', list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista)
+                    return render_template('term_komisar.html', list_as=srovnany_dict, termin=termin, komisari= komisari, volna_mista= volna_mista, autoskoly=autoskoly_lst)
 
             case 'N':
                 """
@@ -479,7 +487,16 @@ def term(id):
                     .all()
                 
                 komisari = Komisar.query.all() #vrací list objektů Komisar
-                
+                autoskoly = Autoskola.query.all() #vrací list objektů Autoškola, který se v html přidá do selectu
+
+                autoskoly_lst = []
+
+                for autoskola in autoskoly:
+                    autoskoly_lst.append({
+                        'id': autoskola.id,
+                        'nazev': autoskola.nazev
+                    })
+
                 zaci_v_as = {} # zde se jako klíče budou dávat název autoškol a hodnota bude list žáků
                 for item in zaci:
                     autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
@@ -513,7 +530,7 @@ def term(id):
 
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
                 volna_mista = termin.max_ridicu - len([zak for zak in zaci if zak.potvrzeni == 'Y'])
-                return render_template('zapis_studenta_adminem.html', superadmin=current_user.isSuperAdmin, admin= current_user.isAdmin, termin=termin, list_as=srovnany_dict, komisari=komisari, volna_mista=volna_mista)
+                return render_template('zapis_studenta_adminem.html', superadmin=current_user.isSuperAdmin, admin= current_user.isAdmin, termin=termin, list_as=srovnany_dict, komisari=komisari, volna_mista=volna_mista, autoskoly=autoskoly_lst)
             case 'R':
                 zaci = Zapsany_zak.query \
                     .join(Zak) \
@@ -683,11 +700,12 @@ def new_driving_school():
         nazev = request.form.get('nazev')
         dat_schranka = request.form.get('datova-schranka')
         email =  request.form.get('email')
+        adresa = request.form.get('adresa')
         
         autoskola = Autoskola.query.filter_by(email=email).first()
 
         if not autoskola:
-            nova_autoskola = Autoskola(nazev=nazev, da_schranka=dat_schranka, email=email)
+            nova_autoskola = Autoskola(nazev=nazev, da_schranka=dat_schranka, email=email, adresa_u=adresa)
             db.session.add(nova_autoskola)
             db.session.commit()
 
@@ -701,13 +719,13 @@ def new_driving_school():
                 sender='ReTesty@mesto-most.cz',
                 recipients=[str(email)],
                 body=f'Kliknutím na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}. Odkaz bude aktivní po dobu dvou dní.',
-                html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a>'
+                html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a><p>Odkaz bude aktivní po dobu dvou dní.</p>'
                 #TODO přidat soubor s manuálem
             )    
             try:
                 mail.send(msg)
                 flash('Email s odkazem byl poslán.', category='success')
-                return redirect(url_for('home'))
+                return redirect(url_for('calendar'))
             except Exception as e:
                 flash(f'Email se nepodařilo odeslat. Prosím, kontaktujte Magistrát města Most.', category='error')
                 return redirect(url_for('calendar'))
@@ -720,8 +738,8 @@ def new_driving_school():
                 subject="Odkaz na vytvoření hesla",
                 sender='ReTesty@mesto-most.cz',
                 recipients=[str(email)],
-                body=f'Klikněte na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}',
-                html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a>'
+                body=f'Klikněte na tento odkaz bude přesměrováni na stránku pro vytvoření hesla: {newPassword_url}. Odkaz bude aktivní po dobu dvou dní.',
+                html=f'<p>Klikněte na tento odkaz pro vytvoření hesla:</p><a href="{newPassword_url}">Vytvořit heslo</a><p>Odkaz bude aktivní po dobu dvou dní.</p>'
                 #TODO přidat soubor s manuálem
             )    
             try:
@@ -968,6 +986,7 @@ def rozdat_prava():
 
 
 #API metody
+@login_required
 @app.route('/pridat_prava', methods= ['POST'])
 def pridat_prava():
     """
@@ -1016,6 +1035,7 @@ def pridat_prava():
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
 
+@login_required
 @app.route('/odebrat_prava', methods= ['POST'])
 def odebrat_prava():
     """
@@ -1190,6 +1210,78 @@ def novy_termin():
         return redirect(url_for('admin'))
 
 @login_required
+@app.route('/api/get_student', methods=['POST'])
+def dostan_studenta():
+    try:
+        # Získání dat z požadavku
+        if not current_user.isCommissar or not current_user.isAdmin:
+            abort(404)
+        data = request.get_json()
+        autoskola_id = data.get('autoskolaId')
+        evidencni_cislo = data.get('evidencniCislo')
+
+        # Validace vstupů
+        if not autoskola_id or not evidencni_cislo:
+            return jsonify({"error": "Chybí id autoškoly nebo evidenční číslo"}), 400
+        
+        zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id).order_by(desc(Zak.id)).first()
+
+        if zak:
+            zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, id_terminu= session.get('term_id')).first()
+            if zap_zak:
+                return jsonify({"error": "Žák je již na termín zapsaný"}), 400
+            zak_info = {
+                'id': zak.id,
+                'ev_cislo': zak.ev_cislo,
+                'jmeno': zak.jmeno,
+                'prijmeni': zak.prijmeni,
+                'dat_nar': zak.narozeni
+                }
+        else:
+            return jsonify({"error": "Žák nebyl nalezen"}), 400
+        
+        return jsonify(zak_info), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@login_required
+@app.route('/api/get_student_as', methods=['POST'])
+def dostan_studenta_as():
+    try:
+        # Získání dat z požadavku
+        if current_user.isCommissar:
+            abort(404)
+        data = request.get_json()
+        autoskola_id = current_user.id
+        evidencni_cislo = data.get('evidencniCislo')
+
+        # Validace vstupů
+        if not autoskola_id or not evidencni_cislo:
+            return jsonify({"error": "Chybí id autoškoly nebo evidenční číslo"}), 400
+        
+        zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id, splnil=False).order_by(desc(Zak.id)).first()
+
+        if zak:
+            zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, id_terminu= session.get('term_id')).first()
+            if zap_zak:
+                return jsonify({"error": "Žák je již na termín zapsaný"}), 400
+            zak_info = {
+                'id': zak.id,
+                'ev_cislo': zak.ev_cislo,
+                'jmeno': zak.jmeno,
+                'prijmeni': zak.prijmeni,
+                'dat_nar': zak.narozeni
+                }
+        else:
+            return jsonify({"error": "Žák nebyl nalezen"}), 400
+        
+        return jsonify(zak_info), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@login_required
 @app.route('/api/create_term', methods=['POST'])
 def vytvor_termin():
     """
@@ -1300,8 +1392,89 @@ def get_calendar_dates():
         return jsonify({"error": str(e)}), 400 
 
 @login_required
-@app.route('/add_drivers', methods=['POST'])
+@app.route('/api/add_drivers', methods=['POST'])
 def add_drivers():
+    """
+    API metoda pro zápis žáků na termín, určená pro komisaře.
+
+    Endpoint umožňuje komisařům zapisovat žáky na konkrétní termín zkoušek. 
+    Přijímá JSON objekt obsahující seznam žáků s detaily a vytváří záznamy v databázi 
+    pro každého validního žáka.
+
+    Vrací:
+        - `200`: Pokud byl zápis úspěšný.
+        - `400`: Pokud nastane jakákoli chyba při zpracování požadavku.
+
+    Vyvolává:
+        - Výjimku (Exception): Pokud dojde k chybě při zpracování nebo při ukládání do databáze.
+
+    Metody:
+        - POST:
+            - Přijímá JSON seznam objektů s detaily žáků:
+            - Pro každého žáka:
+                - Zkontroluje existenci v databázi (`Zak`) na základě údajů.
+                - Pokud žák existuje:
+                    - Vytvoří záznam (`Zapsany_zak`) s údaji o termínu a autoškole.
+                    - Vytvoří logovací záznam (`Zaznam`) o přidání žáka na termín.
+                    - Uloží oba záznamy do databáze.
+            - Vrátí zprávu o úspěchu (`200`), pokud byl zápis dokončen.
+    """
+    try:
+        # Získání dat z požadavku
+        data = request.get_json()
+        students = data.get('students', [])
+
+        # Validace vstupů
+        if not students or not isinstance(students, list):
+            return jsonify({"error": "Seznam studentů je prázdný nebo neplatný"}), 400
+      
+        # Získání termínu ze session
+        term_id = session.get('term_id')
+        if not term_id:
+            return jsonify({"error": "ID termínu není k dispozici"}), 400
+        
+        zapsani_studenti = []
+        for student in students:
+            student_id = student.get('id')
+            zak = Zak.query.filter_by(id= student_id).first()
+            license_category = student.get('license_category')
+            exam_type = student.get('exam_type')
+            
+            if not zak or not license_category or not exam_type:
+                continue  # Přeskočit neplatné záznamy
+
+            # Kontrola, zda student již není zapsán
+            existing_entry = Zapsany_zak.query.filter_by(id_zaka=zak.id, id_terminu=term_id).first()
+            if existing_entry:
+                continue
+            
+            # Vytvoření nového záznamu
+            new_entry = Zapsany_zak(
+                id_zaka=zak.id,
+                id_terminu=term_id,
+                id_autoskoly=zak.id_autoskoly,
+                typ_zkousky=license_category,
+                druh_zkousky=exam_type.replace('_', ' ')
+            )
+            
+            db.session.add(new_entry)
+            zapsani_studenti.append(student)
+
+        # Uložení změn do databáze
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "zapsani_studenti": zapsani_studenti,
+            "pocet_zapsanych": len(zapsani_studenti),
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@login_required
+@app.route('/api/add_drivers_as', methods=['POST'])
+def add_drivers_as():
     """
     API metoda pro zápis žáků na termín, určená pro autoškoly.
 
@@ -1328,31 +1501,58 @@ def add_drivers():
             - Vrátí zprávu o úspěchu (`200`), pokud byl zápis dokončen.
     """
     try:
-        # Získání dat ve formátu JSON
+        # Získání dat z požadavku
         data = request.get_json()
-        # Zpracování dat
-        for student in data:
-            print(student)
-            evidence_number = student.get('evidence_number')
-            first_name = student.get('first_name')
-            last_name = student.get('last_name')
-            birth_date = student.get('birth_date')
+        students = data.get('students', [])
+
+        # Validace vstupů
+        if not students or not isinstance(students, list):
+            return jsonify({"error": "Seznam studentů je prázdný nebo neplatný"}), 400
+      
+        # Získání termínu ze session
+        term_id = session.get('term_id')
+        if not term_id:
+            return jsonify({"error": "ID termínu není k dispozici"}), 400
+        
+        zapsani_studenti = []
+        for student in students:
+            student_id = student.get('id')
+            zak = Zak.query.filter_by(id= student_id).first()
             license_category = student.get('license_category')
-            exam_type = student.get('exam_type').replace('_', ' ') # value se vrací ve tvaru něco_něco tak se mění '_' v ' '
+            exam_type = student.get('exam_type')
             
-            zak = Zak.query.filter_by(ev_cislo=evidence_number, jmeno=first_name, prijmeni=last_name,
-                                    narozeni=birth_date, id_autoskoly=current_user.id).first()
-            if zak:
-                zapis = Zapsany_zak(typ_zkousky=license_category, druh_zkousky=exam_type,
-                                    id_terminu=session.get('term_id'), id_autoskoly=current_user.id,id_zaka=zak.id)
-                zaznam = Zaznam(druh='zápis', kdy=datetime.now(), zprava=f"Autoškola přidala studentku/studenta {first_name} {last_name} {evidence_number} na termín s id: {session.get('term_id')}", id_autoskoly=current_user.id)
-                db.session.add(zapis)
-                db.session.add(zaznam)
-                db.session.commit() 
-        return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
+            if not zak or not license_category or not exam_type:
+                continue  # Přeskočit neplatné záznamy
+
+            # Kontrola, zda student již není zapsán
+            existing_entry = Zapsany_zak.query.filter_by(id_zaka=zak.id, id_terminu=term_id).first()
+            if existing_entry:
+                continue
+            
+            # Vytvoření nového záznamu
+            new_entry = Zapsany_zak(
+                id_zaka=zak.id,
+                id_terminu=term_id,
+                id_autoskoly=zak.id_autoskoly,
+                typ_zkousky=license_category,
+                druh_zkousky=exam_type.replace('_', ' ')
+            )
+            #TODO přidat záznam
+
+            db.session.add(new_entry)
+            zapsani_studenti.append(student)
+
+        # Uložení změn do databáze
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "zapsani_studenti": zapsani_studenti,
+            "pocet_zapsanych": len(zapsani_studenti),
+        }), 200
+
     except Exception as e:
-        # Pokud nastane chyba, odeslat chybovou zprávu
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), 500
 
 @login_required
 @app.route('/api/enroll_by_admin', methods=['POST'])

@@ -1,4 +1,6 @@
 
+
+
 /* Media pro desktopy*/
 html {
     width: 100%;
@@ -19,6 +21,10 @@ main{
     height: 100%;
 }
 
+label{
+    font-family: 'Work Sans';
+}
+
 .nav_bar-desktop {
     background-color: #FFFFFF;
     width: 100%;
@@ -30,9 +36,24 @@ main{
     align-items: center;
 }
 
+.bell-div{
+    margin-left: auto;
+    margin-right: 5px;
+}
+
 .navbar-left {
     display: flex;
     align-items: center; /* Aby byly logo a text vertikálně vyrovnané */
+}
+
+/* 'Hamburger menu pro mobilní platformy' */
+.menu-toggle {
+    display: none;
+    color: white;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
 }
 
 .nav_bar-desktop img{
@@ -52,21 +73,13 @@ main{
     margin-right: 20px;
 }
 
-.nav_bar-mobile { /* Zabra%nuje konfliktu s mobilními zařízeními */
-    display: none;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-}
-
 #mobile-menu { /* Zabra%nuje konfliktu s mobilními zařízeními */
     display: none;
     flex-direction: column;
     gap: 10px;
 }
 
-.nav_bar-desktop .logout {
+.logout {
     font-family: 'Work Sans';
     font-size: 20px;
     padding: 5px;
@@ -901,3 +914,69 @@ h1.error {
     100% { transform: scale(1); }
 }
 
+@media (max-width: 768px) {
+    .nav_bar-desktop {
+        flex-direction: row; /* Navigace pod sebou */
+        align-items: flex-start;
+        align-items: center;
+    }
+
+    .bell-div{
+        margin-left: auto;
+        margin-right: 5px;
+        padding: 10px;
+    }
+
+    .navbar-left{
+        display: none;
+    }
+
+    .navbar-links {
+        display: none;
+        background-color: white;
+        position: absolute;
+        width: 50%;
+        top: 50px;
+        right: 0;
+        flex-direction: column;
+        border-radius: 5px;
+    }
+
+    .notification-popup {
+        display: none;
+        position: absolute;
+        background-color: white;
+        border-radius: 5px;
+        width: 70%;
+        top: 50px;
+        right: 40px;
+        flex-direction: column;
+    }
+
+    .navbar-links.show {
+        display: block; /* Zobrazení navigace */
+    }
+
+    .menu-toggle {
+        display: block; /* Zobrazení na menších obrazovkách */
+        background: transparent; /* Průhledné pozadí */
+        border: none; /* Žádný okraj */
+        color: black; /* Barva ikonky */
+        font-size: 2.1rem; /* Velikost ikonky */
+        cursor: pointer; /* Ukazatel ruky */
+        padding: 10px;
+    }
+    
+    .menu-toggle:focus,
+    .menu-toggle:active {
+        outline: none; /* Žádný okraj při kliknutí */
+        background: rgba(0, 0, 0, 0.1); /* Jemné průhledné pozadí při aktivaci */
+    }
+
+    .logout {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 10px;
+    }
+}
