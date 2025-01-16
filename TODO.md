@@ -25,25 +25,19 @@
     - css
     D - upravit navbar u 'R' termínů
 ### Dodělat
-    D - SUPERADMIN - bude moct dávat práva komisařům na nějakou dobu, koukat na logy komisařů, zápis komisaře a času k termínu
     D ale neotestováno - udělat výuku a výcvik i pro komisaře
-    D - jenom zelené a červené termíny | Stejně jsem zůstal u 3 barev (zelená aktivní a neaktivní termíny, červená plné, modrá proběhlé)
-    D - Pokud komisař někoho zapíše na termín udělat dokument | udělat tlačítko na okno pro autoškolu, které tento dokument udělá
-    D - SPZ - RZ
-    D - skupina ve VaV
-    D - dopsat do mailu info
-    D - přidat form na zápis žáků adminem pro termíny v term_admin a term_komisar
     - udělat ukládání souborů pro výuku a výcvik tak aby se nepřepisovali soubory
-    D - přidat superadminovi možnost upravovat profili autoškol
     - py -m pdoc --output-dir Code/templates/dokumentace Code/app Code/app_logic Code/database
+    - pokud zadám termín bez místa, tak se i tak propíše do db
 
 ### 04.12.2024
-    D - dodělat tlačítko na odevrání studenta když už je zapsaný (třeba z důvodu nemoci)
-    D - dodělat profil
-    D - sepsat requirementy(D) a licence
-    D - přidat vlaječku jestli student už uspěl u zkoušky
-    - předělat zapisovací formulář na zkoušku (chtějí vybrat autoškolu, napsat e.č. a zbytek se doplní sám, pak si jen dopíšou komisaře, druh zkoušky a čas)
+    D? - předělat zapisovací formulář na zkoušku (chtějí vybrat autoškolu, napsat e.č. a zbytek se doplní sám, pak si jen dopíšou komisaře, druh zkoušky a čas)
     - ve VaV přepsat kolonku, kde se píše adresa účebny tak, aby se zobrazovala účebna z DB.
 
+### Next server update
+    - přidat do templatu odkaz na styly pro malé a střední displaye
+    - přidat soubor stylů pro menší displaye
+    - upravit JS script_calendar, přidal jsem omezení na počet žáků při vytváření termínu
+    - pro nějaké html stránky byla přidána classa, primárně pro grid 8
     
     

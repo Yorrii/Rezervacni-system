@@ -3,7 +3,7 @@ function createEmptyForm() {
     form.className = 'exam-form';
 
     form.innerHTML = `
-        <div class="student-line-admin-grid-8 margin-top-10">
+        <div class="student-line-admin-grid-8 specification-for-grid-8 margin-top-10">
             <div class="form-group">
                 <input type="text" name="evidence_number" id="evidence_number" placeholder="E. č." required>
             </div>

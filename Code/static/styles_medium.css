@@ -144,6 +144,7 @@ label{
 
 .navbar-links.show {
     display: flex; /* Zobrazení navigace */
+    z-index: 1100;
 }
 
 .menu-toggle:focus,
@@ -208,6 +209,19 @@ label{
     height: 30px;
     margin-top: 4%;
     margin-bottom: 1%;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    font-size: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.input-box2 {
+    border-color: #000000;
+    border-radius: 5px;
+    padding: 0px;
+    margin-left: 4px;
     background-color: #FFFFFF;
     font-family: 'Work Sans';
     font-size: 100%;
@@ -316,6 +330,25 @@ label{
     height: 100%;
 }
 
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    font-size: 18px;
+    font-family: 'Work Sans';
+    margin-right: 10px;
+}
+
+.input-group input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #888;
+    text-align: center;
+    background-color: #d6e0f5;
+}
+
 /* css pro termíny- autoškola(uživatel) */
 .term-main {
     display: flex;
@@ -323,7 +356,7 @@ label{
 }
 
 .column-div {
-    width: 80%;
+    width: 95%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -417,8 +450,7 @@ label{
     padding: 0px;
     margin-left: 4px;
     background-color: #FFFFFF;
-    height: 20px;
-    width: 22vh;
+    height: 30px;
     font-size: 100%;
     display: flex;
     align-items: center;
@@ -431,7 +463,29 @@ label{
     margin-top: 15px;
     border-radius: 4px;
     background-color: #C6DAF2;
+}
+
+.grid-for-2-select {
     width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+    align-items: center;
+}
+
+.grid-for-2-select > * {
+    font-family: 'Work Sans';
+    height: 100%;
+    padding: 3px;
+}
+
+.grid-for-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.5fr 1.5fr;
+    gap: 10px;
+    align-items: center;
+    margin-top: 1%;
+    justify-content: center;
 }
 
 .grid-for-6 {
@@ -458,13 +512,14 @@ label{
 }
 
 .form-group input[type="text"]{
-    width: 80%;
+    width: 100%;
 }
 
 .form-group input,
 .form-group select {
     font-size: 16px;
     height: 22px;
+    width: 100%;
     border-width: 1px;
     font-family: 'Work Sans';
     border-radius: 4px;
@@ -496,4 +551,91 @@ label{
 
 .student-line-admin-grid-8 > *{
     text-align: center;
+}
+
+.grid-for-9 {
+    display: grid;
+    grid-template-columns: 0.5fr 0.8fr 0.8fr 0.8fr 0.4fr repeat(4, 1fr);
+    margin: 5px;
+    gap: 1px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-9 > * {
+    text-align: center;
+}
+
+.grid-for-9 input, .grid-for-9 select{
+    font-size: 14px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.student-line-admin-grid-9 {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-9 > *{
+    text-align: center;
+}
+
+.nazev {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.document-button {
+    margin-left: 90%;
+    margin-right: 2%;
+    padding: 3px;
+    height: 1.5em;
+    border-radius: 2px;
+}
+
+.no-fill {
+    background-color: transparent;
+    padding: 1px;
+}
+
+.box-row {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    background-color: #C6DAF2;
+    margin-top: 30px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    background-color: #C6DAF2;
+    font-family: 'Work Sans';
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+.specification-for-grid-8 {
+    display: grid;
+    grid-template-columns: 6% 12% 12% 15% 15% 15% 5% 20%;
+    gap: 3px;
+}
+
+.specification-for-grid-8 > *{
+    width: 100%;
 }

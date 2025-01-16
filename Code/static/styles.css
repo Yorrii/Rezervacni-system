@@ -1,6 +1,4 @@
 
-
-
 /* Media pro desktopy*/
 html {
     width: 100%;
@@ -913,7 +911,10 @@ h1.error {
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
+/* tablet */
 
+
+/* mobil */
 @media (max-width: 768px) {
     .nav_bar-desktop {
         flex-direction: row; /* Navigace pod sebou */

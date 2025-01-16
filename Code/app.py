@@ -185,8 +185,10 @@ def reset_password(token):
         if request.method == 'POST': 
             nove_heslo= request.form['password'] # heslo z formuláře při POST          
             if email.endswith('@mesto-most.cz'): # kontrola jak končí email aby se hledalo ve správné tabulce
-                komisar = Komisar.query.filter_by(email=email).first()
-                komisar.heslo = sha256(nove_heslo.encode('utf-8')).hexdigest()
+                cil = Komisar.query.filter_by(email=email).first()
+                if not cil:
+                    cil = Superadmin.query.filter_by(email=email).first()
+                cil.heslo = sha256(nove_heslo.encode('utf-8')).hexdigest()
                 db.session.commit()
                 return redirect(url_for('home'))
             else:
@@ -1212,6 +1214,18 @@ def novy_termin():
 @login_required
 @app.route('/api/get_student', methods=['POST'])
 def dostan_studenta():
+    """
+    API metoda sloužící pro nalezení žáka a kontrole jestli ještě není nikde jinde zapsaný. Metoda vrací žáka, aby ho připravila na zapis. 
+    K metodě mají přístup pouze komisaři a admini.
+    
+    Parametry:
+        request: Z FE obdržíme JSON s id autoškoly žáka, a Ev. Číslo žáka.
+    
+    Vrací:
+        JSON 400: pokud kombinace id autoškoly a ev. čísla nikoho nenajde nebo pokud už je na termínu
+        JSON 200: pokud vše proběhne v pořádku
+        JSON 500: internal error
+    """
     try:
         # Získání dat z požadavku
         if not current_user.isCommissar or not current_user.isAdmin:
@@ -1227,9 +1241,9 @@ def dostan_studenta():
         zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id).order_by(desc(Zak.id)).first()
 
         if zak:
-            zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, id_terminu= session.get('term_id')).first()
+            zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, zaver='W').first()
             if zap_zak:
-                return jsonify({"error": "Žák je již na termín zapsaný"}), 400
+                return jsonify({"error": "Žák je již na zapsaný na termínu."}), 400
             zak_info = {
                 'id': zak.id,
                 'ev_cislo': zak.ev_cislo,
@@ -1260,12 +1274,12 @@ def dostan_studenta_as():
         if not autoskola_id or not evidencni_cislo:
             return jsonify({"error": "Chybí id autoškoly nebo evidenční číslo"}), 400
         
-        zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id, splnil=False).order_by(desc(Zak.id)).first()
+        zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id).order_by(desc(Zak.id)).first()
 
         if zak:
-            zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, id_terminu= session.get('term_id')).first()
+            zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, zaver='W').first()
             if zap_zak:
-                return jsonify({"error": "Žák je již na termín zapsaný"}), 400
+                return jsonify({"error": "Žák je již zapsaný na termín."}), 400
             zak_info = {
                 'id': zak.id,
                 'ev_cislo': zak.ev_cislo,
@@ -1815,10 +1829,10 @@ def docx_for_signup():
         str: pokud vše proběhne v pořádku
         docx: dokument o žádost zápisu studentů do výuky a výcviku
     """
-    try:
-        data = request.get_json() #data z POST requestu
+    #try:
+    data = request.get_json() #data z POST requestu
 
-        driving_school_id = data['main_form'].get('driving_school_id')
+    driving_school_id = data['main_form'].get('driving_school_id')
 
         if driving_school_id:
             autoskola = Autoskola.query.filter_by(id=data['main_form']['driving_school_id']).first()

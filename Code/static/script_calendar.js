@@ -77,6 +77,11 @@ document.getElementById('create_term_btn').addEventListener('click', function() 
     // Získáme hodnotu z inputu s id 'pocet_mist'
     let pocetMist = document.getElementById('pocet_mist').value;
 
+    if(!pocetMist || pocetMist <= 0){
+        alert('Zadali jste neplatné počet studentů.');
+        return;
+    }
+
     // Vytvoříme objekt s daty, které budeme odesílat
     let data = {
         dayId: selectedDayId,
@@ -98,7 +103,7 @@ document.getElementById('create_term_btn').addEventListener('click', function() 
     })
     .catch((error) => {
         console.error('Chyba:', error);
-        // Zde můžete přidat akci v případě chyby
+        alert('Nastala chyba')
     });
 })
 

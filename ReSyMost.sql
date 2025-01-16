@@ -61,7 +61,7 @@ CREATE TABLE `Zaci` (
   `datum_narozeni` date,
   `adresa` varchar(255),
   `cislo_prukazu` varchar(20),
-  `splnil` boolean DEFAULT FALSE,
+  `splnil` DATE,
   `zaci_id_autoskoly` INT,
   CONSTRAINT `fk_zaci_autoskoly` FOREIGN KEY (`zaci_id_autoskoly`) REFERENCES `Autoskoly` (`id`)
 );
