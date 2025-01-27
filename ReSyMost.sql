@@ -33,7 +33,9 @@ CREATE TABLE `Komisari` (
   `heslo` varchar(70),
   `jmeno` varchar(30),
   `prijmeni` varchar(30),
-  `isAdmin` DATETIME NULL
+  `isAdmin` BOOLEAN NULL,
+  `start_isAdmin` DATE,
+  `end_isAdmin` DATE
 ) AUTO_INCREMENT=100001;
 
 CREATE TABLE `Superadmini` (

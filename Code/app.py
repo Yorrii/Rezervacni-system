@@ -593,10 +593,30 @@ def profile():
             else:
                 return redirect(url_for('profile_admin', id=autoskola))
     else:
-        id = current_user.id
-        skola = Autoskola.query.filter_by(id=id).first()
-        seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
-        return render_template('profile.html', vozidla= seznam_vozidel, autoskola=skola)
+        if request.method == 'GET':
+            id = current_user.id
+            skola = Autoskola.query.filter_by(id=id).first()
+            seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
+            studenti = Zak.query.filter_by(id_autoskoly= current_user.id).all()
+            seznam_studentu = []
+
+            for student in studenti:
+                seznam_studentu.append(
+                    {
+                        'ev_cislo': student.ev_cislo,
+                        'jmeno': student.jmeno,
+                        'prijmeni': student.prijmeni,
+                        'termin': 'splnil' if student.splnil else (
+                            'nepřihlášený' if not Zapsany_zak.query.filter_by(id_zaka=student.id).first() else
+                            Zapsany_zak.query.filter_by(id_zaka=student.id).first().termin.datum.strftime('%d.%m.%Y')
+                        )
+                    }
+                )
+
+            print(seznam_studentu)
+            return render_template('profile.html', vozidla= seznam_vozidel, autoskola=skola, studenti=seznam_studentu)
+        if request.method == 'POST':
+            pass
 
 @app.route('/profile/<id>')
 @login_required
@@ -981,7 +1001,9 @@ def rozdat_prava():
             'id': komisar.id,
             'jmeno': komisar.jmeno,
             'prijmeni': komisar.prijmeni,
-            'isAdmin': komisar.isAdmin.strftime("%d.%m.%Y") if komisar.isAdmin else None
+            'isAdmin': date.today() < komisar.end_isAdmin if komisar.end_isAdmin else False,
+            'start_isAdmin': komisar.start_isAdmin.strftime("%d.%m.%Y") if komisar.start_isAdmin else None,
+            'end_isAdmin': komisar.end_isAdmin.strftime("%d.%m.%Y") if komisar.end_isAdmin else None
         })
 
     return render_template('rights.html', komisari=lst_komisari)
@@ -1024,11 +1046,13 @@ def pridat_prava():
     try:
         data = request.get_json()
         id = data.get('id')
-        date = data.get('date')    
+        date_start = data.get('date_start')
+        date_end = data.get('date_end')    
 
         komisar = Komisar.query.filter_by(id=id).first()
         if komisar:
-            komisar.isAdmin = date
+            komisar.start_isAdmin = date_start
+            komisar.end_isAdmin = date_end
             db.session.commit()
             return jsonify({"message": "Data přijata úspěšně"}), 200 # Odeslání odpovědi o úspěchu
         else:
@@ -1076,7 +1100,9 @@ def odebrat_prava():
         komisar = Komisar.query.filter_by(id=id).first()
         
         if komisar:
-            komisar.isAdmin = None
+            komisar.isAdmin = False
+            komisar.start_isAdmin = None
+            komisar.end_isAdmin = None
             db.session.commit()
             return jsonify({"message": "Práva byla úspěšně odebrána"}), 200
         else:
@@ -1372,7 +1398,7 @@ def get_calendar_dates():
                     'date': termin.datum.isoformat(),  # datum převedeme na string ve formátu ISO
                     'ac_flag': termin.ac_flag,
                     'max_ridicu': termin.max_ridicu,
-                    'zapsani_zaci': len(termin.zapsani_zaci)  # Počet zapsaných žáků na termín
+                    'zapsani_zaci': len([z for z in termin.zapsani_zaci if z.potvrzeni == 'Y'])  # Počet zapsaných žáků na termín
                 }
                 terminy_list.append(termin_data)
             return jsonify(terminy_list)
@@ -1392,12 +1418,17 @@ def get_calendar_dates():
             # Příprava dat pro frontend ve formátu JSON
             terminy_data = []
             for termin in terminy:
+                filtered_zapsani_zaci = [
+                    zapsany for zapsany in termin.zapsani_zaci
+                    if zapsany.id_autoskoly == current_user.id
+                ]
+            
                 terminy_data.append({
                     "id": termin.id,
                     "date": termin.datum.isoformat(),
                     "ac_flag": termin.ac_flag,
                     "max_ridicu": termin.max_ridicu,
-                    "zapsani_zaci": len(termin.zapsani_zaci)
+                    "zapsani_zaci": len(filtered_zapsani_zaci)
                 })
             
             return jsonify(terminy_data)
@@ -1671,7 +1702,7 @@ def enroll_drivers():
             zapis.zacatek = time_start
             zapis.id_komisare = id_commissar
             print('zak se zapsal na termín')
-            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} byl/a zapsán/a na termín {termin.datum.strftime("%d.%m.%Y")} v {time_start}',
+            upozorneni= Upozorneni(zprava= f'Student/ka {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl/a zapsán/a na termín {termin.datum.strftime("%d.%m.%Y")} v {time_start}',
                                    id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(upozorneni)
             db.session.commit()
@@ -1681,6 +1712,45 @@ def enroll_drivers():
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400   
+
+@login_required
+@app.route('/api/edit_student', methods=['POST'])
+def edit_student():
+    if not current_user.isAdmin:
+        abort(404)
+    try:
+        # Načti data z požadavku
+        data = request.get_json()
+        student_id = data.get('id')
+        new_time = data.get('time')
+        new_commissar = data.get('commissar')
+
+        zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=student_id).first()
+        if not zapis:
+            print('Nebyl nalezen zápis.')
+            return jsonify({"status": "error", "message": "Došlo k chybě při ukládání změn."}), 500
+        
+        print(new_time != zapis.zacatek, new_time, zapis.zacatek)
+        if new_time != zapis.zacatek:
+            zapis.zacatek = new_time
+            zak = Zak.query.filter_by(id=student_id).first()
+            termin = Termin.query.filter_by(id=session.get('term_id')).first()
+            upozorneni = Upozorneni(zprava=f"Studentovi/Studentce {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl pozměněn začátek na termín {termin.datum.strftime("%d.%m.%Y")} na {new_time}.", id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+            db.session.add(upozorneni)
+
+        zapis.id_komisare = new_commissar
+        
+
+        db.session.commit()
+
+        print(f"Upravuji studenta {student_id}: nový čas: {new_time}, nový komisař: {new_commissar}")
+
+        # Vrácení úspěšné odpovědi
+        return jsonify({"status": "success", "message": "Změny byly uloženy."}), 200
+    except Exception as e:
+        # Ošetření chyby a vrácení chybové odpovědi
+        print(f"Chyba při zpracování změn: {str(e)}")
+        return jsonify({"status": "error", "message": "Došlo k chybě při ukládání změn."}), 500
 
 @login_required
 @app.route('/api/add_vehicle', defaults={'id': None}, methods=['POST'])
@@ -1732,9 +1802,7 @@ def add_vehicle(id):
 @login_required
 def delete_student_in_term():
     """
-    Vymazaní studenta, který už je zapsán a potvrzen na termínu.
-
-    Endpoint přidá nové vozidlo do systému. 
+    Vymazaní studenta, který už je zapsán a potvrzen na termínu. 
 
     Vrací:
         - `200`: Přesměrování na profil po úspěšném přidání.
@@ -1743,10 +1811,10 @@ def delete_student_in_term():
     Metody:
         - POST:
             - Přijímá formulářová data:
-                - `znacka` (str): Značka vozidla.
-                - `model` (str): Model vozidla.
-                - `spz` (str): SPZ vozidla.
-            - Uloží záznam do databáze.
+                - `id` (int): id žáka.
+                - `term_id` (str): id termínu.
+            - Vytvoří upozornění pro autoškolu, že žák byl odebrán.
+            - Smaže zapsany_zak, který odpovídá id studenta a id termínu.
     """
     if not current_user.isAdmin:
         abort(404)
@@ -1766,7 +1834,9 @@ def delete_student_in_term():
         if not zapsany_zak:
             return jsonify({"message": "Record not found"}), 404
 
-        upozorneni = Upozorneni(zprava=f"Student/ka {zak.jmeno} {zak.prijmeni}  byl/a odebrán/a z termínu {termin.datum}.", id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+        formatted_date = termin.datum.strftime("%d.%m.%Y")
+
+        upozorneni = Upozorneni(zprava=f"Student/ka {zak.jmeno} {zak.prijmeni}  byl/a odebrán/a z termínu {formatted_date}.", id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
         db.session.add(upozorneni)
         db.session.delete(zapsany_zak)
         db.session.commit()
@@ -1829,10 +1899,10 @@ def docx_for_signup():
         str: pokud vše proběhne v pořádku
         docx: dokument o žádost zápisu studentů do výuky a výcviku
     """
-    #try:
-    data = request.get_json() #data z POST requestu
+    try:
+        data = request.get_json() #data z POST requestu
 
-    driving_school_id = data['main_form'].get('driving_school_id')
+        driving_school_id = data['main_form'].get('driving_school_id')
 
         if driving_school_id:
             autoskola = Autoskola.query.filter_by(id=data['main_form']['driving_school_id']).first()
@@ -1889,7 +1959,7 @@ def docx_for_signup():
 
         # Název složky a souboru
         folder_path = "Zapis_studentu"
-        file_name = f"{autoskola.nazev.replace(" ", "_")}_{date.today().strftime('%d-%m-%Y')}.docx"
+        file_name = f"{autoskola.nazev.replace(" ", "_")}_{datum.strftime("%d-%m-%Y")}.docx"
 
         # Kontrola a vytvoření složky
         Path(folder_path).mkdir(parents=True, exist_ok=True)
@@ -1984,8 +2054,8 @@ def student_success():
         if zak and termin:
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             zapis.zaver = 'Y'
-            zak.splnil = True
-            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} úspěšně splnil termín.', id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+            zak.splnil = termin.datum
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} úspěšně splnil termín.', id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(zapis)
             db.session.add(upozorneni)
             db.session.commit()
@@ -2025,7 +2095,7 @@ def student_reject():
         if zak and termin:
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             zapis.zaver = 'N'
-            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.jmeno} {zak.prijmeni} {zak.ev_cislo} neuspěl u termínu.', id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+            upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} neuspěl u termínu.', id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(upozorneni)
             db.session.add(zapis)
             db.session.commit()
@@ -2147,7 +2217,10 @@ def get_vehicles():
 @login_required
 @app.route('/api/change_info_ds', methods=['POST'])
 def change_info():
-    """#TODO"""
+    """
+        API endpoint pro změnu informací o AŠ na profilu.
+        #TODO
+    """
     try:
         # Načti JSON data z požadavku
         data = request.get_json()

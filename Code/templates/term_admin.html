@@ -31,11 +31,12 @@
                             <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
-                            <div>{{ zak['komisar'] }}</div>
-                            <div>{{ zak['cas']}}</div>
-                            
-                            <button class="form-button" onclick="deleteStudent('{{ zak['id'] }}')">Odstranit</button>
-                                   
+                            <div id="cas-zak-{{ zak['id'] }}">{{ zak['cas']}}</div>
+                            <div id="komisar-zak-{{ zak['id'] }}">{{ zak['komisar'] }}</div>
+                            <div id="actions-zak-{{ zak['id'] }}">
+                                <button class="form-button" style="background-color: red; color: white;" onclick="deleteStudent('{{ zak['id'] }}')">Odstranit</button>
+                                <button class="form-button" style="background-color: orange;" onclick="editStudent('{{ zak['id'] }}')">Edit</button>
+                            </div>
                         </div>
                     {% else %}
                         <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">                       
@@ -68,7 +69,7 @@
                 <button type="button" onclick="sendAllStudentIds()" id="sendButton">Odeslat ID</button>
             </div>
         </div>
-        <div class="div-select">
+        <div class="div-select" id="search-form">
             <div class="grid-for-2-select">
                 <div>
                     <p>Autoškola</p>
@@ -93,6 +94,8 @@
     </main>
     <script src="{{ url_for('static', filename='term_admin.js') }}"></script>
     <script>
+    let maxForms = {{volna_mista}}
+    
     async function sendAllStudentIds() {
             const resultSection = document.getElementById("result");
             const studentDivs = resultSection.querySelectorAll('[data-student-id]');
@@ -144,13 +147,12 @@
             }
 
             if (list_ev.includes(evidencniCislo)) {
-            alert("Toto evidenční číslo již bylo zadáno.");
-            return;
+                alert("Toto evidenční číslo již bylo zadáno.");
+                return;
             }
-
-            list_ev.push(evidencniCislo);
-
+            
             try {
+                list_ev.push(evidencniCislo);
                 const response = await fetch("/api/get_student", {
                     method: "POST",
                     headers: {
@@ -169,6 +171,7 @@
                 }
 
                 const data = await response.json();
+                maxForms--
 
                 // Format the date to dd.mm.yyyy
                 const formattedDate = new Date(data.dat_nar).toLocaleDateString('cs-CZ');
@@ -213,7 +216,16 @@
                 messageBox.style.color = 'red';
                 messageBox.style.marginTop = '20px';
             }
+
+        if(maxForms <= 0){
+            const searchFormDiv = document.getElementById('search-form');
+            if (searchFormDiv) {
+                searchFormDiv.style.display = 'none';
+                console.log('search-form byl skryt, protože maxForms <= 0');
+            }
         }
+    }
+
     async function deleteStudent(studentId) {
         try {
             const response = await fetch('/api/delete_student_in_term', {
@@ -237,7 +249,70 @@
         }
     }
 
-    const maxForms = {{volna_mista}}
+    function editStudent(studentId) {
+        // Najdi divy s informacemi o čase a komisaři
+        const timeDiv = document.getElementById(`cas-zak-${studentId}`);
+        const commissarDiv = document.getElementById(`komisar-zak-${studentId}`);
+        const actionsDiv = document.getElementById(`actions-zak-${studentId}`);
 
+        // Získej aktuální hodnoty
+        const currentTime = timeDiv.textContent.trim();
+        const currentCommissar = commissarDiv.textContent.trim();
+
+        // Nahraď čas inputem
+        timeDiv.innerHTML = `
+            <input class="input-box3" type="time" id="time-zak-${studentId}" value="${currentTime}" required>
+        `;
+
+        // Nahraď komisaře selectem
+        commissarDiv.innerHTML = `
+            <select class="input-box3" id="commissar-for-zak-${studentId}" required>
+                {% for komisar in komisari %}
+                    <option value="{{komisar['id']}}" {% if komisar['jmeno'] + ' ' + komisar['prijmeni'] == currentCommissar %}selected{% endif %}>
+                        {{komisar['jmeno']}} {{komisar['prijmeni']}}
+                    </option>
+                {% endfor %}
+            </select>
+        `;
+
+        // Nahraď tlačítka novým tlačítkem "Uložit"
+        actionsDiv.innerHTML = `
+            <button class="form-button" style="background-color: green; color: white;" onclick="saveEdit('${studentId}')">Uložit</button>
+        `;
+    }
+
+    // funkce vezme data z editačních selectů(čas a komisař) a pošle je na endpoint /api/edit_student
+    function saveEdit(studentId) {
+        // Získej nové hodnoty z inputu a selectu
+        const newTime = document.getElementById(`time-zak-${studentId}`).value;
+        const newCommissar = document.getElementById(`commissar-for-zak-${studentId}`).value;
+
+        // Vytvoř payload pro odeslání
+        const payload = {
+            id: studentId,
+            time: newTime,
+            commissar: newCommissar
+        };
+
+        // Pošli data na backend pomocí fetch
+        fetch('/api/edit_student', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload(); // Reload stránky po úspěšném uložení
+            } else {
+                alert('Nepodařilo se uložit změny. Zkuste to prosím znovu.');
+            }
+        })
+        .catch(error => {
+            console.error('Chyba při ukládání změn:', error);
+            alert('Došlo k chybě. Zkuste to prosím znovu.');
+        });
+    }
     </script>
 {% endblock %}

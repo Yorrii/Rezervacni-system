@@ -5,44 +5,60 @@
 {% endblock %}
 {% block main %}
 <main class="term-main">
-    <div class="column-div">
+    <div class="column-div" style="width: 90%;">
         <div class='user-info'>
             <h2 class="school-name">{{ autoskola.nazev }}</h2>
         </div>
-        <div class="grid-for-2">
-            <div class="vehicle-list">
+        <div class="grid-for-2" style="gap: 2%; height: fit-content; align-items: start;"> <!-- Tohle bude div, který v sobě bude držet okénko pro vozidla a studenty -->
+            <div style="min-width: 600px; width: 100%; height: 60%; overflow-y: scroll;"> <!-- Vozidla -->
                 <div class="grid-for-3 vycentrovat-text">
                     <div style="font-weight: bold;">Značka</div>
                     <div style="font-weight: bold;">Model</div>
                     <div style="font-weight: bold;">Registrační značka</div>
                 </div>
                 {% for vozidlo in vozidla %}
-                    <div class="grid-for-3">
-                        <div class="center-div">{{vozidlo.znacka}}</div>
-                        <div class="center-div">{{vozidlo.model}}</div>
-                        <div class="center-div">{{vozidlo.spz}}</div>
+                    <div class="grid-for-3 vycentrovat-text">
+                        <div>{{vozidlo['znacka']}}</div>
+                        <div>{{vozidlo['model']}}</div>
+                        <div>{{vozidlo['spz']}}</div>
                     </div>
                 {% endfor %}
-            </div>
-            <div class="vehicle-add">
-                <form action="/api/add_vehicle" id="vehicle-form" autocomplete="off" method="post">
-                    <div class="center-div margin-top-10">
-                        <label for="znacka">Značka:</label>
-                        <input type="text" name="znacka" id="znacka" required>
-                    </div>
-                    <div class="center-div margin-top-10">
-                        <label for="model">Model:</label>
-                        <input type="text" name="model" id="model" required>
-                    </div>
-                    <div class="center-div margin-top-10">
-                        <label for="spz">RZ:</label>
-                        <input type="text" name="spz" id="spz" required>
+                <form action="/api/add_vehicle_as" id="vehicle-form" autocomplete="off" method="post">
+                    <div class="grid-for-3">
+                        <div class="center-div margin-top-10">
+                            <label for="znacka">Značka:</label>
+                            <input type="text" name="znacka" id="znacka" required>
+                        </div>
+                        <div class="center-div margin-top-10">
+                            <label for="model">Model:</label>
+                            <input type="text" name="model" id="model" required>
+                        </div>
+                        <div class="center-div margin-top-10">
+                            <label for="spz">RZ:</label>
+                            <input type="text" name="spz" id="spz" required>
+                        </div>
                     </div>
                     <div class="center-div">
                         <button class="form-button margin-top-10 margin-bot-10" type="submit" form="vehicle-form">Přidat</button>
                     </div>
                 </form>
-            </div>  
+            </div>
+            <div style="width: 100%; overflow-y: scroll; max-height: 60%;"> <!-- Žáci -->
+                <div class="grid-for-4 vycentrovat-text">
+                    <div style="font-weight: bold;">Evidenční číslo</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Termín</div>
+                </div>
+                {% for zak in studenti %}
+                    <div class="grid-for-4 vycentrovat-text">
+                        <div>{{zak['ev_cislo']}}</div>
+                        <div>{{zak['jmeno']}}</div>
+                        <div>{{zak['prijmeni']}}</div>
+                        <div>{{zak['termin']}}</div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>        
 </main>

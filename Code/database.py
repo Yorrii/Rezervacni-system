@@ -21,7 +21,7 @@ class Zak(db.Model):
     """narozeni (str): Datum narození žáka."""
     adresa = db.Column('adresa', db.String(255), nullable=True)
     """adresa (str): Adresa bydliště."""
-    splnil = db.Column('splnil', db.Boolean, default=False, nullable=False)
+    splnil = db.Column('splnil', db.Date, nullable=True)
     """splnil (bool): Určuje, zda žák splnil požadavky. Výchozí hodnota je False."""
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)
     """id_autoskoly (int): Cizý klíč odkazující na autoškolu do které žák patří."""
@@ -84,8 +84,12 @@ class Komisar(db.Model):
     """jmeno (str): Jméno komisaře."""
     prijmeni = db.Column('prijmeni', db.String(70), nullable=True)
     """prijmeni (str): Přijmení komisaře."""
-    isAdmin = db.Column('isAdmin', db.DateTime, nullable=True)
-    """isAdmin (str): Datum, do kdy má komisař adminská práva."""
+    isAdmin = db.Column('isAdmin', db.Boolean, nullable=True)
+    """isAdmin (int): Boolean, jestli je komisař admin."""
+    start_isAdmin = db.Column('start_isAdmin', db.Date, nullable=True)
+    """start_isAdmin (str): Datum začátku, od kdy je admin."""
+    end_isAdmin = db.Column('end_isAdmin', db.Date, nullable=True)
+    """end_isAdmin (str): Datum konce, do kdy je admin."""
 
 
 class Superadmin(db.Model):

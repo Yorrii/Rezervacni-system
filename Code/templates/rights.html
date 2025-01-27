@@ -8,14 +8,18 @@
         <div class="column-div">    
                 <div class="rights-box">
                     {% for komisar in komisari %}
-                        <div class="grid-for-4 margin-top-10 small-gap margin-bot-10">
+                        <div class="grid-for-5 margin-top-10 small-gap margin-bot-10">
                             <div class="center-div">{{komisar['jmeno']}}</div>
                             <div class="center-div">{{komisar['prijmeni']}}</div>
                             {% if komisar['isAdmin'] %}
-                                <div class="center-div">{{komisar['isAdmin']}}</div>
+                                <div class="center-div">{{komisar['start_isAdmin']}}</div>
+                                <div class="center-div">{{komisar['end_isAdmin']}}</div>
                             {% else %}
                             <div class="center-div">
-                                <input class="input-box3" type="datetime-local" name="time-{{komisar['id']}}" id="time-{{komisar['id']}}" required> 
+                                <input class="input-box3" type="date" name="start-time-{{komisar['id']}}" id="start-time-{{komisar['id']}}" required> 
+                            </div>
+                            <div class="center-div">
+                                <input class="input-box3" type="date" name="end-time-{{komisar['id']}}" id="end-time-{{komisar['id']}}" required> 
                             </div>
                             {% endif %}
                             {% if komisar['isAdmin'] %}
@@ -59,11 +63,19 @@
 
         function giveRights(komisarId) {
             // Najdi input element s ID `time-{komisarId}`
-            const dateInput = document.getElementById(`time-${komisarId}`);
-            const dateValue = dateInput ? dateInput.value : null;
+            const dateInput1 = document.getElementById(`start-time-${komisarId}`);
+            const dateInput2 = document.getElementById(`end-time-${komisarId}`);
+           
+            const dateValue1 = dateInput1 ? dateInput1.value : null;
+            const dateValue2 = dateInput2 ? dateInput2.value : null;
 
-            if (!dateValue) {
+            if (!dateValue1 || !dateValue2) {
                 alert("Vyberte prosím datum.");
+                return;
+            }
+
+            if (dateValue1 >= dateValue2) {
+                alert("Datum začátku musí být menší než datum konce.");
                 return;
             }
 
@@ -72,7 +84,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: komisarId, date: dateValue })
+                body: JSON.stringify({ id: komisarId, date_start: dateValue1, date_end: dateValue2 })
             })
             .then(response => {
                 if (!response.ok) {
