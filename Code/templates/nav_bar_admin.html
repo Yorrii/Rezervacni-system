@@ -3,7 +3,8 @@
         <img src="../static/images/logo_most.png" alt="Logo_Most" height="40px">
         <p>Rezervační<br>systém Most</p>
     </div>
-    <div class="navbar-links">
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    <div class="navbar-links" id="menuLinks">
         <a class="logout" href="{{ url_for('calendar') }}">Kalendář</a>
         <a class="logout" href="{{ url_for('teaching_training') }}">Výuka a výcvik</a>
         <a class="logout" href="{{ url_for('profile') }}">Profil</a>
@@ -12,3 +13,27 @@
         <a class="logout" href="{{ url_for('logout') }}">Odhlásit se</a>
     </div>
 </nav>
+<script>
+    const menuToggle = document.getElementById('menuToggle');
+    const menuLinks = document.getElementById('menuLinks');
+
+    // Funkce pro zobrazení/skrývání menu
+    menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation(); // Zastaví šíření kliknutí
+        menuLinks.classList.toggle('show');
+    });
+
+    // Funkce pro zavření menu při kliknutí mimo něj
+    document.addEventListener('click', (e) => {
+        if (!menuLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+            menuLinks.classList.remove('show');
+        }
+    });
+
+    // Zavření menu po kliknutí na odkaz
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.addEventListener('click', () => {
+            menuLinks.classList.remove('show');
+        });
+    });
+</script>

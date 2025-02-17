@@ -61,8 +61,63 @@ document.getElementById('remove-form').addEventListener('click', function() {
     }
 });
 
+function validateForms() {
+    let isValid = true;
+    let errorMessage = '';
+
+    // Ověření hlavního formuláře
+    const mainForm = document.querySelector('#for-form form');
+    if (!mainForm.querySelector('#adress').value.trim()) {
+        isValid = false;
+        errorMessage += 'Pole "Adresa" musí být vyplněno.\n';
+    }
+    if (!mainForm.querySelector('#start-of-training').value.trim()) {
+        isValid = false;
+        errorMessage += 'Pole "Datum zahájení výcviku" musí být vyplněno.\n';
+    }
+    if (mainForm.querySelector('#vehicle-list').selectedOptions.length === 0) {
+        isValid = false;
+        errorMessage += 'Musíte vybrat alespoň jedno vozidlo.\n';
+    }
+
+    // Ověření každého formuláře studenta
+    const examForms = document.querySelectorAll('.exam-form');
+    examForms.forEach((form, index) => {
+        if (!form.querySelector('#evidence_number').value.trim()) {
+            isValid = false;
+            errorMessage += `Řádek ${index + 1}: Pole "E. č." musí být vyplněno.\n`;
+        }
+        if (!form.querySelector('#first_name').value.trim()) {
+            isValid = false;
+            errorMessage += `Řádek ${index + 1}: Pole "Jméno" musí být vyplněno.\n`;
+        }
+        if (!form.querySelector('#last_name').value.trim()) {
+            isValid = false;
+            errorMessage += `Řádek ${index + 1}: Pole "Příjmení" musí být vyplněno.\n`;
+        }
+        if (!form.querySelector('#birth_date').value.trim()) {
+            isValid = false;
+            errorMessage += `Řádek ${index + 1}: Pole "Datum narození" musí být vyplněno.\n`;
+        }
+        if (!form.querySelector('#adress').value.trim()) {
+            isValid = false;
+            errorMessage += `Řádek ${index + 1}: Pole "Adresa" musí být vyplněno.\n`;
+        }
+        // Číslo řidičského průkazu není povinné
+    });
+
+    if (!isValid) {
+        alert(errorMessage);
+    }
+    return isValid;
+}
+
 document.getElementById('submit-forms').addEventListener('click', function(event) {
     event.preventDefault(); // Zabráníme defaultnímu odeslání formuláře
+
+    if (!validateForms()) {
+        return;
+    }
 
     // Shromáždění údajů z hlavního formuláře
     const mainForm = document.querySelector('#for-form form');
@@ -97,19 +152,25 @@ document.getElementById('submit-forms').addEventListener('click', function(event
     // Odeslání dat na backend pomocí fetch
     fetch('/api/sign_up', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Úspěch:', data);
-        window.location.href = '/calendar';
+        if (data.error) {
+            if (data.duplicate_evidence_numbers) {
+                alert(`Chyba: Některá evidenční čísla již existují v systému:\n\n${data.duplicate_evidence_numbers.join(", ")}`);
+            } else {
+                alert(`Chyba: ${data.error}`);
+            }
+        } else {
+            alert("Data byla úspěšně odeslána!");
+            window.location.href = '/calendar';
+        }
     })
     .catch((error) => {
         console.error('Chyba:', error);
-        window.alert(error);
+        alert("Došlo k chybě při odesílání formuláře.");
     });
 });
 

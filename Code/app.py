@@ -6,7 +6,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature 
 from sqlalchemy import or_, desc #metoda na možnost or v quary
 from docx import Document #Objekt, který generuje word dokument z kódu
 import app_logic #soubor s metodamy
-from config import Config #nastavení pro posílání emailů
+from config_copy import Config #nastavení pro posílání emailů
 from io import BytesIO 
 from hashlib import sha256  #hashovací metoda
 from datetime import date, datetime, timedelta
@@ -829,7 +829,8 @@ def teaching_training():
         for skola in ausk:
             autoskoly.append({
                 'id': skola.id,
-                'nazev': skola.nazev
+                'nazev': skola.nazev,
+                'adresa': skola.adresa_u
             })
 
         return render_template('sign_up_admin.html', autoskoly=autoskoly, superadmin=current_user.isSuperAdmin, admin=current_user.isAdmin)
@@ -1914,6 +1915,7 @@ def docx_for_signup():
         datum = datetime.strptime(datum, "%Y-%m-%d") # datum začátku výcviku
         seznam_vozidel = data['main_form']['vehicle_list'] # seznam vozidel k výcviku
         seznam_studentu = data['students'] # seznam studentů do výcviku
+
         document = Document() # docx dokument
         document.sections[0].right_margin = 457200
         document.sections[0].left_margin = 457200
@@ -1926,6 +1928,9 @@ def docx_for_signup():
         for vozidlo in seznam_vozidel:
             document.add_paragraph(vozidlo)
 
+        save_document = False
+        duplicate_students = []
+
         # vytvoření tabulky a sloupců s názvem
         table = document.add_table(rows=1, cols=8)
         hdr_cells = table.rows[0].cells
@@ -1937,7 +1942,15 @@ def docx_for_signup():
         hdr_cells[5].text = 'Číslo řidičského průkazu'
         hdr_cells[6].text = 'Skupina řidičského oprávnění'
         hdr_cells[7].text = 'Druh výcviku'
+
         for student in seznam_studentu: # cykl pro studenty, aby se zapsali do tabulky a zároveň jejich tvorba do db
+            exist_student = Zak.query.filter_by(ev_cislo=student['evidence_number'], id_autoskoly= autoskola.id).first()
+            
+            if exist_student:
+                duplicate_students.append(student['evidence_number'])
+                continue  # Nepřidáváme duplicity
+            
+            save_document = True
             row_cells = table.add_row().cells
             row_cells[0].text = student['evidence_number']
             row_cells[1].text = student['first_name']
@@ -1964,9 +1977,16 @@ def docx_for_signup():
         # Kontrola a vytvoření složky
         Path(folder_path).mkdir(parents=True, exist_ok=True)
 
+        if save_document:
+            document.save(f"{folder_path}/{file_name}")
+        
+        if duplicate_students:
+            return jsonify({
+                "error": "Někteří studenti již existují v systému.",
+                "duplicate_evidence_numbers": duplicate_students
+            }), 400
 
-        document.save(f"{folder_path}/{file_name}") # ukládání dokumentu
-        return jsonify({"message": "Data přijata úspěšně"}), 200   
+        return jsonify({"message": "Data přijata úspěšně"}), 200
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
@@ -2152,7 +2172,6 @@ def get_notifications():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-
 
 @login_required
 @app.route('/api/notifications_change', methods=['POST'])

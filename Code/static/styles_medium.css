@@ -8,15 +8,16 @@ html {
 body {
     background-color: #425CC7;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     margin: 0;
+    overflow-y: auto;
 }
 
 main{
     display: flex;
     justify-content: center;
     width: 100%;
-    height: 100%;
+    height: 90vh;
 }
 
 button {
@@ -46,6 +47,7 @@ label{
     background-color: #FFFFFF;
     width: 100%;
     height: 10%;
+    min-height: 60px;
     margin: 0;
     display: flex;
     flex-direction: row;
@@ -93,6 +95,7 @@ label{
 .notification-popup {
     display: none;
     position: absolute;
+    z-index: 9999;
     background-color: white;
     border-radius: 5px;
     width: fit-content;
@@ -126,6 +129,7 @@ label{
     color: black; /* Barva ikonky */
     font-size: 2.1rem; /* Velikost ikonky */
     cursor: pointer; /* Ukazatel ruky */
+    margin-right: 5%;
     padding: 10px;
 }
 
@@ -140,6 +144,10 @@ label{
     border-radius: 4px;
     align-items: center;
     gap: 10px;
+}
+
+.logout {
+    text-decoration: none;
 }
 
 .navbar-links.show {
@@ -380,6 +388,18 @@ label{
     margin: 0%;
 }
 
+.students-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding: 7px;
+    align-items: center;
+    margin-top: 30px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+}
+
 .students-container_button {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -441,12 +461,14 @@ label{
 
 .center-div {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: middle;
+    align-items: center;
 }
 
 .input-box3 {
     border-radius: 4px;
+    font-family: 'Work Sans';
     padding: 0px;
     margin-left: 4px;
     background-color: #FFFFFF;
@@ -517,7 +539,7 @@ label{
 
 .form-group input,
 .form-group select {
-    font-size: 16px;
+    font-size: 14px;
     height: 22px;
     width: 100%;
     border-width: 1px;
@@ -530,7 +552,7 @@ label{
 
 .student-line-admin-grid-8 {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 0.4fr 1.6fr 0.5fr 1fr;
     gap: 10px;
     align-items: center;
     padding: 0px;
@@ -610,20 +632,11 @@ label{
     padding: 1px;
 }
 
-.box-row {
-    display: flex;
-    flex-direction: row;
-    padding: 5px;
-    background-color: #C6DAF2;
-    margin-top: 30px;
-    border-radius: 4px;
-    width: 100%;
-}
-
 .form-container {
     display: flex;
     flex-direction: column;
     width: fit-content;
+    min-width: 823px;
     background-color: #C6DAF2;
     font-family: 'Work Sans';
     margin-top: 10px;
@@ -638,4 +651,172 @@ label{
 
 .specification-for-grid-8 > *{
     width: 100%;
+}
+
+/* profil */
+.user-info {
+    display: flex;
+    flex-direction: row;
+    background-color: #C6DAF2;
+    font-family: 'Work Sans';
+    width: 60%;
+    margin-top: 30px;
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-for-2 {
+    width: 100%;
+    display: grid;
+    gap: 3px;
+    margin-top: 30px;
+    align-items: center;
+}
+
+.grid-for-2 > * {
+    background-color: #C6DAF2;
+    border-radius: 5px;
+    font-family: 'Work Sans';
+    height: 100%;
+    padding: 3px;
+}
+
+.grid-for-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    margin-top: 1%;
+    justify-content: center;
+}
+
+.vycentrovat-text{
+    text-align: center;
+}
+
+.vycentrovat-text > * {
+    text-align: center;
+}
+
+.smaller-box{
+    height: 40vh;
+}
+
+.small-gap {
+    gap: 10px;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-bot-10 {
+    margin-bottom: 10px;
+}
+
+.box-row {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    background-color: #C6DAF2;
+    margin-top: 30px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.grid-for-7 {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-7 > * {
+    text-align: center;
+}
+
+.grid-for-7 input, .grid-for-7 select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.form-button {
+    margin-right: 5px;
+    margin-left: 5px;
+    font-family: 'Work Sans';
+    background-color: #425CC7;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.form-button:hover{
+    background-color: #283777;
+}
+
+.rights-box {
+    display: flex;
+    flex-direction: column;
+    background-color: #C6DAF2;
+    font-family: 'Work Sans';
+    margin-top: 30px;
+    border-radius: 4px;
+}
+
+.grid-for-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    margin-top: 1%;
+    justify-content: center;
+}
+
+.box{
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    background-color: #C6DAF2;
+    margin-top: 30px;
+    border-radius: 4px;
+}
+
+.logs-container {
+    display: flex;
+    flex-direction: column; /* Zajistí, že logy budou pod sebou */
+    align-items: center; /* Centrovaní obsahu na střed */
+    width: 100%;
+    background-color: #C6DAF2;
+    border-radius: 4px;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.log {
+    display: grid;
+    font-size: 12px;
+    grid-template-columns: 10% 15% 10% auto;
+    gap: 5px;
+    width: 100%; /* Nastaví pevnou šířku pro každý log */
+    padding: 2px;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: 'Work Sans';
+    border-bottom: 1px solid #000;
+}
+
+.medium-restrain {
+    min-width: none;
+}
+
+.medium-calendar-button {
+    width: 40px;
+    height: 30px;
+    background-color: #425CC7;
+    font-size: 16px;
 }

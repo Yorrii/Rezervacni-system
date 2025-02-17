@@ -16,10 +16,10 @@
             <form>
                 <div class="grid-for-4 margin-top-10 box-row small-gap">
                     <div>
-                        <select class="input-box3" name="driving-school" id="driving-school">
+                        <select class="input-box3" name="driving-school" id="driving-school" onchange="updateAddress(this)">
                             <option value="" disabled selected hidden>Autoškola</option>
                             {% for autoskola in autoskoly %}
-                                <option value="{{autoskola.id}}">{{autoskola.nazev}}</option>
+                                <option value="{{autoskola.id}}" data-address="{{autoskola.adresa}}">{{autoskola.nazev}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -40,10 +40,10 @@
                 </div>
             </form>        
         </div>   
-        <div class="form-container">
+        <div class="form-container medium-restrain">
             <div id="form-list">
                 <form class="exam-form">
-                    <div class="student-line-admin-grid-8 specification-for-grid-8">
+                    <div class="student-line-admin-grid-8 specification-for-grid-8" style="overflow-x: scroll;">
                         <div class="form-group">
                             <input type="text" name="evidence_number" id="evidence_number" placeholder="E. č." required>
                         </div>
@@ -85,7 +85,7 @@
                     </div>
                 </form>
             </div>
-            <div class="buttons center-div margin-top-10">
+            <div class="buttons center-div margin-top-10" style="flex-direction: row;">
                 <button class="form-button" type="button" id="add-form">Přidat další formulář</button>
                 <button class="form-button" type="button" id="remove-form">Odebrat poslední formulář</button>
             </div>
@@ -104,6 +104,13 @@
 </main>
 <script src="{{ url_for('static', filename='script_sign_up_admin.js') }}"></script>
 <script>
+    function updateAddress(selectElement) {
+            // Najdeme adresu na základě vybrané školy
+            const selectedSchool = selectElement.options[selectElement.selectedIndex];
+            const addressField = document.getElementById('adress');
+            addressField.value = selectedSchool.getAttribute('data-address');
+        }
+
     $(document).ready(function() {
         // Initialize Select2 on the select element with id="vehicle-list"
         $('#vehicle-list').select2({

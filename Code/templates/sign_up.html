@@ -10,7 +10,7 @@
             <form>
                 <div class="grid-for-3 margin-top-10 box-row small-gap">      
                     <div >
-                        <input class="input-box3" type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
+                        <input class="input-box3" type="text" name="adress" id="adress" value="{{autoskola.adresa_u}}" required> 
                     </div>
                     <div >
                         <input class="input-box3" type="date" name="start-of-training" id="start-of-training" required> 
@@ -26,7 +26,7 @@
             </form>        
         </div>   
         <div class="form-container">
-            <div id="form-list">
+            <div id="form-list" style="overflow-x: scroll; padding: 10px;">
                 <form class="exam-form">
                     <div class="student-line-admin-grid-8 specification-for-grid-8">
                         <div class="form-group">
@@ -70,7 +70,7 @@
                     </div>
                 </form>
             </div>
-            <div class="buttons center-div margin-top-10">
+            <div class="buttons center-div margin-top-10" style="flex-direction: row;">
                 <button class="form-button" type="button" id="add-form">Přidat další formulář</button>
                 <button class="form-button" type="button" id="remove-form">Odebrat poslední formulář</button>
             </div>

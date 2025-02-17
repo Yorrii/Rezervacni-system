@@ -12,7 +12,7 @@
         <div class="column-div">
             <div class="form-container">
                 <form action="/new_driving_school" method="POST">
-                    <div class="grid-for-4">
+                    <div class="grid-for-4" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
                         <div class="center-div">
                             <label for="nazev">Název: </label>
                             <input class="input-box2" type="text" id="nazev" name="nazev" placeholder="Autoškola" required>
@@ -31,7 +31,7 @@
                         </div>
                     </div>
                     <div class="center-div margin-top-10">    
-                        <input type="submit" value="Přidat" class="confirm-btn">
+                        <button type="submit" class="confirm-btn" style="width: 150px; height: 30px;">Přidat</button>
                     </div>
                 </form>
             <div id="new_dr_school-text" class="center-div">
