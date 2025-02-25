@@ -1,4 +1,5 @@
 <!-- HTML by měla být určena pro admina. Má zobrazovat studenty zapsané na neaktivní termín + dát mu možnost je zapsat -->
+<!-- zapis_studenta_adminem.html-->
 {% extends 'template.html' %}
 {% block title %}{{termin.datum.strftime('%d.%m.%Y')}}{% endblock %}
 {% block nav %}
@@ -95,7 +96,7 @@
         <div class="students-container-admin" style="display: none;" id="result">
             <div id="result-content"></div> <!-- Sekce pro data -->
             <div class="center-div">
-                <button type="button" onclick="sendAllStudentIds()" id="sendButton">Odeslat ID</button>
+                <button class="sticky" type="button" onclick="sendAllStudentIds()" id="sendButton">Odeslat ID</button>
             </div>
         </div>
         <div class="div-select" id="search-form">

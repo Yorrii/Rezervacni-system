@@ -1,3 +1,4 @@
+<!--profile_commissar.html-->
 {% extends 'template.html' %}
 {% block title %}Profil{% endblock %}
 {% block nav %}
@@ -12,9 +13,9 @@
 {% block main %}
 <main class="term-main">
     <div class="column-div">
-        <div id="for-form">
+        <div id="for-form" class="specification-for-profil-main-div">
             <form>
-                <div class="grid-for-4 margin-top-10 box-row small-gap">
+                <div class="grid-for-4 margin-top-10 box-row small-gap" style="overflow-x: scroll;">
                     <div>
                         <label class="center-div" for="nazev">Název: </label>
                         <input class="input-box4" type="text" name="name" id="name" placeholder="{{autoskola['nazev']}}" required> 
@@ -31,12 +32,12 @@
                         <label class="center-div" for="datovka">Datovka: </label>
                         <input class="input-box4" type="text" name="datovka" id="datovka" placeholder="{{autoskola['datovka']}}" required> 
                     </div>
-                    {% if admin %}
-                        <div>
-                            <button id="submit-button">Změnit</button>
-                        </div>
-                    {% endif %}
                 </div>
+                {% if admin %}
+                    <div class="fixed-button">
+                        <button id="submit-button">Změnit</button>
+                    </div>
+                {% endif %}
             </form>        
         </div>
         <div class="grid-for-2" style="gap: 2%;"> <!-- Tohle bude div, který v sobě bude držet okénko pro vozidla a studenty -->
@@ -58,15 +59,15 @@
                     <div class="grid-for-3">
                         <div class="center-div margin-top-10">
                             <label for="znacka">Značka:</label>
-                            <input type="text" name="znacka" id="znacka" required>
+                            <input class="input-cars" type="text" name="znacka" id="znacka" required>
                         </div>
                         <div class="center-div margin-top-10">
                             <label for="model">Model:</label>
-                            <input type="text" name="model" id="model" required>
+                            <input class="input-cars" type="text" name="model" id="model" required>
                         </div>
                         <div class="center-div margin-top-10">
                             <label for="spz">RZ:</label>
-                            <input type="text" name="spz" id="spz" required>
+                            <input class="input-cars" type="text" name="spz" id="spz" required>
                         </div>
                     </div>
                     <div class="center-div">

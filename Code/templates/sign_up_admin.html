@@ -1,3 +1,4 @@
+<!--sign_up_admin.html-->
 {% extends 'template.html' %}
 {% block title %}Výuka a výcvik{% endblock %}
 {% block nav %}
@@ -12,38 +13,40 @@
 {% block main %}
 <main class="term-main">
     <div class="column-div">
-        <div id="for-form">
-            <form>
-                <div class="grid-for-4 margin-top-10 box-row small-gap">
-                    <div>
-                        <select class="input-box3" name="driving-school" id="driving-school" onchange="updateAddress(this)">
-                            <option value="" disabled selected hidden>Autoškola</option>
-                            {% for autoskola in autoskoly %}
-                                <option value="{{autoskola.id}}" data-address="{{autoskola.adresa}}">{{autoskola.nazev}}</option>
-                            {% endfor %}
-                        </select>
+        <div class="name-in-progress" id="for-form">
+            
+                <form>
+                    <div class="grid-for-4 margin-top-10 box-row small-gap slider">
+                        <div>
+                            <select class="input-box3" name="driving-school" id="driving-school" onchange="updateAddress(this)">
+                                <option value="" disabled selected hidden>Autoškola</option>
+                                {% for autoskola in autoskoly %}
+                                    <option value="{{autoskola.id}}" data-address="{{autoskola.adresa}}">{{autoskola.nazev}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <input class="input-box3" type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
+                        </div>
+                        <div >
+                            <input class="input-box3" type="date" name="start-of-training" id="start-of-training" required> 
+                        </div>
+                        <div >  
+                            <select class="input-box2" name="vehicle-list" id="vehicle-list"  multiple required>
+                                <option value="">------------------</option>
+                                {% for vozidlo in vozidla %}
+                                    <option value="{{vozidlo.znacka}}_{{vozidlo.model}}_{{vozidlo.spz}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <input class="input-box3" type="text" name="adress" id="adress" placeholder="Adrasa účebny" required> 
-                    </div>
-                    <div >
-                        <input class="input-box3" type="date" name="start-of-training" id="start-of-training" required> 
-                    </div>
-                    <div >  
-                        <select class="input-box2" name="vehicle-list" id="vehicle-list"  multiple required>
-                            <option value="">------------------</option>
-                            {% for vozidlo in vozidla %}
-                                <option value="{{vozidlo.znacka}}_{{vozidlo.model}}_{{vozidlo.spz}}">{{vozidlo.znacka}} {{vozidlo.model}} {{vozidlo.spz}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </form>        
+                </form>
+            
         </div>   
         <div class="form-container medium-restrain">
-            <div id="form-list">
+            <div class="slider" id="form-list">
                 <form class="exam-form">
-                    <div class="student-line-admin-grid-8 specification-for-grid-8" style="overflow-x: scroll;">
+                    <div class="student-line-admin-grid-8 specification-for-grid-8">
                         <div class="form-group">
                             <input type="text" name="evidence_number" id="evidence_number" placeholder="E. č." required>
                         </div>
@@ -115,7 +118,8 @@
         // Initialize Select2 on the select element with id="vehicle-list"
         $('#vehicle-list').select2({
             placeholder: "Vyberte vozidla",  // Volitelný placeholder
-            allowClear: true  // Přidá možnost vymazání výběru
+            allowClear: true,  // Přidá možnost vymazání výběru
+            width: '90%'
         });
     });
 </script>

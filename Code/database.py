@@ -22,7 +22,9 @@ class Zak(db.Model):
     adresa = db.Column('adresa', db.String(255), nullable=True)
     """adresa (str): Adresa bydliště."""
     splnil = db.Column('splnil', db.Date, nullable=True)
-    """splnil (bool): Určuje, zda žák splnil požadavky. Výchozí hodnota je False."""
+    """splnil (str): Určuje, kdy žák splnil požadavky."""
+    zacatek = db.Column('zacatek_vycviku', db.Date, nullable=True)
+    """zacatek (str): Určuje, kdy byl žák zařazen do systému."""
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)
     """id_autoskoly (int): Cizý klíč odkazující na autoškolu do které žák patří."""
 

@@ -852,6 +852,36 @@ input[type='time'] {
     text-align: center;
 }
 
+.cars-box {
+    min-width: 600px;
+    width: 100%;
+}
+
+.search-div-fixed{
+    position: sticky;
+    bottom: 0;
+    background-color: #C6DAF2;
+    left: 30%;
+    right: 70%;
+    width: 40%;
+    align-self: center;
+    justify-content: center;
+}
+
+.input-box5{
+    border-color: #000000;
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 0px;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    height: 24px;
+    font-size: 100%;
+    display: flex;
+    width: 30%;
+    text-align: center;
+}
+
 .input-box4 {
     border-color: #000000;
     border-radius: 4px;
@@ -1002,6 +1032,9 @@ h1.error {
     .menu-toggle:active {
         outline: none; /* Žádný okraj při kliknutí */
         background: rgba(0, 0, 0, 0.1); /* Jemné průhledné pozadí při aktivaci */
+        outline: none;
+        box-shadow: none;
+        background-color: inherit;
     }
 
     .logout {

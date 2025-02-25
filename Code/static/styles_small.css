@@ -46,9 +46,10 @@ label{
 /* css pro navigační bar */
 .nav_bar-desktop {
     position: fixed;
+    z-index: 9999;
     background-color: #FFFFFF;
     width: 100%;
-    height: 10%;
+    height: 60px;
     min-height: 60px;
     margin: 0;
     display: flex;
@@ -106,7 +107,7 @@ label{
     background-color: white;
     border-radius: 5px;
     width: fit-content;
-    top: 10.5%;
+    top: 65px;
     right: 40px;
     flex-direction: column;
     gap: 10px;
@@ -131,21 +132,30 @@ label{
 /* 'Hamburger menu pro mobilní platformy' */
 .menu-toggle {
     position: fixed;
-    top: 15px;
+    top: 1px;
     display: block; /* Zobrazení na menších obrazovkách */
     background: transparent; /* Průhledné pozadí */
     border: none; /* Žádný okraj */
     color: black; /* Barva ikonky */
     font-size: 2.3rem; /* Velikost ikonky */
     cursor: pointer; /* Ukazatel ruky */
-    right: 5vw;
+    right: 15px;
     margin-left: auto;
     padding-bottom: 10px;
     padding-right: 10px;
 }
 
+.menu-toggle:focus,
+.menu-toggle:active {
+    outline: none;
+    box-shadow: none;
+    background-color: inherit;
+}
+
 .navbar-links {
     display: none;
+    font-size: 20px;
+    padding: 5px;
     background-color: white;
     border: gray 2px solid;
     position: absolute;
@@ -197,7 +207,7 @@ label{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 30px;
+    margin-top: 80px;
     height: fit-content;
     width: 90%;
     border-radius: 6px;
@@ -249,6 +259,22 @@ label{
     text-align: center;
 }
 
+.input-box4 {
+    border-color: #000000;
+    border-radius: 4px;
+    border-width: 1px;
+    padding: 0px;
+    margin-left: 4px;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    width: 100%;
+    height: 24px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
 .log_div button {
     background-color: #00A541;
     font-family: 'Work Sans';
@@ -272,7 +298,6 @@ label{
 
 /* css pro kalendář */
 .calendar_main {
-    margin-top: 85px;
     display: flex;
     justify-content: center;    
     flex-wrap: wrap;
@@ -290,7 +315,7 @@ label{
     background-color: #fff;
     padding: 20px;
     margin: 2%;
-    margin-top: 3%;
+    margin-top: 80px;
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -373,6 +398,7 @@ label{
 
 /* css pro termíny- autoškola(uživatel) */
 .term-main {
+    font-size: 12px;
     margin-top: 85px;
     display: flex;
     justify-content: center; /* Horizontální zarovnání na střed */
@@ -393,7 +419,7 @@ label{
     grid-template-columns: repeat(3, 1fr);
     margin-top: 15px;
     border-radius: 4px;
-    width: 100%;
+    width: 90%;
     align-items: center;
     background-color: #C6DAF2;
     padding: 7px;
@@ -403,9 +429,18 @@ label{
     margin: 0%;
 }
 
+.cars-box{
+    width: 100%;
+}
+
+.specification-for-grid-4{
+    grid-template-columns: 10ch 10ch 10ch 10ch;
+}
+
 .students-container {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    overflow-x: scroll;
     gap: 10px;
     padding: 7px;
     align-items: center;
@@ -418,6 +453,7 @@ label{
 .students-container_button {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    overflow-x: scroll;
     gap: 4px;
     align-items: center;
     padding: 7px;
@@ -482,24 +518,24 @@ label{
 }
 
 .input-box3 {
+    width: 100%;
     border-radius: 4px;
     font-family: 'Work Sans';
     padding: 0px;
-    margin-left: 4px;
     background-color: #FFFFFF;
-    height: 30px;
-    font-size: 100%;
-    display: flex;
+    height: 24px;
     align-items: center;
     text-align: center;
 }
 
 .students-container-admin {
     display: inline-block;
+    width: 90%;
     padding: 7px;
     margin-top: 15px;
     border-radius: 4px;
     background-color: #C6DAF2;
+    overflow-x: scroll;
 }
 
 .grid-for-2-select {
@@ -518,17 +554,17 @@ label{
 
 .grid-for-4 {
     display: grid;
-    grid-template-columns: 1fr 1fr 0.5fr 1.5fr;
+    overflow-x: scroll;
+    grid-template-columns:15ch 25ch 15ch 20ch;
     gap: 10px;
     align-items: center;
     margin-top: 1%;
-    justify-content: center;
 }
 
 .grid-for-6 {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 3px;
+    grid-template-columns: 3ch repeat(3, 10ch) 8ch 25ch;
+    gap: 5px;
     margin: 5px;
     align-items: center;
     font-family: 'Work Sans';
@@ -592,9 +628,9 @@ label{
 
 .grid-for-9 {
     display: grid;
-    grid-template-columns: 0.5fr 0.8fr 0.8fr 0.8fr 0.4fr repeat(4, 1fr);
+    grid-template-columns: 3ch repeat(3, 10ch) 2ch 15ch 12ch 15ch 18ch;
     margin: 5px;
-    gap: 1px;
+    gap: 5px;
     align-items: center;
     font-family: 'Work Sans';
 }
@@ -615,11 +651,10 @@ label{
 
 .student-line-admin-grid-9 {
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(9, 15ch);
     gap: 10px;
     align-items: center;
     padding: 0px;
-    margin-top: 10px;
     width: 100%;
     font-family: 'Work Sans';
 }
@@ -629,17 +664,15 @@ label{
 }
 
 .nazev {
+    position: sticky;
+    left: 5px;
     font-size: 18px;
     text-align: center;
     font-weight: bold;
 }
 
 .document-button {
-    margin-left: 90%;
-    margin-right: 2%;
-    padding: 3px;
-    height: 1.5em;
-    border-radius: 2px;
+    display: none;
 }
 
 .no-fill {
@@ -650,18 +683,19 @@ label{
 .form-container {
     display: flex;
     flex-direction: column;
-    width: fit-content;
-    min-width: 823px;
+    width: 100%;
     background-color: #C6DAF2;
     font-family: 'Work Sans';
-    margin-top: 10px;
+    margin-top: 70px;
+    padding: 3px;
     border-radius: 4px;
 }
 
 .specification-for-grid-8 {
     display: grid;
-    grid-template-columns: 6% 12% 12% 15% 15% 15% 5% 20%;
+    grid-template-columns: repeat(6, 20ch) 6ch 25ch;
     gap: 3px;
+    margin-bottom: 10px;
 }
 
 .specification-for-grid-8 > *{
@@ -699,10 +733,15 @@ label{
 
 .grid-for-3 {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 15ch);
+    overflow-x: auto;
     align-items: center;
     margin-top: 1%;
     justify-content: center;
+}
+
+.input-cars{
+    width: 100%;
 }
 
 .vycentrovat-text{
@@ -713,6 +752,14 @@ label{
     text-align: center;
 }
 
+.name-in-progress{
+    overflow-x: scroll;
+    width: 100%;
+    background-color: #C6DAF2;
+    padding: 3px;
+    border-radius: 4px;
+}
+
 .smaller-box{
     height: 40vh;
 }
@@ -721,22 +768,24 @@ label{
     gap: 10px;
 }
 
-.margin-top-10 {
-    margin-top: 10px;
-}
-
 .margin-bot-10 {
     margin-bottom: 10px;
 }
 
-.box-row {
+/*.box-row {
     display: flex;
     flex-direction: row;
     padding: 5px;
     background-color: #C6DAF2;
-    margin-top: 30px;
     border-radius: 4px;
     width: 100%;
+}*/
+
+.specification-for-profil-main-div{
+    width: 100%;
+    overflow-x: hidden;
+    border-radius: 5px;
+    background-color: #C6DAF2;
 }
 
 .grid-for-7 {
@@ -762,6 +811,20 @@ label{
     box-sizing: border-box;
 }
 
+.fixed-button {
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Nastavení maximální výšky pro vybrané položky */
+.select2-container .select2-selection {
+    height: 24px;
+    overflow-y: scroll;
+    width: 100% !important;
+}
+
+
 .form-button {
     margin-right: 5px;
     margin-left: 5px;
@@ -780,7 +843,7 @@ label{
     flex-direction: column;
     background-color: #C6DAF2;
     font-family: 'Work Sans';
-    margin-top: 30px;
+    margin-top: 70px;
     border-radius: 4px;
 }
 
@@ -809,14 +872,15 @@ label{
     background-color: #C6DAF2;
     border-radius: 4px;
     max-height: 600px;
+    margin-top: 20px;
     overflow-y: scroll;
 }
 
 .log {
     display: grid;
     font-size: 12px;
-    grid-template-columns: 10% 15% 10% auto;
-    gap: 5px;
+    grid-template-columns: 20% 20% 20% auto;
+    gap: 3px;
     width: 100%; /* Nastaví pevnou šířku pro každý log */
     padding: 2px;
     box-sizing: border-box;
@@ -825,13 +889,41 @@ label{
     border-bottom: 1px solid #000;
 }
 
-.medium-restrain {
-    min-width: none;
-}
-
 .medium-calendar-button {
     width: 40px;
     height: 30px;
     background-color: #425CC7;
     font-size: 16px;
+}
+
+.sticky{
+    position: sticky;
+    left: 115px;
+}
+
+.slider{
+    overflow: scroll;
+}
+
+.specification-for-grid-4{
+    grid-template-columns: 12ch 12ch 12ch 12ch;
+}
+
+.sign_up-box{
+    width: 100%;
+    background: #C6DAF2;
+    padding: 3px;
+    border-radius: 4px;
+}
+
+.margin-top-10{
+    margin-top: 10px;
+}
+
+select[name="driving-school"]{
+    width: 60%;
+}
+
+button[name="potvrdit"]{
+    width: fit-content;
 }

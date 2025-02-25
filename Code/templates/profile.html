@@ -1,3 +1,4 @@
+<!--profile.html-->
 {% extends 'template.html' %}
 {% block title %}Profil{% endblock %}
 {% block nav %}
@@ -10,7 +11,7 @@
             <h2 class="school-name">{{ autoskola.nazev }}</h2>
         </div>
         <div class="grid-for-2" style="gap: 2%; height: fit-content; align-items: start;"> <!-- Tohle bude div, který v sobě bude držet okénko pro vozidla a studenty -->
-            <div style="min-width: 600px; width: 100%;"> <!-- Vozidla -->
+            <div class="cars-box"> <!-- Vozidla -->
                 <div style="overflow-y: scroll;">
                     <div class="grid-for-3 vycentrovat-text">
                         <div style="font-weight: bold;">Značka</div>
@@ -29,15 +30,15 @@
                     <div class="grid-for-3">
                         <div class="center-div margin-top-10">
                             <label for="znacka">Značka:</label>
-                            <input type="text" name="znacka" id="znacka" required>
+                            <input class="input-cars" type="text" name="znacka" id="znacka" required>
                         </div>
                         <div class="center-div margin-top-10">
                             <label for="model">Model:</label>
-                            <input type="text" name="model" id="model" required>
+                            <input class="input-cars" type="text" name="model" id="model" required>
                         </div>
                         <div class="center-div margin-top-10">
                             <label for="spz">RZ:</label>
-                            <input type="text" name="spz" id="spz" required>
+                            <input class="input-cars" type="text" name="spz" id="spz" required>
                         </div>
                     </div>
                     <div class="center-div">
@@ -46,22 +47,47 @@
                 </form>
             </div>
             <div  class="smaller-box" style="width: 100%; overflow-y: scroll;"> <!-- Žáci -->
-                <div class="grid-for-4 vycentrovat-text">
+                <div class="grid-for-5 vycentrovat-text specification-for-grid-5">
+                    <div style="font-weight: bold;">Zahájení výcviku</div>
                     <div style="font-weight: bold;">Evidenční číslo</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
                     <div style="font-weight: bold;">Termín</div>
                 </div>
                 {% for zak in studenti %}
-                    <div class="grid-for-4 vycentrovat-text">
-                        <div>{{zak['ev_cislo']}}</div>
-                        <div>{{zak['jmeno']}}</div>
-                        <div>{{zak['prijmeni']}}</div>
+                    <div class="grid-for-5 vycentrovat-text specification-for-grid-5 student-row-search">
+                        <div>{{zak['zacatek']}}</div>
+                        <div class="searchable">{{zak['ev_cislo']}}</div>
+                        <div class="searchable">{{zak['jmeno']}}</div>
+                        <div class="searchable">{{zak['prijmeni']}}</div>
                         <div>{{zak['termin']}}</div>
                     </div>
                 {% endfor %}
+
+                <div class="search-div-fixed">
+                    <input class="input-box5" type="text" id="search" placeholder="Hledat podle E.Č., jména nebo příjmení..." onkeyup="filterTable()" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                </div>
             </div>
         </div>
     </div>        
 </main>
+<script>
+    function filterTable() {
+        let input = document.getElementById("search").value.toLowerCase();
+        let rows = document.querySelectorAll(".student-row-search");
+
+        rows.forEach(row => {
+            let searchableFields = row.querySelectorAll(".searchable");
+            let match = false;
+
+            searchableFields.forEach(field => {
+                if (field.innerText.toLowerCase().includes(input)) {
+                    match = true;
+                }
+            });
+
+            row.style.display = match ? "" : "none";
+        });
+    }
+</script>
 {% endblock %}

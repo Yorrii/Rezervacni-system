@@ -49,7 +49,9 @@ def home():
         - redirect(url_for('calendar')): Přesměrování na kalendář komisaře (POST request, správné přihlášení).
         - redirect(url_for('calendar')): Přesměrování na kalendář autoškoly (POST request, správné přihlášení).
         - flash("message.html", message=error): Chybová zpráva při špatném přihlášení.
-    """  
+    """ 
+    if current_user.is_authenticated:
+        return redirect(url_for('calendar'))
     if request.method == 'POST': # při POST requestu
         email = request.form['login_email'] # načte si email
         heslo = request.form['login_heslo'] # načte si string z formu pro heslo
@@ -597,12 +599,13 @@ def profile():
             id = current_user.id
             skola = Autoskola.query.filter_by(id=id).first()
             seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
-            studenti = Zak.query.filter_by(id_autoskoly= current_user.id).all()
+            studenti = Zak.query.filter_by(id_autoskoly= current_user.id).order_by(Zak.zacatek).all()
             seznam_studentu = []
 
             for student in studenti:
                 seznam_studentu.append(
                     {
+                        'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else None,
                         'ev_cislo': student.ev_cislo,
                         'jmeno': student.jmeno,
                         'prijmeni': student.prijmeni,
@@ -1962,7 +1965,7 @@ def docx_for_signup():
             row_cells[7].text = student['license_category']
 
             # Tady se vytvoří žák a uloží se do db
-            zak = Zak(ev_cislo=student['evidence_number'], jmeno=student['first_name'], prijmeni=student['last_name'], narozeni=student['birth_date'], adresa=student['adress'], id_autoskoly= autoskola.id)
+            zak = Zak(ev_cislo=student['evidence_number'], jmeno=student['first_name'], prijmeni=student['last_name'], narozeni=student['birth_date'], adresa=student['adress'], id_autoskoly= autoskola.id, zacatek=datum)
             zaznam = Zaznam(druh='přidání', kdy=datetime.now(), zprava=f'Autoškola zapsala studentku/studenta {student['first_name']} {student['last_name']} {student['evidence_number']} do výuky a výcviku.', id_autoskoly=autoskola.id)
             db.session.add(zaznam)
             db.session.add(zak)

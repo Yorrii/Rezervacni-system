@@ -137,13 +137,14 @@ label{
     display: none;
     background-color: white;
     position: absolute;
-    width: 30%;
+    width: 50%;
     top: 10.5%;
     right: 10px;
     flex-direction: column;
     border-radius: 4px;
     align-items: center;
-    gap: 10px;
+    font-size: 28px;
+    gap: 20px;
 }
 
 .logout {
@@ -159,6 +160,9 @@ label{
 .menu-toggle:active {
     outline: none; /* Žádný okraj při kliknutí */
     background: rgba(0, 0, 0, 0.1); /* Jemné průhledné pozadí při aktivaci */
+    outline: none;
+    box-shadow: none;
+    background-color: inherit;
 }
 
 /* css pro login */
@@ -635,8 +639,7 @@ label{
 .form-container {
     display: flex;
     flex-direction: column;
-    width: fit-content;
-    min-width: 823px;
+    width: 100%;
     background-color: #C6DAF2;
     font-family: 'Work Sans';
     margin-top: 10px;
@@ -819,4 +822,29 @@ label{
     height: 30px;
     background-color: #425CC7;
     font-size: 16px;
+}
+
+.search-div-fixed{
+    position: sticky;
+    bottom: 0;
+    background-color: #C6DAF2;
+    left: 30%;
+    right: 70%;
+    width: 40%;
+    align-self: center;
+    justify-content: center;
+}
+
+.input-box5{
+    border-color: #000000;
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 0px;
+    background-color: #FFFFFF;
+    font-family: 'Work Sans';
+    height: 24px;
+    font-size: 100%;
+    display: flex;
+    width: 30%;
+    text-align: center;
 }
