@@ -9,11 +9,6 @@
     - zajistit licence
 
 ### BUGI
-    SD - Autoškola může zapsat na termín více, než je volný počet míst(i když je termín plný, může přidat žáky po jednom)
-    - Komisař může na termín povolit více, než je počet volných míst.
-    - Pokud se při VaV nebo přihlášení na zkoušku nechá jeden řádek prázdný, tak je problém.
-    - V DB může vzniknout duplikát jenom s jiným id. Kontrolovat jestli už žák s takovým E.č. je v autoškole pokud ano, nenechat zapsat.
-    - pokud komisař odepíše studenta z termínu, vytvoří se upozornění se špatným formátem data 
 
 ### Uživatel
     - logování
@@ -23,7 +18,6 @@
     - (api metodu, která vytvoří novou školu), udělá pro ní dočasné heslo, pošle ho na vybraný email spolu s manuálem
     - css
 ### Dodělat
-    - udělat ukládání souborů pro výuku a výcvik tak aby se nepřepisovali soubory
     - py -m pdoc --output-dir Code/templates/dokumentace Code/app Code/app_logic Code/database
     - pokud zadám termín bez místa, tak se i tak propíše do db
 
@@ -35,4 +29,12 @@
     - upravit JS script_calendar, přidal jsem omezení na počet žáků při vytváření termínu
     - pro nějaké html stránky byla přidána classa, primárně pro grid 8
     
+### 11.03.2025
+    - přenastavit dobu aktivace termínů na tři týdny |DONE| 
+    - do 'R' termínu přidat možnost zapsat žáka
+    - Možnost smazat žáka v den termínu(vedle úspěch/neúspech přidat tlačítko, které ho smaže)
+    - přidat možnost do VaV (opakovaný výcvik, opakovaná výuka) a u těhle možností nevytvářet nového žáka
+    - Při vytváření nové autoškoly pohrát si s adresou. Myslím si, že by bylo dobré, kdybych udělal nějaký oddělovač(', ').
+    - Při zapisování žáka na termín, udělat kolonku pro první termín(nepovinná).
+    - Sloupeček s prvním nesplněným termínem
     

@@ -19,23 +19,35 @@
                 <div style="padding-right: 2%;">
                     <button class="document-button" onclick="makeDocument('{{ nazev }}', '{{termin.datum}}')">Dokument</button>
                 </div>
+                <div class="grid-for-8">
+                    <div style="font-weight: bold;">E.Č.</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Začátek V.</div>
+                    <div style="font-weight: bold;">Typ zkoušky</div>
+                    <div style="font-weight: bold;">Druh zkoušky</div>
+                    <div style="font-weight: bold;">Začátek/Stav</div>         
+                </div>
                 {% for zak in students %}
                     {% if zak['potvrzeni'] == 'Y' %}
-                        <div class="grid-for-7" id="zak_{{ zak['id'] }}">
+                        <div class="grid-for-8" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                            <div>{{ zak['start'].strftime('%d.%m.%Y') if zak['start'] else '' }}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
-                            <div>Zapsaný</div>         
+                            <div>{{ zak['cas'] }}</div>         
                         </div>
                     {% else %}
-                        <div class="grid-for-7" id="zak_{{ zak['id'] }}">                       
+                        <div class="grid-for-8" id="zak_{{ zak['id'] }}">                       
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                            <div>{{ zak['start'].strftime('%d.%m.%Y') if zak['start'] else '' }}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>

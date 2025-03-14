@@ -4,6 +4,7 @@ from flask_mail import Mail, Message #podpůrná knihovna na posílání emailů
 from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo, Upozorneni, Superadmin #ORM modely na komunikaci s databází
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature #knihovna na generování tokenů. Kontrola, jestli není token 'prošlí' a je autentický 'neupravený'.
 from sqlalchemy import or_, desc #metoda na možnost or v quary
+from sqlalchemy.sql import func
 from docx import Document #Objekt, který generuje word dokument z kódu
 import app_logic #soubor s metodamy
 from config_copy import Config #nastavení pro posílání emailů
@@ -16,7 +17,7 @@ app = Flask(__name__) # Vytvoření instance pro web
 app.config['SECRET_KEY'] = Config.SECRET_KEY
 
 # Nastavení aplikace pro spoj s databází
-app.config['SQLALCHEMY_DATABASE_URI'] = Config.DB_MODEL_PATH # ://uživatel:heslo@kde_db_běží:port/název_db
+app.config['SQLALCHEMY_DATABASE_URI'] = Config.DB_MODEL_PATH
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60) # nastavuje jak dlouho může být uživatel neaktivní před tím než se ukončí session
@@ -453,6 +454,7 @@ def term(id):
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
                                                             'potvrzeni': item.potvrzeni,
+                                                            'start': item.zak.zacatek if item.zak.zacatek else None,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek
                                                         }]
@@ -466,6 +468,7 @@ def term(id):
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
                                                             'potvrzeni': item.potvrzeni,
+                                                            'start': item.zak.zacatek if item.zak.zacatek else None,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek
                                                         })
@@ -582,7 +585,25 @@ def term(id):
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    #TODO dokumentace
+    """
+    Zpracovává zobrazení profilu aktuálně přihlášeného uživatele.
+
+    Endpoint se přizpůsobuje podle role uživatele:
+    - **Autoškola**: Zobrazí detailní informace o autoškole, seznam vozidel a žáků.
+    - **Komisař/Admin**: Umožňuje výběr autoškoly k zobrazení profilu.
+
+    Vrací:
+        - `profile.html`: Pokud je uživatel autoškola, zobrazí informace o ní.
+        - `profile_admin.html`: Pokud je uživatel komisař/admin, zobrazí přehled autoškol.
+        - Přesměrování: Pokud je odeslán POST request k výběru autoškoly.
+
+    Vyvolává:
+        - `flash()`: Chybová zpráva při nesprávném výběru autoškoly.
+    
+    Metody:
+        - GET: Zobrazí stránku s informacemi o uživateli.
+        - POST: Zpracuje výběr autoškoly administrátorem.
+    """
     if current_user.isCommissar:
         if request.method == 'GET':
             autoskoly = Autoskola.query.all()
@@ -599,24 +620,32 @@ def profile():
             id = current_user.id
             skola = Autoskola.query.filter_by(id=id).first()
             seznam_vozidel =  Vozidlo.query.filter_by(id_autoskoly= current_user.id).all()
-            studenti = Zak.query.filter_by(id_autoskoly= current_user.id).order_by(Zak.zacatek).all()
+            studenti = (
+                db.session.query(
+                    Zak,
+                    func.coalesce(Termin.datum, None).label("datum")  # Nahrazení NULL hodnoty
+                )
+                .outerjoin(Zapsany_zak, (Zak.id == Zapsany_zak.id_zaka) & (Zapsany_zak.zaver == 'W'))
+                .outerjoin(Termin, Termin.id == Zapsany_zak.id_terminu)
+                .filter(Zak.id_autoskoly == current_user.id)
+                .all()
+            )
             seznam_studentu = []
 
-            for student in studenti:
-                seznam_studentu.append(
-                    {
-                        'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else None,
-                        'ev_cislo': student.ev_cislo,
-                        'jmeno': student.jmeno,
-                        'prijmeni': student.prijmeni,
-                        'termin': 'splnil' if student.splnil else (
-                            'nepřihlášený' if not Zapsany_zak.query.filter_by(id_zaka=student.id).first() else
-                            Zapsany_zak.query.filter_by(id_zaka=student.id).first().termin.datum.strftime('%d.%m.%Y')
-                        )
-                    }
-                )
+            for student, datum in studenti:
+                seznam_studentu.append({
+                    'id': student.id,
+                    'ev_cislo': student.ev_cislo,
+                    'jmeno': student.jmeno,
+                    'prijmeni': student.prijmeni,
+                    'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else None,
+                    'termin': (
+                        "splnil" if student.splnil  # Pokud student splnil, zobrazí "splnil"
+                        else datum.strftime('%d.%m.%Y') if datum  # Pokud existuje termín, zobrazí datum
+                        else "nepřihlášený"  # Jinak zobrazí "nepřihlášený"
+                    )
+                })
 
-            print(seznam_studentu)
             return render_template('profile.html', vozidla= seznam_vozidel, autoskola=skola, studenti=seznam_studentu)
         if request.method == 'POST':
             pass
@@ -624,13 +653,40 @@ def profile():
 @app.route('/profile/<id>')
 @login_required
 def profile_admin(id):
-    """#TODO"""
+    """
+    Zpracovává zobrazení profilu autoškoly pro administrátory a komisaře.
+
+    Endpoint umožňuje zobrazit podrobnosti o konkrétní autoškole, jejích vozidlech a žácích.
+
+    Args:
+        id (str): Identifikátor autoškoly.
+
+    Vrací:
+        - `profile_commissar.html`: Stránku s informacemi o autoškole, jejích vozidlech a žácích.
+        - `404`: Pokud uživatel nemá oprávnění nebo autoškola neexistuje.
+
+    Vyvolává:
+        - `404`: Pokud uživatel není administrátor nebo komisař.
+        - `Exception`: Pokud nastane chyba při získávání dat.
+
+    Metody:
+        - GET: Načte a zobrazí detaily autoškoly.
+    """
     if not current_user.isCommissar:
         abort(404)
     try:
         autoskola = Autoskola.query.filter_by(id=id).first()
         vozidla = Vozidlo.query.filter_by(id_autoskoly=id).all()
-        zaci = Zak.query.filter_by(id_autoskoly=id).all()
+        studenti = (
+                db.session.query(
+                    Zak,
+                    func.coalesce(Termin.datum, None).label("datum")  # Nahrazení NULL hodnoty
+                )
+                .outerjoin(Zapsany_zak, (Zak.id == Zapsany_zak.id_zaka) & (Zapsany_zak.zaver == 'W'))
+                .outerjoin(Termin, Termin.id == Zapsany_zak.id_terminu)
+                .filter(Zak.id_autoskoly == id)
+                .all()
+            )
 
         autoskola_dic = {
             'id': autoskola.id,
@@ -650,12 +706,18 @@ def profile_admin(id):
                 'model': vozidlo.model,
                 'rz': vozidlo.spz
             })
-        for zak in zaci:
+        for student, datum in studenti:
             zaci_lst.append({
-                'id': zak.id,
-                'ev': zak.ev_cislo,
-                'jmeno': zak.jmeno,
-                'prijmeni': zak.prijmeni
+                'id': student.id,
+                    'ev': student.ev_cislo,
+                    'jmeno': student.jmeno,
+                    'prijmeni': student.prijmeni,
+                    'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else None,
+                    'termin': (
+                        "splnil" if student.splnil  # Pokud student splnil, zobrazí "splnil"
+                        else datum.strftime('%d.%m.%Y') if datum  # Pokud existuje termín, zobrazí datum
+                        else "nepřihlášený"  # Jinak zobrazí "nepřihlášený"
+                    )
             })
 
         return render_template('profile_commissar.html', superadmin=current_user.isSuperAdmin, admin=current_user.isAdmin, autoskola=autoskola_dic, vozidla=vozidla_lst, zaci=zaci_lst)
@@ -666,7 +728,7 @@ def profile_admin(id):
              string += " není autoškola,"
         elif not vozidla:
             string += " nejsou vozidla,"
-        elif not zaci:
+        elif not studenti:
             string += " nejsou zaci,"
         else:
             string += " Něco je špatně jinde"
@@ -843,19 +905,6 @@ def teaching_training():
         return render_template('sign_up.html', vozidla=vozidla, autoskola=autoskola)
     
     abort(404)
-
-@app.route('/admin', methods=['GET', 'POST'])
-@login_required
-def admin():
-    """
-    Endpoint pouze pro testování, v plné verzi odebrat
-    """
-    if not current_user.isAdmin:
-        abort(404)
-    if request.method == 'GET':
-        return render_template('admin.html')
-    if request.method == 'POST':
-        pass
 
 @app.route('/logs', methods= ['GET', 'POST'])
 @login_required
@@ -1228,6 +1277,9 @@ def novy_termin():
         flash(str): při úspěšném přidání se vytvoří zpráva, která se zobrazí při dalším render_templatu
         redirect(url_for(str)): po přijmutí a vytvoření autoškoly vrátí uživatele zpátky na /admin
     """
+    if not (current_user.isCommissar or current_user.isAdmin):
+       abort(404)
+
     datum = request.form['datum']
     max_ridicu = request.form['max_ridicu']
 
@@ -1256,10 +1308,10 @@ def dostan_studenta():
         JSON 200: pokud vše proběhne v pořádku
         JSON 500: internal error
     """
+    if not (current_user.isCommissar or current_user.isAdmin):
+       abort(404)
     try:
         # Získání dat z požadavku
-        if not current_user.isCommissar or not current_user.isAdmin:
-            abort(404)
         data = request.get_json()
         autoskola_id = data.get('autoskolaId')
         evidencni_cislo = data.get('evidencniCislo')
@@ -1292,6 +1344,7 @@ def dostan_studenta():
 @login_required
 @app.route('/api/get_student_as', methods=['POST'])
 def dostan_studenta_as():
+    #TODO dokumentace
     try:
         # Získání dat z požadavku
         if current_user.isCommissar:
@@ -1305,6 +1358,9 @@ def dostan_studenta_as():
             return jsonify({"error": "Chybí id autoškoly nebo evidenční číslo"}), 400
         
         zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id).order_by(desc(Zak.id)).first()
+
+        if zak.splnil:
+            return jsonify({"error": "Žák je již splnil zkoušku."}), 400
 
         if zak:
             zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, zaver='W').first()
@@ -1350,6 +1406,8 @@ def vytvor_termin():
             - Uloží nový záznam pomocí `db.session.commit()`.
             - Při úspěšném vytvoření přesměruje uživatele na endpoint `calendar`.
     """
+    if not (current_user.isCommissar or current_user.isAdmin):
+       abort(404)
     data = request.get_json()
 
     try:
@@ -1413,7 +1471,7 @@ def get_calendar_dates():
             # Dotaz pro ukončené termíny (ac_flag = 'R') s žáky z konkrétní autoškoly
             ukoncene_terminy = db.session.query(Termin)\
                 .join(Zapsany_zak)\
-                .filter(Termin.ac_flag == 'R', Zapsany_zak.id_autoskoly == current_user.id)\
+                .filter(Termin.ac_flag == 'R', Zapsany_zak.id_autoskoly == current_user.id, Zapsany_zak.potvrzeni == 'Y')\
                 .all()
 
             # Spojíme aktivní i ukončené termíny dohromady
@@ -1468,6 +1526,8 @@ def add_drivers():
                     - Uloží oba záznamy do databáze.
             - Vrátí zprávu o úspěchu (`200`), pokud byl zápis dokončen.
     """
+    if not (current_user.isCommissar or current_user.isAdmin):
+       abort(404)
     try:
         # Získání dat z požadavku
         data = request.get_json()
@@ -1993,6 +2053,57 @@ def docx_for_signup():
     except Exception as e:
         # Pokud nastane chyba, odeslat chybovou zprávu
         return jsonify({"error": str(e)}), 400
+
+@login_required
+@app.route('/api/make_sheet', methods=['GET'])
+def make_sheet():
+    """
+    Vytvoří a vrátí Word dokument se seznamem zapsaných žáků na daný termín.
+
+    Funkce načte ID termínu ze session, dohledá odpovídající termín v databázi
+    a získá seznam přihlášených žáků. Následně vygeneruje Word dokument, uloží
+    ho do paměti a odešle jako přílohu ke stažení.
+
+    Návratová hodnota:
+        - Pokud je ID termínu neplatné nebo termín neexistuje, vrátí HTTP 400.
+        - Pokud nejsou k dispozici žádní zapsaní žáci, může vrátit prázdný dokument.
+        - Jinak vrátí vygenerovaný Word dokument jako přílohu ke stažení.
+    """
+
+    # Načtení ID termínu ze session
+    term_id = session.get('term_id')
+    if not term_id:
+        abort(400, "ID termínu není k dispozici.")
+
+    # Načtení termínu z databáze
+    term = Termin.query.filter_by(id=term_id).first()
+    if not term:
+        abort(400, "Termín s tímto ID neexistuje.")
+
+    # Načtení zapsaných žáků pro daný termín
+    zaci = Zapsany_zak.query \
+                      .join(Zak) \
+                      .join(Termin) \
+                      .filter(Zapsany_zak.id_terminu == term_id) \
+                      .all()
+
+    if not zaci:
+        abort(400, "Pro tento termín nejsou zapsaní žádní žáci.")
+
+    # Vytvoření dokumentu
+    dokument = app_logic.create_student_document(term.datum, zaci)
+    if not dokument:
+        abort(500, "Nepodařilo se vygenerovat dokument.")
+
+    # Uložení dokumentu do paměti a odeslání ke stažení
+    file_stream = BytesIO()
+    dokument.save(file_stream)
+    file_stream.seek(0)
+
+    return send_file(file_stream, 
+                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                     as_attachment=True, 
+                     download_name=f'{term.datum}_seznam_studentu.docx')
 
 @login_required
 @app.route('/api/generate_doc', methods=['POST'])

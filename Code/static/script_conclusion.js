@@ -60,6 +60,37 @@ function rejectStudent(id) {
     });
 }
 
+async function createStudentDocument(datum) {
+    const date= datum;
+
+    try {
+        const response = await fetch('/api/make_sheet', {
+            method: 'GET', // nebo 'POST' pokud je potřeba
+            headers: {
+                'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Chyba při stahování souboru: ${response.statusText}`);
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${date}_students.docx`; // Název staženého souboru
+        document.body.appendChild(a);
+        a.click();
+        
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    } catch (error) {
+        console.error('Chyba při stahování dokumentu:', error);
+    }
+}
+
 async function makeDocument(nazev, datum) {
     const name = nazev;
     const date = datum;

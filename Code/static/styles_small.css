@@ -440,7 +440,7 @@ label{
 .students-container {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    overflow-x: scroll;
+    overflow-x: auto;
     gap: 10px;
     padding: 7px;
     align-items: center;
@@ -535,7 +535,7 @@ label{
     margin-top: 15px;
     border-radius: 4px;
     background-color: #C6DAF2;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .grid-for-2-select {
@@ -554,7 +554,7 @@ label{
 
 .grid-for-4 {
     display: grid;
-    overflow-x: scroll;
+    overflow-x: auto;
     grid-template-columns:15ch 25ch 15ch 20ch;
     gap: 10px;
     align-items: center;
@@ -753,7 +753,7 @@ label{
 }
 
 .name-in-progress{
-    overflow-x: scroll;
+    overflow-x: auto;
     width: 100%;
     background-color: #C6DAF2;
     padding: 3px;

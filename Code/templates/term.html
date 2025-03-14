@@ -15,6 +15,15 @@
         <input type="hidden" id="max-forms" value="{{ volna_mista }}">
         {% if zaci_Y %}
             <div class="students-container" id="students_container">
+                <div class="student-line">
+                    <div style="font-weight: bold;">E.Č.</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Typ zkoušky</div>
+                    <div style="font-weight: bold;">Druh zkoušky</div>
+                    <div style="font-weight: bold;">Začátek</div>          
+                </div>
                 {% for zak in zaci_Y %}
                     <div class="student-line" id="zak_{{ zak['id'] }}">
                         <div>{{ zak['ev_cislo']}}</div>
@@ -30,6 +39,15 @@
         {% endif %}
         {% if zaci_W %}
             <div class="students-container_button" id="students_container">
+                <div class="student-line">
+                    <div style="font-weight: bold;">E.Č.</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Typ zkoušky</div>
+                    <div style="font-weight: bold;">Druh zkoušky</div>
+                    <div style="font-weight: bold;">Smazat</div>          
+                </div>
                 {% for zak in zaci_W %}
                     <div class="student-line" id="zak_{{ zak['id'] }}">
                         <div>{{ zak['ev_cislo']}}</div>
@@ -45,6 +63,14 @@
         {% endif %}
         {% if volna_mista > 0 %}
             <div class="students-container-admin" style="display: none;" id="result">
+                <div class="grid-for-6">
+                    <div style="font-weight: bold;">E.Č.</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Typ zkoušky</div>
+                    <div style="font-weight: bold;">Druh zkoušky</div>          
+                </div>
                 <div id="result-content"></div> <!-- Sekce pro data -->
                 <div class="center-div">
                     <button type="button" onclick="sendAllStudentIds()" id="sendButton">Odeslat ID</button>

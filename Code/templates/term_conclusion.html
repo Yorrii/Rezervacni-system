@@ -47,8 +47,12 @@
                             {% endif %}
                         </div>
                 {% endfor %}
-            </div>
+                </div>
         {% endfor %}
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="make_list_button" onclick="createStudentDocument('{{termin.datum}}')">Vytvořit seznam</button>
+            </div>
         </div>
     </main>
     <script src="{{ url_for('static', filename='../static/script_conclusion.js') }}"></script>

@@ -23,6 +23,17 @@
                 <div style="padding-right: 2%;">
                     <button class="document-button" onclick="makeDocument('{{ nazev }}', '{{termin.datum}}')">Dokument</button>
                 </div>
+                <div class="student-line-admin-grid-9">
+                    <div style="font-weight: bold;">E.Č.</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Začátek V.</div>
+                    <div style="font-weight: bold;">Typ zkoušky</div>
+                    <div style="font-weight: bold;">Druh zkoušky</div>
+                    <div style="font-weight: bold;">Začátek/Stav</div>
+                    <div></div>         
+                </div>
                 {% for zak in students %}
                     {% if zak['potvrzeni'] == 'Y' %}
                         <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">

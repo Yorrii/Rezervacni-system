@@ -4,6 +4,7 @@ from docx.shared import Pt, Cm
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from flask_login import UserMixin
 from datetime import datetime
 
@@ -37,6 +38,67 @@ class User(UserMixin):
             self.isSuperAdmin = False
             self.isAdmin = False
             self.isCommissar = False
+
+def create_student_document(datum, seznam_studentu):
+    """
+    Vytvoří profesionálně vypadající Word dokument se seznamem žáků pro daný termín.
+
+    Parametry:
+        datum (str): Datum termínu ve formátu 'DD.MM.YYYY'.
+        seznam_studentu (list): Seznam objektů žáků, kteří jsou přihlášeni k termínu.
+
+    Návratová hodnota:
+        Document: Objekt Word dokumentu s tabulkou obsahující informace o žácích.
+    """
+    doc = Document()
+
+    # Přidání nadpisu
+    title = doc.add_paragraph()
+    title_run = title.add_run(f"Seznam žáků pro termín {datum}")
+    title_run.bold = True
+    title_run.font.size = Pt(16)
+    title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # Zarovnání na střed
+
+    doc.add_paragraph()  # Přidání mezery pod nadpisem
+
+    # Vytvoření tabulky se stylem
+    table = doc.add_table(rows=1, cols=7)
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER  # Zarovnání tabulky na střed
+
+    # Definování nadpisů sloupců
+    headers = [
+        "Evidenční číslo", "Jméno", "Příjmení",
+        "Začátek výuky", "Datum narození", "Typ zkoušky", "Druh zkoušky"
+    ]
+    
+    hdr_cells = table.rows[0].cells
+    for i, header in enumerate(headers):
+        hdr_cells[i].text = header
+        hdr_cells[i].paragraphs[0].runs[0].bold = True
+        hdr_cells[i].paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # Zarovnání na střed
+        hdr_cells[i].paragraphs[0].runs[0].font.size = Pt(11)  # Zvětšení fontu
+
+    # Vyplnění tabulky daty studentů
+    for student in seznam_studentu:
+        row_cells = table.add_row().cells
+        row_cells[0].text = student.zak.ev_cislo
+        row_cells[1].text = student.zak.jmeno
+        row_cells[2].text = student.zak.prijmeni
+        row_cells[3].text = _format_date(student.zak.zacatek)
+        row_cells[4].text = _format_date(student.zak.narozeni)
+        row_cells[5].text = student.typ_zkousky
+        row_cells[6].text = student.druh_zkousky
+
+        # Zarovnání obsahu buněk a nastavení velikosti písma
+        for cell in row_cells:
+            cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            cell.paragraphs[0].runs[0].font.size = Pt(10)
+
+    return doc
+
+def _format_date(date):
+    """Pomocná funkce pro formátování data."""
+    return date.strftime("%d.%m.%Y") if date else "Neznámé"
 
 
 def create_document(autoskola, datum, seznam_studentu, komisar): 
@@ -100,20 +162,19 @@ def create_document(autoskola, datum, seznam_studentu, komisar):
         return paragraph
     
     add_paragraph_with_spacing(f"Váš dopis zn.:")
-    add_paragraph_with_spacing(f"Ze dne: {datetime.today().strftime("%d.%m.%Y")}")
     add_paragraph_with_spacing(f"Naše zn.:")
     add_paragraph_with_spacing(f"Listů/příloh: 0/0")
     add_paragraph_with_spacing(f"Vyřizuje: {komisar.jmeno} {komisar.prijmeni}")
     add_paragraph_with_spacing(f"Telefon:")
     add_paragraph_with_spacing(f"Email: {komisar.email}")
-    add_paragraph_with_spacing(f"Most, datum")
+    add_paragraph_with_spacing(f"Most, {datetime.today().strftime("%d.%m.%Y")}")
     # info o autoškole
     part2_right = part2.cell(0, 1)
 
     # Vytvoř nový odstavec v pravé buňce a nastav zarovnání doprava
     part2_right_paragraph = part2_right.add_paragraph()
     part2_right_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
-    part2_text = f"{autoskola.nazev}\nJMENO PŘIJMENÍ\n{autoskola.adresa_u}\nMost\n434 01"   
+    part2_text = f"{autoskola.nazev}\n{autoskola.adresa_u}\nMost\n434 01"   
     run = part2_right_paragraph.add_run(part2_text)
     run.bold = False
     run.font.name = 'Arial'
@@ -125,13 +186,14 @@ def create_document(autoskola, datum, seznam_studentu, komisar):
 
     doc.add_paragraph()
     paragraf = doc.add_paragraph()
-    run = paragraf.add_run('Zkouška z odborné způsobilosti k řízení motorového vozidla.')
+    run = paragraf.add_run('Zkouška z odborné způsobilosti k řízení motorového vozidla')
     run.font.size = Pt(10)
     run.font.name = 'Arial'
     run.bold = True
     
     paragraf = doc.add_paragraph()
-    run = paragraf.add_run("""\nNa základě Vámi podané přihlášky k provedení zkoušky níže uvedeného uchazeče o řidičské oprávnění Vám sdělujeme, že tato zkouška bude vykonána v souladu s ustanovením §32 a §39 zákona č. 247/2000 Sb. o získávání a zdokonalování odborné způsobilosti k řízení motorových vozidel, ve znění pozdějších předpisů v termínu:""")
+    paragraf.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
+    run = paragraf.add_run("""\nNa základě Vámi podané přihlášky k provedení zkoušky níže uvedeného uchazeče o řidičské oprávnění Vám sdělujeme, že tato zkouška bude vykonána v souladu s ustanovením §32 a §39 zákona č. 247/2000 Sb. \no získávání a zdokonalování odborné způsobilosti k řízení motorových vozidel, ve znění pozdějších předpisů \nv termínu:""")
     run.font.name = 'Arial'
     run.font.size = Pt(10)
     paragraf = doc.add_paragraph()
@@ -143,7 +205,7 @@ def create_document(autoskola, datum, seznam_studentu, komisar):
 
     table = doc.add_table(rows=1, cols=7)
     hdr_cells = table.rows[0].cells
-    hdr_cells[0].text = 'Evidenčí číslo'
+    hdr_cells[0].text = 'Evidenční číslo'
     hdr_cells[1].text = 'Jméno'
     hdr_cells[2].text = 'Přijmení'
     hdr_cells[3].text = 'Datum narození'
@@ -185,11 +247,14 @@ def create_document(autoskola, datum, seznam_studentu, komisar):
     run.font.size = Pt(10)
     run.bold = True
     paragraf = doc.add_paragraph()
+    paragraf.alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
     run = paragraf.add_run("\nPotřebné doklady (občanský průkaz popř. potvrzení dlouhodobého pobytu, žádost uchazeče, lékařskou prohlídku, průkaz žáka, třídní knihu a potvrzení o zaplacení správního poplatku) předložte, prosím, ke kontrole zkušebnímu komisaři týž den před zkouškou, nebo po dohodě s komisařem i dříve.")
     run.font.name = 'Arial'
     run.font.size = Pt(10)
     paragraf = doc.add_paragraph()
     run = paragraf.add_run("\nS pozdravem")
+    run.font.name = 'Arial'
+    run.font.size = Pt(10)
 
     #Footer
     footer = doc.sections[0].footer

@@ -973,6 +973,12 @@ h1.error {
 }
 /* tablet */
 
+.make_list_button{
+    border: white;
+    border-width: 2px;
+    background-color: #218838;
+    border-color: white;
+}
 
 /* mobil */
 @media (max-width: 768px) {

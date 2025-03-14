@@ -13,6 +13,16 @@
                 <div></div> 
             </div>
             <div class="students-container-admin" id="{{nazev}}">
+                <div class="student-line-admin-grid-8">
+                    <div style="font-weight: bold;">E.Č.</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Typ zkoušky</div>
+                    <div style="font-weight: bold;">Druh zkoušky</div>
+                    <div style="font-weight: bold;">Začátek</div>
+                    <div style="font-weight: bold;">Výsledek</div>          
+                </div>
                 {% for zak in zaci %}
                         <div class="student-line-admin-grid-8" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
