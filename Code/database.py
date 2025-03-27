@@ -21,12 +21,18 @@ class Zak(db.Model):
     """narozeni (str): Datum narození žáka."""
     adresa = db.Column('adresa', db.String(255), nullable=True)
     """adresa (str): Adresa bydliště."""
+    cislo = db.Column('cislo_prukazu', db.String(20), nullable=True)
+    """cislo (str): Číslo průkazu."""
     splnil = db.Column('splnil', db.Date, nullable=True)
     """splnil (str): Určuje, kdy žák splnil požadavky."""
     zacatek = db.Column('zacatek_vycviku', db.Date, nullable=True)
     """zacatek (str): Určuje, kdy byl žák zařazen do systému."""
+    konec = db.Column('konec_vycviku', db.Date, nullable=True)
+    """konec (str): Určuje, kdy žák ukončil výcvik, aby mohl být přiřazen ke zkoušce."""
     id_autoskoly = db.Column('id_autoskoly', db.Integer, db.ForeignKey('autoskoly.id'), nullable=False)
     """id_autoskoly (int): Cizý klíč odkazující na autoškolu do které žák patří."""
+    prvni = db.Column('prvni_pokus', db.Date, nullable=True)
+    """prvni (str): Určuje první neúspěšný termín žáka."""
 
 
 class Termin(db.Model):
@@ -82,9 +88,9 @@ class Komisar(db.Model):
     """email (str): Email komisaře."""
     heslo = db.Column('heslo', db.String(70), nullable=True)
     """heslo (str): Zašifrované heslo komisaře."""
-    jmeno = db.Column('jmeno', db.String(70), nullable=True)
+    jmeno = db.Column('jmeno', db.String(30), nullable=True)
     """jmeno (str): Jméno komisaře."""
-    prijmeni = db.Column('prijmeni', db.String(70), nullable=True)
+    prijmeni = db.Column('prijmeni', db.String(30), nullable=True)
     """prijmeni (str): Přijmení komisaře."""
     isAdmin = db.Column('isAdmin', db.Boolean, nullable=True)
     """isAdmin (int): Boolean, jestli je komisař admin."""
@@ -108,7 +114,7 @@ class Superadmin(db.Model):
     """heslo (str): Zašifrované heslo superadmina."""
     jmeno = db.Column('jmeno', db.String(70), nullable=True)
     """jmeno (str): Jméno superadmina."""
-    prijmeni = db.Column('prijmeni', db.String(70), nullable=True)
+    prijmeni = db.Column('prijmeni', db.String(30), nullable=True)
     """prijmeni (str): Přijmení superadmina."""
 
 
@@ -120,7 +126,7 @@ class Zapsany_zak(db.Model):
 
     potvrzeni = db.Column('potvrzeni', db.Enum('Y', 'N', 'W'), default='W', nullable=True)
     """potvrzeni (str): Stav, jestli je žák přihlášený na termín, čeká nebo je zamítnut."""
-    typ_zkousky = db.Column('typ_zkousky', db.Enum('A', 'B', 'C', 'C+E', 'D', 'D+E', 'T'), nullable=True)
+    typ_zkousky = db.Column('typ_zkousky', db.String(20), nullable=True)
     """typ_zkousky (str): Třída řidičského oprávnění, kterou bude žák podstupovat."""
     druh_zkousky = db.Column('druh_zkousky', db.Enum('Řádná zkouška', 'Opravná zkouška-test+jízda', 'Opravná zkouška-jízda', 'Opravná zkouška-technika', 'Opravná zkouška-technika+jízda', 'Profesní způsobilost-test'), nullable=True)
     """druh_zkousky (str): O jaký druh zkoušky se jedná."""

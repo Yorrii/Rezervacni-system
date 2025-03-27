@@ -20,21 +20,26 @@
 ### Dodělat
     - py -m pdoc --output-dir Code/templates/dokumentace Code/app Code/app_logic Code/database
     - pokud zadám termín bez místa, tak se i tak propíše do db
-
-### 04.12.2024
-    - ve VaV přepsat kolonku, kde se píše adresa účebny tak, aby se zobrazovala účebna z DB.
-
-### Next server update
-    - přidat soubor stylů pro menší displaye
-    - upravit JS script_calendar, přidal jsem omezení na počet žáků při vytváření termínu
-    - pro nějaké html stránky byla přidána classa, primárně pro grid 8
     
 ### 11.03.2025
     - přenastavit dobu aktivace termínů na tři týdny |DONE| 
-    - do 'R' termínu přidat možnost zapsat žáka
-    - Možnost smazat žáka v den termínu(vedle úspěch/neúspech přidat tlačítko, které ho smaže)
-    - přidat možnost do VaV (opakovaný výcvik, opakovaná výuka) a u těhle možností nevytvářet nového žáka
-    - Při vytváření nové autoškoly pohrát si s adresou. Myslím si, že by bylo dobré, kdybych udělal nějaký oddělovač(', ').
+    - do 'R' termínu přidat možnost zapsat žáka |DONE|
+    - Možnost smazat žáka v den termínu(vedle úspěch/neúspech přidat tlačítko, které ho smaže) |DONE|nevypadá hezky|
+    - přidat možnost do VaV (opakovaný výcvik, opakovaná výuka) a u těhle možností nevytvářet nového žáka |DONE|
+    - Při vytváření nové autoškoly pohrát si s adresou. Myslím si, že by bylo dobré, kdybych udělal nějaký oddělovač(', '). |DONE|
     - Při zapisování žáka na termín, udělat kolonku pro první termín(nepovinná).
-    - Sloupeček s prvním nesplněným termínem
+    - Sloupeček s prvním nesplněným termínem |DONE|
+
+### 21.03.2025
+    - udělat konec výuky
+    - změnit skupinu na na input místo selectu
+    - do VaV přidat první pokus
+    - opravit nadpisy sloupců
+
+
+### Dodělat
+    - před zapisem na termín zkontrolovat jestli ukončil výcvik
+    - přidat do profili sloupeček s kounce výuky
+    - Upravit seznam souborů v konci výuky
+    - v term_admin.html chybí kontrolo vstupu pro třídu řidič. oprávnění   
     

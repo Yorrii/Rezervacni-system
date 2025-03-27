@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, send_file,session #mikrorámec na routování a celkovou správu webu
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, abort, send_file, session, send_from_directory, current_app #mikrorámec na routování a celkovou správu webu
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user #podpůrná knihovna na správu přihlášených uživatelů
 from flask_mail import Mail, Message #podpůrná knihovna na posílání emailů
 from database import db, Zak, Termin, Autoskola, Zaznam, Komisar, Zapsany_zak, Vozidlo, Upozorneni, Superadmin #ORM modely na komunikaci s databází
@@ -7,6 +7,9 @@ from sqlalchemy import or_, desc #metoda na možnost or v quary
 from sqlalchemy.sql import func
 from docx import Document #Objekt, který generuje word dokument z kódu
 import app_logic #soubor s metodamy
+import os
+from werkzeug.utils import safe_join
+from urllib.parse import unquote
 from config_copy import Config #nastavení pro posílání emailů
 from io import BytesIO 
 from hashlib import sha256  #hashovací metoda
@@ -377,6 +380,9 @@ def term(id):
                             'jmeno': item.zak.jmeno,
                             'prijmeni': item.zak.prijmeni,
                             'narozeni': item.zak.narozeni,
+                            'zacatek': item.zak.zacatek,
+                            'konec': item.zak.konec,
+                            'prvni': item.zak.prvni,
                             'potvrzeni': item.potvrzeni,
                             'cas': item.zacatek
                         })
@@ -389,6 +395,9 @@ def term(id):
                             'jmeno': item.zak.jmeno,
                             'prijmeni': item.zak.prijmeni,
                             'narozeni': item.zak.narozeni,
+                            'zacatek': item.zak.zacatek,
+                            'konec': item.zak.konec,
+                            'prvni': item.zak.prvni,
                             'potvrzeni': item.potvrzeni
                         })
 
@@ -412,6 +421,9 @@ def term(id):
                             'jmeno': item.zak.jmeno,
                             'prijmeni': item.zak.prijmeni,
                             'narozeni': item.zak.narozeni,
+                            'zacatek': item.zak.zacatek,
+                            'konec': item.zak.konec,
+                            'prvni': item.zak.prvni,
                             'potvrzeni': item.potvrzeni,
                             'zaver': item.zaver,
                             'cas': item.zacatek
@@ -453,8 +465,10 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
+                                                            'zacatek': item.zak.zacatek,
+                                                            'konec': item.zak.konec,
+                                                            'prvni': item.zak.prvni,
                                                             'potvrzeni': item.potvrzeni,
-                                                            'start': item.zak.zacatek if item.zak.zacatek else None,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek
                                                         }]
@@ -467,8 +481,10 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
+                                                            'zacatek': item.zak.zacatek,
+                                                            'konec': item.zak.konec,
+                                                            'prvni': item.zak.prvni,
                                                             'potvrzeni': item.potvrzeni,
-                                                            'start': item.zak.zacatek if item.zak.zacatek else None,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek
                                                         })
@@ -517,6 +533,9 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
+                                                            'zacatek': item.zak.zacatek,
+                                                            'konec': item.zak.konec,
+                                                            'prvni': item.zak.prvni,
                                                             'potvrzeni': item.potvrzeni,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek
@@ -530,6 +549,9 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
+                                                            'zacatek': item.zak.zacatek,
+                                                            'konec': item.zak.konec,
+                                                            'prvni': item.zak.prvni,
                                                             'potvrzeni': item.potvrzeni,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek
@@ -546,7 +568,17 @@ def term(id):
                     .all()
                 
                 komisari = Komisar.query.all() #vrací list objektů Komisar
-                
+
+                komisari_lst = []
+
+                for komisar in komisari:
+                    komisari_lst.append({
+                        'id': komisar.id,
+                        'jmeno': komisar.jmeno,
+                        'prijmeni': komisar.prijmeni
+                    })
+
+
                 zaci_v_as = {} # zde se jako klíče budou dávat název autoškol a hodnota bude list žáků
                 for item in zaci:
                     autoskola = Autoskola.query.filter_by(id=item.zak.id_autoskoly).first()
@@ -560,6 +592,9 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
+                                                            'zacatek': item.zak.zacatek,
+                                                            'konec': item.zak.konec,
+                                                            'prvni': item.zak.prvni,
                                                             'potvrzeni': item.potvrzeni,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek,
@@ -574,13 +609,25 @@ def term(id):
                                                             'narozeni': item.zak.narozeni,
                                                             'typ_zkousky': item.typ_zkousky,
                                                             'druh_zkousky': item.druh_zkousky,
+                                                            'zacatek': item.zak.zacatek,
+                                                            'konec': item.zak.konec,
+                                                            'prvni': item.zak.prvni,
                                                             'potvrzeni': item.potvrzeni,
                                                             'komisar': f'{komisar.jmeno} {komisar.prijmeni}' if komisar else None,
                                                             'cas': item.zacatek,
                                                             'zaver': item.zaver
                                                         })                   
                 srovnany_dict = dict(sorted(zaci_v_as.items()))
-                return render_template('term_conclusion.html', superadmin = current_user.isSuperAdmin, admin = current_user.isAdmin, list_as=srovnany_dict, termin=termin, komisari= komisari)
+                autoskoly = Autoskola.query.all()
+
+                autoskoly_lst = []
+
+                for autoskola in autoskoly:
+                    autoskoly_lst.append({
+                        'id': autoskola.id,
+                        'nazev': autoskola.nazev
+                    })
+                return render_template('term_conclusion.html', superadmin = current_user.isSuperAdmin, admin = current_user.isAdmin, list_as=srovnany_dict, termin=termin, komisari= komisari_lst, autoskoly= autoskoly_lst)
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -638,7 +685,8 @@ def profile():
                     'ev_cislo': student.ev_cislo,
                     'jmeno': student.jmeno,
                     'prijmeni': student.prijmeni,
-                    'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else None,
+                    'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else '',
+                    'konec': student.konec.strftime("%d.%m.%Y") if student.konec else '',
                     'termin': (
                         "splnil" if student.splnil  # Pokud student splnil, zobrazí "splnil"
                         else datum.strftime('%d.%m.%Y') if datum  # Pokud existuje termín, zobrazí datum
@@ -712,7 +760,8 @@ def profile_admin(id):
                     'ev': student.ev_cislo,
                     'jmeno': student.jmeno,
                     'prijmeni': student.prijmeni,
-                    'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else None,
+                    'zacatek': student.zacatek.strftime("%d.%m.%Y") if student.zacatek else '',
+                    'konec': student.konec.strftime("%d.%m.%Y") if student.konec else '',
                     'termin': (
                         "splnil" if student.splnil  # Pokud student splnil, zobrazí "splnil"
                         else datum.strftime('%d.%m.%Y') if datum  # Pokud existuje termín, zobrazí datum
@@ -1061,8 +1110,45 @@ def rozdat_prava():
 
     return render_template('rights.html', komisari=lst_komisari)
 
+@login_required
+@app.route("/end_of_training_site")
+def end_of_training_view():
+    if not current_user.isCommissar:
+        abort(404)
+
+    slozka = "Ukonceni_vycviku"
+    nazvy_souboru = []
+
+    if os.path.exists(slozka):
+        for filename in os.listdir(slozka):
+            if filename.endswith(".docx"):
+                cesta = os.path.join(slozka, filename)
+                cas_zmeny = os.path.getmtime(cesta)  # poslední změna v sekundách (timestamp)
+                nazvy_souboru.append((cas_zmeny, filename))
+
+    # Seřadíme sestupně (nejnovější nahoře)
+    nazvy_souboru.sort(reverse=True)
+
+    # Předáme jen názvy (bez časů)
+    return render_template("end_of_training_site.html", soubory=[f[1] for f in nazvy_souboru], superadmin=current_user.isSuperAdmin, admin=current_user.isAdmin,)
 
 #API metody
+@login_required
+@app.route('/api/get_document/<path:name>', methods=['GET'])
+def get_end_document(name):
+    name = unquote(name)
+
+    slozka_absolutni = os.path.abspath(os.path.join(current_app.root_path, "..", "Ukonceni_vycviku"))
+    cesta = safe_join(slozka_absolutni, name)
+
+    print("Absolutní složka:", slozka_absolutni)
+    print("Celá cesta k souboru:", cesta)
+
+    if not os.path.isfile(cesta):
+        abort(404)
+
+    return send_from_directory(directory=slozka_absolutni, path=name, as_attachment=True)
+
 @login_required
 @app.route('/pridat_prava', methods= ['POST'])
 def pridat_prava():
@@ -1315,7 +1401,6 @@ def dostan_studenta():
         data = request.get_json()
         autoskola_id = data.get('autoskolaId')
         evidencni_cislo = data.get('evidencniCislo')
-
         # Validace vstupů
         if not autoskola_id or not evidencni_cislo:
             return jsonify({"error": "Chybí id autoškoly nebo evidenční číslo"}), 400
@@ -1331,11 +1416,14 @@ def dostan_studenta():
                 'ev_cislo': zak.ev_cislo,
                 'jmeno': zak.jmeno,
                 'prijmeni': zak.prijmeni,
-                'dat_nar': zak.narozeni
+                'dat_nar': zak.narozeni,
+                'adresa': zak.adresa,
+                'zacatek': zak.zacatek,
+                'konec': zak.konec if zak.konec else None,
+                'prvni':zak.prvni if zak.prvni else None
                 }
         else:
             return jsonify({"error": "Žák nebyl nalezen"}), 400
-        
         return jsonify(zak_info), 200
 
     except Exception as e:
@@ -1344,7 +1432,33 @@ def dostan_studenta():
 @login_required
 @app.route('/api/get_student_as', methods=['POST'])
 def dostan_studenta_as():
-    #TODO dokumentace
+    """
+    Získá informace o žákovi na základě evidenčního čísla a ID autoškoly.
+
+    Endpoint umožňuje získat informace o konkrétním žákovi v autoškole, pokud není již přihlášen na termín nebo nesplnil zkoušku. 
+    Požadavek musí být proveden s platným JSON objektem obsahujícím evidenční číslo žáka.
+
+    Vrací:
+        - 200: Pokud je žák nalezen a nejsou žádná omezení, vrací JSON objekt s informacemi o žákovi.
+        - 400: Pokud chybí vstupní data nebo pokud:
+            - Žák již splnil zkoušku.
+            - Žák je již přihlášen na termín.
+            - Žák nebyl nalezen v databázi.
+        - 404: Pokud je uživatel komisář (nemá oprávnění pro tento endpoint).
+        - 500: Pokud dojde k interní chybě serveru.
+
+    Vyvolává:
+        - Výjimku (Exception): Pokud dojde k chybě při zpracování požadavku nebo přístupu k databázi.
+
+    Metody:
+        - POST:
+            - Přijímá JSON objekt s klíči:
+                - `evidencniCislo` (str): Evidenční číslo žáka.
+            - Ověří, zda je uživatel oprávněn požadavek provést.
+            - Ověří, zda žák existuje a splňuje podmínky pro získání informací.
+            - Vrací informace o žákovi jako JSON objekt nebo chybovou odpověď.
+    """
+
     try:
         # Získání dat z požadavku
         if current_user.isCommissar:
@@ -1359,10 +1473,10 @@ def dostan_studenta_as():
         
         zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id).order_by(desc(Zak.id)).first()
 
-        if zak.splnil:
-            return jsonify({"error": "Žák je již splnil zkoušku."}), 400
-
+    
         if zak:
+            if zak.splnil:
+                return jsonify({"error": "Žák je již splnil zkoušku."}), 400
             zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, zaver='W').first()
             if zap_zak:
                 return jsonify({"error": "Žák je již zapsaný na termín."}), 400
@@ -1371,7 +1485,11 @@ def dostan_studenta_as():
                 'ev_cislo': zak.ev_cislo,
                 'jmeno': zak.jmeno,
                 'prijmeni': zak.prijmeni,
-                'dat_nar': zak.narozeni
+                'dat_nar': zak.narozeni,
+                'adresa': zak.adresa,
+                'zacatek': zak.zacatek,
+                'konec': zak.konec if zak.konec else '',
+                'prvni':zak.prvni if zak.prvni else ''
                 }
         else:
             return jsonify({"error": "Žák nebyl nalezen"}), 400
@@ -1379,6 +1497,178 @@ def dostan_studenta_as():
         return jsonify(zak_info), 200
 
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@login_required
+@app.route('/api/get_student_end', methods=['POST'])
+def dostan_studenta_end():
+    """
+    API metoda sloužící pro nalezení žáka a kontrole jestli ještě není nikde jinde zapsaný. Metoda vrací žáka, aby ho připravila na zapis. 
+    K metodě mají přístup pouze komisaři a admini.
+    
+    Parametry:
+        request: Z FE obdržíme JSON s id autoškoly žáka, a Ev. Číslo žáka.
+    
+    Vrací:
+        JSON 400: pokud kombinace id autoškoly a ev. čísla nikoho nenajde nebo pokud už je na termínu
+        JSON 200: pokud vše proběhne v pořádku
+        JSON 500: internal error
+    """
+    if not (current_user.isCommissar or current_user.isAdmin):
+       abort(404)
+    try:
+        # Získání dat z požadavku
+        data = request.get_json()
+        autoskola_id = data.get('autoskolaId')
+        evidencni_cislo = data.get('evidencniCislo')
+        # Validace vstupů
+        if not autoskola_id or not evidencni_cislo:
+            return jsonify({"error": "Chybí id autoškoly nebo evidenční číslo"}), 400
+        
+        zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id).order_by(desc(Zak.id)).first()
+
+        if zak:
+            zak_info = {
+                'id': zak.id,
+                'ev_cislo': zak.ev_cislo,
+                'jmeno': zak.jmeno,
+                'prijmeni': zak.prijmeni,
+                'dat_nar': zak.narozeni,
+                'adresa': zak.adresa,
+                'zacatek': zak.zacatek,
+                'konec': zak.konec if zak.konec else None,
+                'prvni':zak.prvni if zak.prvni else None
+                }
+        else:
+            return jsonify({"error": "Žák nebyl nalezen"}), 400
+        return jsonify(zak_info), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@login_required
+@app.route('/api/end_of_training_as', methods=['POST'])
+def end_of_training_as():   
+    try:
+        data = request.get_json()
+        studenti = data.get("studenti") # z dat dostane [{'id': int, 'datum':'yyyy-mm-dd'}, atd.]
+
+        if not studenti or not isinstance(studenti, list):
+            return jsonify({"error": "Neplatná nebo chybějící data o studentech."}), 400
+        studenti_do_dokumentu = []
+        aktualizovano = []
+        for student in studenti:
+            student_id = student.get("id")
+            datum_konce = student.get("datum_konce")
+            skupiny = student.get("skupiny_opravneni")
+
+            if not student_id or not datum_konce:
+                return jsonify({"error": f"Chybí id nebo datum konce u jednoho ze záznamů."}), 400
+
+            # Ověření správného formátu datumu
+            try:
+                datum_obj = datetime.strptime(datum_konce, "%Y-%m-%d").date()
+            except ValueError:
+                return jsonify({"error": f"Neplatný formát datumu: {datum_konce}. Použijte YYYY-MM-DD."}), 400
+
+            # Najít žáka
+            zak = Zak.query.filter_by(id=student_id).first()
+            if not zak:
+                return jsonify({"error": f"Žák s ID {student_id} nebyl nalezen."}), 404
+            if zak.konec:
+                aktualizovano.append(f"Studentovi/tce {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl změněn datum konce výuky.")
+
+            # Aktualizace datumu konce výcviku
+            zak.konec = datum_obj
+            studenti_do_dokumentu.append({
+                'ev_cislo': zak.ev_cislo,
+                'jmeno': zak.jmeno,
+                'prijmeni': zak.prijmeni,
+                'narozeni': zak.narozeni,
+                'adresa':   zak.adresa,
+                'zacatek': zak.zacatek,
+                'konec': zak.konec,
+                'skupina': skupiny,
+                'cislo': zak.cislo if zak.cislo else None
+            })
+            
+        autoskola = Autoskola.query.filter_by(id= current_user.id).first()
+        db.session.commit()
+
+        app_logic.create_document_end(studenti_do_dokumentu, autoskola)
+
+        return jsonify({"success": True, "zaznamy": aktualizovano}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@login_required
+@app.route('/api/end_of_training', methods=['POST'])
+def end_of_training():
+    if not (current_user.isCommissar or current_user.isAdmin):
+       abort(404)   
+    try:
+        data = request.get_json()
+        studenti = data.get("studenti") # z dat dostane [{'id': int, 'datum':'yyyy-mm-dd'}, atd.]
+
+        if not studenti or not isinstance(studenti, list):
+            return jsonify({"error": "Neplatná nebo chybějící data o studentech."}), 400
+
+        autoskola_id = None
+        studenti_do_dokumentu = []
+        aktualizovano = []
+
+        for student in studenti:
+            student_id = student.get("id")
+            datum_konce = student.get("datum_konce")
+            skupiny = student.get("skupiny_opravneni")
+
+            if not student_id or not datum_konce:
+                return jsonify({"error": f"Chybí id nebo datum konce u jednoho ze záznamů."}), 400
+
+            # Ověření správného formátu datumu
+            try:
+                datum_obj = datetime.strptime(datum_konce, "%Y-%m-%d").date()
+            except ValueError:
+                return jsonify({"error": f"Neplatný formát datumu: {datum_konce}. Použijte YYYY-MM-DD."}), 400
+            # Najít žáka
+            zak = Zak.query.filter_by(id=student_id).first()
+            if not autoskola_id:
+                autoskola_id= zak.id_autoskoly
+            if not zak:
+                return jsonify({"error": f"Žák s ID {student_id} nebyl nalezen."}), 404
+            if zak.konec:
+                aktualizovano.append(f"Studentovi/tce {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl změněn datum konce výuky.")
+                upozorneni= Upozorneni(zprava= f'Studentovi/ce {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl změněn konec výcviku.',
+                                    id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+            # Aktualizace datumu konce výcviku
+            else:
+                upozorneni= Upozorneni(zprava= f'Studentovi/ce {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl přidán konec výcviku.',
+                            id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+            db.session.add(upozorneni)
+            zak.konec = datum_obj
+            studenti_do_dokumentu.append({
+                'ev_cislo': zak.ev_cislo,
+                'jmeno': zak.jmeno,
+                'prijmeni': zak.prijmeni,
+                'narozeni': zak.narozeni,
+                'adresa':   zak.adresa,
+                'zacatek': zak.zacatek,
+                'konec': zak.konec,
+                'skupina': skupiny,
+                'cislo': zak.cislo if zak.cislo else None
+            })
+            
+        autoskola = Autoskola.query.filter_by(id=autoskola_id).first()
+        db.session.commit()
+
+        app_logic.create_document_end(studenti_do_dokumentu, autoskola)
+
+        return jsonify({"success": True, "zaznamy": aktualizovano}), 200
+
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 @login_required
@@ -1566,6 +1856,71 @@ def add_drivers():
                 druh_zkousky=exam_type.replace('_', ' ')
             )
             
+            db.session.add(new_entry)
+            zapsani_studenti.append(student)
+
+        # Uložení změn do databáze
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "zapsani_studenti": zapsani_studenti,
+            "pocet_zapsanych": len(zapsani_studenti),
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@login_required
+@app.route('/api/add_drivers/r_term', methods=['POST'])
+def add_drivers_r_term():
+    try:
+        data = request.get_json()
+        students = data.get('students', [])
+
+        # Validace vstupů
+        if not students or not isinstance(students, list):
+            return jsonify({"error": "Seznam studentů je prázdný nebo neplatný"}), 400
+      
+        # Získání termínu ze session
+        term_id = session.get('term_id')
+        if not term_id:
+            return jsonify({"error": "ID termínu není k dispozici"}), 400
+        
+        termin = Termin.query.filter_by(id=term_id).first()
+        zapsani_studenti = []
+        for student in students:
+            student_id = student.get('id')
+            zak = Zak.query.filter_by(id= student_id).first()
+            license_category = student.get('license_category')
+            exam_type = student.get('exam_type')
+            commisar = student.get('commisar')
+            start = student.get('start_time')
+            first = student.get('first_try')# kdy absolvoval první pokus
+            
+            if not zak or not license_category or not exam_type:
+                continue  # Přeskočit neplatné záznamy
+
+            # Kontrola, zda student již není zapsán
+            existing_entry = Zapsany_zak.query.filter_by(id_zaka=zak.id, id_terminu=term_id).first()
+            if existing_entry:
+                continue
+            
+            # Vytvoření nového záznamu
+            new_entry = Zapsany_zak(
+                potvrzeni='Y',
+                id_zaka=zak.id,
+                id_terminu=term_id,
+                id_autoskoly=zak.id_autoskoly,
+                typ_zkousky=license_category,
+                druh_zkousky=exam_type.replace('_', ' '),
+                id_komisare = commisar,
+                zacatek=start
+                #prvni_pokus= first
+            )
+            upozorneni= Upozorneni(zprava= f'Student/ka {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl/a zapsán/a na termín {termin.datum.strftime("%d.%m.%Y")} v {start}',
+                                   id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
+            db.session.add(upozorneni)
             db.session.add(new_entry)
             zapsani_studenti.append(student)
 
@@ -2008,8 +2363,11 @@ def docx_for_signup():
 
         for student in seznam_studentu: # cykl pro studenty, aby se zapsali do tabulky a zároveň jejich tvorba do db
             exist_student = Zak.query.filter_by(ev_cislo=student['evidence_number'], id_autoskoly= autoskola.id).first()
-            
-            if exist_student:
+            typ_vycviku = student['type_of_teaching'].replace('-', ' ')
+            podminka = typ_vycviku in ['opakovaná výuka', 'opakovaný výcvik'] # pokud je žák zapsaný na opakovaný výcvik nebo výuku tak se nemá znovu vytvářet ale ani nevracet jako chybný vstup
+            ridicky_prukaz = student['drivers_license'] if student['drivers_license'] else None
+            prvni_pokus = student['first_try'] if student['first_try'] else None
+            if exist_student and not podminka:
                 duplicate_students.append(student['evidence_number'])
                 continue  # Nepřidáváme duplicity
             
@@ -2020,16 +2378,19 @@ def docx_for_signup():
             row_cells[2].text = student['last_name']
             row_cells[3].text = student['birth_date']
             row_cells[4].text = student['adress']
-            row_cells[5].text = student['drivers_license'] if student['drivers_license'] else ' '
-            row_cells[6].text = student['type_of_teaching'].replace('-', ' ')
+            row_cells[5].text = ridicky_prukaz if ridicky_prukaz else ' '
+            row_cells[6].text = typ_vycviku
             row_cells[7].text = student['license_category']
 
             # Tady se vytvoří žák a uloží se do db
-            zak = Zak(ev_cislo=student['evidence_number'], jmeno=student['first_name'], prijmeni=student['last_name'], narozeni=student['birth_date'], adresa=student['adress'], id_autoskoly= autoskola.id, zacatek=datum)
-            zaznam = Zaznam(druh='přidání', kdy=datetime.now(), zprava=f'Autoškola zapsala studentku/studenta {student['first_name']} {student['last_name']} {student['evidence_number']} do výuky a výcviku.', id_autoskoly=autoskola.id)
-            db.session.add(zaznam)
-            db.session.add(zak)
-            
+            if (exist_student and podminka):
+                zaznam = Zaznam(druh='přidání', kdy=datetime.now(), zprava=f'Autoškola zapsala studentku/studenta {student['first_name']} {student['last_name']} {student['evidence_number']} na opravnou výuku nebo výcvik.', id_autoskoly=autoskola.id)
+            else:
+                zak = Zak(ev_cislo=student['evidence_number'], jmeno=student['first_name'], prijmeni=student['last_name'], narozeni=student['birth_date'], adresa=student['adress'], id_autoskoly= autoskola.id, zacatek=datum, cislo=ridicky_prukaz, prvni=prvni_pokus)
+                zaznam = Zaznam(druh='přidání', kdy=datetime.now(), zprava=f'Autoškola zapsala studentku/studenta {student['first_name']} {student['last_name']} {student['evidence_number']} do výuky a výcviku.', id_autoskoly=autoskola.id)
+                db.session.add(zaznam)
+                db.session.add(zak)
+                
         db.session.commit()
         document.add_page_break()
 
@@ -2229,6 +2590,8 @@ def student_reject():
         if zak and termin:
             zapis = Zapsany_zak.query.filter_by(id_terminu=session.get('term_id'), id_zaka=id_studenta).first()
             zapis.zaver = 'N'
+            if zak.prvni == None:
+                zak.prvni = termin.datum
             upozorneni= Upozorneni(zprava= f'Studentka/Student {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} neuspěl u termínu.', id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(upozorneni)
             db.session.add(zapis)

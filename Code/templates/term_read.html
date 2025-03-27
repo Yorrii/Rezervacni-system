@@ -13,24 +13,30 @@
                 <div></div> 
             </div>
             <div class="students-container-admin" id="{{nazev}}">
-                <div class="student-line-admin-grid-8">
+                <div class="student-line-admin-grid-11">
                     <div style="font-weight: bold;">E.Č.</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
                     <div style="font-weight: bold;">Narození</div>
                     <div style="font-weight: bold;">Typ zkoušky</div>
                     <div style="font-weight: bold;">Druh zkoušky</div>
+                    <div style="font-weight: bold;">Začátek výuky</div>
+                    <div style="font-weight: bold;">Konec výuky</div>
+                    <div style="font-weight: bold;">První pokus</div>
                     <div style="font-weight: bold;">Začátek</div>
                     <div style="font-weight: bold;">Výsledek</div>          
                 </div>
                 {% for zak in zaci %}
-                        <div class="student-line-admin-grid-8" id="zak_{{ zak['id'] }}">
+                        <div class="student-line-admin-grid-11" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
+                            <div>{{ zak['zacatek'].strftime('%d.%m.%Y') if zak['zacatek'] else ''}}</div>
+                            <div>{{ zak['konec'].strftime('%d.%m.%Y') if zak['konec'] else ''}}</div>
+                            <div>{{ zak['prvni'].strftime('%d.%m.%Y') if zak['prvni'] else ''}}</div>
                             <div>{{ zak['cas']}}</div>
                             {% if zak['zaver'] == 'Y' %}
                                 <div> Splněno </div>

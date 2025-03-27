@@ -14,12 +14,15 @@
         </div>
         <input type="hidden" id="max-forms" value="{{ volna_mista }}">
         {% if zaci_Y %}
-            <div class="students-container" id="students_container">
+            <div class="students-container-10" id="students_container">
                 <div class="student-line">
                     <div style="font-weight: bold;">E.Č.</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
                     <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Začátek výcviku</div>
+                    <div style="font-weight: bold;">Konec výcviku</div>
+                    <div style="font-weight: bold;">První pokus</div>
                     <div style="font-weight: bold;">Typ zkoušky</div>
                     <div style="font-weight: bold;">Druh zkoušky</div>
                     <div style="font-weight: bold;">Začátek</div>          
@@ -30,6 +33,9 @@
                         <div>{{ zak['jmeno']}}</div>
                         <div>{{ zak['prijmeni']}}</div>
                         <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                        <div>{{ zak['zacatek'].strftime('%d.%m.%Y') if zak['zacatek'] else ''}}</div>
+                        <div>{{ zak['konec'].strftime('%d.%m.%Y') if zak['konec'] else ''}}</div>
+                        <div>{{ zak['prvni'].strftime('%d.%m.%Y') if zak['prvni'] else ''}}</div>
                         <div>{{ zak['typ_zkousky']}}</div>
                         <div>{{ zak['druh_zkousky']}}</div>
                         <div>{{ zak['cas']}}</div>
@@ -38,12 +44,15 @@
             </div>
         {% endif %}
         {% if zaci_W %}
-            <div class="students-container_button" id="students_container">
+            <div class="students-container_button-10" id="students_container">
                 <div class="student-line">
                     <div style="font-weight: bold;">E.Č.</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
                     <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Začátek výcviku</div>
+                    <div style="font-weight: bold;">Konec výcviku</div>
+                    <div style="font-weight: bold;">První pokus</div>
                     <div style="font-weight: bold;">Typ zkoušky</div>
                     <div style="font-weight: bold;">Druh zkoušky</div>
                     <div style="font-weight: bold;">Smazat</div>          
@@ -54,6 +63,9 @@
                         <div>{{ zak['jmeno']}}</div>
                         <div>{{ zak['prijmeni']}}</div>
                         <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                        <div>{{ zak['zacatek'].strftime('%d.%m.%Y') if zak['zacatek'] else ''}}</div>
+                        <div>{{ zak['konec'].strftime('%d.%m.%Y') if zak['konec'] else ''}}</div>
+                        <div>{{ zak['prvni'].strftime('%d.%m.%Y') if zak['prvni'] else ''}}</div>
                         <div>{{ zak['typ_zkousky']}}</div>
                         <div>{{ zak['druh_zkousky']}}</div>
                         <button class="delete-student" id="delete-student" data-zakId="{{zak['id']}}" data-terminId="{{termin.id}}">Smazat</button>
@@ -63,13 +75,16 @@
         {% endif %}
         {% if volna_mista > 0 %}
             <div class="students-container-admin" style="display: none;" id="result">
-                <div class="grid-for-6">
+                <div class="grid-for-9-align">
                     <div style="font-weight: bold;">E.Č.</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
                     <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Začátek výcviku</div>
+                    <div style="font-weight: bold;">Konec výcviku</div>
+                    <div style="font-weight: bold;">První pokus</div>
                     <div style="font-weight: bold;">Typ zkoušky</div>
-                    <div style="font-weight: bold;">Druh zkoušky</div>          
+                    <div style="font-weight: bold;">Druh zkoušky</div>
                 </div>
                 <div id="result-content"></div> <!-- Sekce pro data -->
                 <div class="center-div">
@@ -166,30 +181,31 @@
             const data = await response.json();
 
             // Format the date to dd.mm.yyyy
-            const formattedDate = new Date(data.dat_nar).toLocaleDateString('cs-CZ');
-            data.dat_nar = formattedDate;
+            const formattedDateBirth = new Date(data.dat_nar).toLocaleDateString('cs-CZ');
+            const formattedDateStart = new Date(data.zacatek).toLocaleDateString('cs-CZ');
+            const formattedDateEnd = new Date(data.konec).toLocaleDateString('cs-CZ');
+            
+            data.dat_nar = formattedDateBirth;
+            data.zacatek = formattedDateStart;
+            data.konec = formattedDateEnd;
 
             // Přidání záznamu do `result-content` na začátek
     const resultSection = document.getElementById("result");
     const resultContent = document.getElementById("result-content");
     resultSection.style.display = 'block';
 
+    const prvniDatum = data.prvni ? new Date(data.prvni).toISOString().split('T')[0] : '';
+
     const studentHTML = `
-        <div data-student-id="${data.id}" class="grid-for-6">
+        <div data-student-id="${data.id}" class="grid-for-9-align">
             <p style= margin-top:3px;margin-bottom:3px;>${data.ev_cislo}</p>
             <p style= margin-top:3px;margin-bottom:3px;>${data.jmeno}</p>
             <p style= margin-top:3px;margin-bottom:3px;>${data.prijmeni}</p>
             <p style= margin-top:3px;margin-bottom:3px;>${data.dat_nar}</p>
-            <div class="form-group">
-                <select name="license_category" id="license_category">
-                    <option value="A">A</option>
-                    <option value="B" selected>B</option>
-                    <option value="C">C</option>
-                    <option value="C+E">C+E</option>
-                    <option value="D">D</option>
-                    <option value="D+E">D+E</option>
-                </select>
-            </div>
+            <p style= margin-top:3px;margin-bottom:3px;>${data.zacatek}</p>
+            <p style= margin-top:3px;margin-bottom:3px;>${data.konec}</p>
+            <p style= margin-top:3px;margin-bottom:3px;>${prvniDatum}</p>
+            <input class="input-box3" name="license_category" type="text" placeholder="Např. B, B+E, T" required title="Zadej skupiny ŘP oddělené čárkou (např. B, B+E)">    
             <div class="form-group">
                 <select name="exam_type" id="exam_type">
                     <option value="Řádná_zkouška" selected>Řádná zkouška</option>

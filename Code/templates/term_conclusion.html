@@ -24,13 +24,30 @@
                 <div style="padding-right: 2%;">
                     <button class="document-button" onclick="makeDocument('{{ nazev }}', '{{termin.datum}}')">Dokument</button>
                 </div>
-                <div class="students-container-admin" id="{{nazev}}" style="margin-top: 0px;"> 
+                <div class="students-container-admin" id="{{nazev}}" style="margin-top: 0px;">
+                    <div class="student-line-admin-grid-12">
+                        <div style="font-weight: bold;">E.Č.</div>
+                        <div style="font-weight: bold;">Jméno</div>
+                        <div style="font-weight: bold;">Příjmení</div>
+                        <div style="font-weight: bold;">Narození</div>
+                        <div style="font-weight: bold;">Začátek výcviku</div>
+                        <div style="font-weight: bold;">Konec výcviku</div>
+                        <div style="font-weight: bold;">První pokus</div>
+                        <div style="font-weight: bold;">Typ zkoušky</div>
+                        <div style="font-weight: bold;">Druh zkoušky</div>
+                        <div style="font-weight: bold;">Začátek</div>
+                        <div style="font-weight: bold;">Komisař</div>
+                        <div></div>         
+                    </div> 
                 {% for zak in students %} 
-                        <div class="student-line-admin-grid-9" id="zak_{{ zak['id'] }}">                       
+                        <div class="student-line-admin-grid-12" id="zak_{{ zak['id'] }}">                       
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
+                            <div>{{ zak['zacatek'].strftime('%d.%m.%Y') if zak['zacatek'] else ''}}</div>
+                            <div>{{ zak['konec'].strftime('%d.%m.%Y') if zak['konec'] else ''}}</div>
+                            <div>{{ zak['prvni'].strftime('%d.%m.%Y') if zak['prvni'] else ''}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>{{ zak['cas']}}</div>
@@ -39,6 +56,7 @@
                                 <div>
                                     <button class="no-fill" onclick="successStudent('{{ zak['id'] }}')"><img src="../static/images/checkmark.svg" alt="checkmark" height="20px" width="20px"></button>
                                     <button class="no-fill" onclick="rejectStudent('{{ zak['id'] }}')"><img src="../static/images/cross.svg" alt="cross" height="20px" width="20px"></button>         
+                                    <button class="form-button" style="background-color: red; color:white; display: flexbox; height: 26px;" onclick="deleteStudent('{{ zak['id'] }}')">Smazat</button>         
                                 </div>
                             {% elif zak['zaver'] == 'Y' %}
                                 <div> Splněno </div>
@@ -48,12 +66,220 @@
                         </div>
                 {% endfor %}
                 </div>
-        {% endfor %}
             </div>
+        {% endfor %}
+            <div class="students-container-admin" style="display: none;" id="result">
+                <div id="result-content"> <!-- Sekce pro data -->
+                    <div class="grid-for-9-align">
+                        <div style="font-weight: bold;">E.Č.</div>
+                        <div style="font-weight: bold;">Jméno</div>
+                        <div style="font-weight: bold;">Příjmení</div>
+                        <div style="font-weight: bold;">Narození</div>
+                        <div style="font-weight: bold;">Typ zkoušky</div>
+                        <div style="font-weight: bold;">Druh zkoušky</div>
+                        <div style="font-weight: bold;">První pokus</div>
+                        <div style="font-weight: bold;">Začátek</div>
+                        <div style="font-weight: bold;">Komisař</div>         
+                    </div>
+                </div>
+                <div class="center-div">
+                    <button class="sticky" type="button" onclick="sendAllStudentIds()" id="sendButton">Odeslat ID</button>
+                </div>
+            </div>
+            {% if suepradmin or admin %}
+            <div class="div-select" id="search-form">
+                <div class="grid-for-2-select">
+                    <div>
+                        <label for="autoskola">Autoškola:</label>
+                        <select class="input-box3" name="driving-school" id="autoskola">
+                            <option value="" disabled selected hidden>Autoškola</option>
+                            {% for autoskola in autoskoly %}
+                                <option id="{{autoskola.id}}">{{autoskola.nazev}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="evidencniCislo">Evidenční číslo:</label>
+                        <input class="input-box3" type="text" id="evidencniCislo">
+                    </div>
+                </div>
+                <div class="center-div">
+                    <button type="button" onclick="fetchStudent()">Odeslat</button>
+                </div>
+            </div>
+            {% endif %}
             <div style="margin-top: 15px;">
                 <button class="make_list_button" onclick="createStudentDocument('{{termin.datum}}')">Vytvořit seznam</button>
             </div>
-        </div>
+            
+        </div> 
     </main>
     <script src="{{ url_for('static', filename='../static/script_conclusion.js') }}"></script>
+    <script>
+        const komisari = {{ komisari | tojson }};
+
+async function sendAllStudentIds() {
+    const resultSection = document.getElementById("result");
+    const studentDivs = resultSection.querySelectorAll('[data-student-id]');
+
+    // Mapování ID a hodnot z input/select prvků
+    const studentsData = Array.from(studentDivs).map(div => {
+        return {
+            id: div.getAttribute('data-student-id'),
+            license_category: div.querySelector('[name="license_category"]')?.value || "",
+            exam_type: div.querySelector('[name="exam_type"]')?.value || "",
+            commisar: div.querySelector('[name="commissar"]')?.value || "",
+            first_try: div.querySelector('[name="prvni_pokus"]')?.value || "",
+            start_time: div.querySelector('[name="time-start"]')?.value || "08:00",
+        };
+    });
+
+    try {
+        const response = await fetch('/api/add_drivers/r_term', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ students: studentsData }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Chyba při odesílání dat studentů.');
+        }
+
+        alert('Data studentů byla úspěšně odeslána.');
+        window.location.reload()
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+let list_ev = [];
+
+async function fetchStudent() {
+    // Get selected values
+    const autoskolaSelect = document.getElementById("autoskola");
+    const autoskolaId = autoskolaSelect.options[autoskolaSelect.selectedIndex].id;
+    const evidencniCislo = document.getElementById("evidencniCislo").value;
+
+    if (!autoskolaId || !evidencniCislo) {
+        alert("Prosím, vyplňte všechna pole.");
+        return;
+    }
+
+    if (list_ev.includes(evidencniCislo)) {
+    alert("Toto evidenční číslo již bylo zadáno.");
+    return;
+    }
+
+    try {
+            list_ev.push(evidencniCislo);
+            const response = await fetch("/api/get_student", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    autoskolaId: autoskolaId,
+                    evidencniCislo: evidencniCislo,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorMessage = await response.json();
+                alert(errorMessage.error || 'Nastala chyba při získávání údajů o studentovi.');
+                return;
+            }
+
+            const data = await response.json();
+
+            // Format the date to dd.mm.yyyy
+            const formattedDate = new Date(data.dat_nar).toLocaleDateString('cs-CZ');
+            data.dat_nar = formattedDate;
+
+            // Přidání záznamu do `result-content` na začátek
+            const resultSection = document.getElementById("result");
+            const resultContent = document.getElementById("result-content");
+            resultSection.style.display = 'block';
+
+            const prvniDatum = data.prvni ? new Date(data.prvni).toISOString().split('T')[0] : '';
+
+            const studentHTML = `
+                <div data-student-id="${data.id}" class="grid-for-9-align">
+                    <p style= margin-top:3px;margin-bottom:3px;>${data.ev_cislo}</p>
+                    <p style= margin-top:3px;margin-bottom:3px;>${data.jmeno}</p>
+                    <p style= margin-top:3px;margin-bottom:3px;>${data.prijmeni}</p>
+                    <p style= margin-top:3px;margin-bottom:3px;>${data.dat_nar}</p>
+                    <div class="form-group">
+                        <select name="license_category" id="license_category">
+                            <option value="A">A</option>
+                            <option value="B" selected>B</option>
+                            <option value="C">C</option>
+                            <option value="C+E">C+E</option>
+                            <option value="D">D</option>
+                            <option value="D+E">D+E</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select name="exam_type" id="exam_type">
+                            <option value="Řádná_zkouška" selected>Řádná zkouška</option>
+                            <option value="Opravná_zkouška-test+jízda">Opravná zkouška (jízda+test)</option>
+                            <option value="Opravná_zkouška-jízda">Opravná zkouška (jízda)</option>
+                            <option value="Opravná_zkouška-technika">Opravná zkouška (technika)</option>
+                            <option value="Opravná_zkouška-technika+jízda">Opravná zkouška (technika+jízda)</option>
+                            <option value="Profesní_způsobilost-test">Profesní způsobilost</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" name="prvni_pokus" value="${prvniDatum}">
+                    </div>
+                    <input type="time" name="time-start" id="time-zak-${data.id}" placeholder="začátek" value="08:00" required>
+                    <select name="commissar" id="commissar-for-zak-${data.id}" required>
+                        ${komisari.map(komisar => `<option value="${komisar.id}">${komisar.jmeno} ${komisar.prijmeni}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+            // Najdeme `grid-for-7`, což jsou nadpisy sloupců
+            const columnHeaders = document.querySelector(".grid-for-9-align");
+
+            // Vložíme nový záznam ihned za nadpisy, ale před tlačítko
+            columnHeaders.insertAdjacentHTML('afterend', studentHTML);
+        } catch (error) {
+            alert(error.message);
+            messageBox.style.color = 'red';
+            messageBox.style.marginTop = '20px';
+        }
+
+    if(maxForms <= 0){
+        const searchFormDiv = document.getElementById('search-form');
+        if (searchFormDiv) {
+            searchFormDiv.style.display = 'none';
+            console.log('search-form byl skryt, protože maxForms <= 0');
+        }
+    }
+}
+
+async function deleteStudent(studentId) {
+        try {
+            const response = await fetch('/api/delete_student_in_term', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: studentId })
+            });
+            if (response.ok) {
+                alert('Student byl úspěšně odstraněn.');
+                // Aktualizace stránky nebo odstranění divu
+                window.location.reload()
+            } else {
+                const error = await response.json();
+                alert(`Chyba: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Nastala chyba při odesílání požadavku.');
+        }
+    }
+    </script>
 {% endblock %}

@@ -19,35 +19,41 @@
                 <div style="padding-right: 2%;">
                     <button class="document-button" onclick="makeDocument('{{ nazev }}', '{{termin.datum}}')">Dokument</button>
                 </div>
-                <div class="grid-for-8">
+                <div class="grid-for-10">
                     <div style="font-weight: bold;">E.Č.</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
                     <div style="font-weight: bold;">Narození</div>
-                    <div style="font-weight: bold;">Začátek V.</div>
+                    <div style="font-weight: bold;">Začátek výcviku</div>
+                    <div style="font-weight: bold;">Konec výcviku</div>
+                    <div style="font-weight: bold;">První pokus</div>
                     <div style="font-weight: bold;">Typ zkoušky</div>
                     <div style="font-weight: bold;">Druh zkoušky</div>
                     <div style="font-weight: bold;">Začátek/Stav</div>         
                 </div>
                 {% for zak in students %}
                     {% if zak['potvrzeni'] == 'Y' %}
-                        <div class="grid-for-8" id="zak_{{ zak['id'] }}">
+                        <div class="grid-for-10" id="zak_{{ zak['id'] }}">
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
-                            <div>{{ zak['start'].strftime('%d.%m.%Y') if zak['start'] else '' }}</div>
+                            <div>{{ zak['zacatek'].strftime('%d.%m.%Y') if zak['zacatek'] else ''}}</div>
+                            <div>{{ zak['konec'].strftime('%d.%m.%Y') if zak['konec'] else ''}}</div>
+                            <div>{{ zak['prvni'].strftime('%d.%m.%Y') if zak['prvni'] else ''}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>{{ zak['cas'] }}</div>         
                         </div>
                     {% else %}
-                        <div class="grid-for-8" id="zak_{{ zak['id'] }}">                       
+                        <div class="grid-for-10" id="zak_{{ zak['id'] }}">                       
                             <div>{{ zak['ev_cislo']}}</div>
                             <div>{{ zak['jmeno']}}</div>
                             <div>{{ zak['prijmeni']}}</div>
                             <div>{{ zak['narozeni'].strftime('%d.%m.%Y')}}</div>
-                            <div>{{ zak['start'].strftime('%d.%m.%Y') if zak['start'] else '' }}</div>
+                            <div>{{ zak['zacatek'].strftime('%d.%m.%Y') if zak['zacatek'] else ''}}</div>
+                            <div>{{ zak['konec'].strftime('%d.%m.%Y') if zak['konec'] else ''}}</div>
+                            <div>{{ zak['prvni'].strftime('%d.%m.%Y') if zak['prvni'] else ''}}</div>
                             <div>{{ zak['typ_zkousky']}}</div>
                             <div>{{ zak['druh_zkousky']}}</div>
                             <div>
@@ -60,6 +66,17 @@
         {% endfor %}
         {% if volna_mista > 0 %}
             <div class="students-container-admin" style="display: none;" id="result">
+                <div class="grid-for-9-align">
+                    <div style="font-weight: bold;">E.Č.</div>
+                    <div style="font-weight: bold;">Jméno</div>
+                    <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Narození</div>
+                    <div style="font-weight: bold;">Začátek výcviku</div>
+                    <div style="font-weight: bold;">Konec výcviku</div>
+                    <div style="font-weight: bold;">První pokus</div>
+                    <div style="font-weight: bold;">Typ zkoušky</div>
+                    <div style="font-weight: bold;">Druh zkoušky</div>        
+                </div>
                 <div id="result-content"></div> <!-- Sekce pro data -->
                 <div class="center-div">
                     <button type="button" onclick="sendAllStudentIds()" id="sendButton">Odeslat ID</button>
@@ -170,30 +187,31 @@
                 const data = await response.json();
 
                 // Format the date to dd.mm.yyyy
-                const formattedDate = new Date(data.dat_nar).toLocaleDateString('cs-CZ');
-                data.dat_nar = formattedDate;
+            const formattedDateBirth = new Date(data.dat_nar).toLocaleDateString('cs-CZ');
+            const formattedDateStart = new Date(data.zacatek).toLocaleDateString('cs-CZ');
+            const formattedDateEnd = new Date(data.konec).toLocaleDateString('cs-CZ');
+            
+            data.dat_nar = formattedDateBirth;
+            data.zacatek = formattedDateStart;
+            data.konec = formattedDateEnd;
 
                 // Přidání záznamu do `result-content` na začátek
         const resultSection = document.getElementById("result");
         const resultContent = document.getElementById("result-content");
         resultSection.style.display = 'block';
 
+        const prvniDatum = data.prvni ? new Date(data.prvni).toISOString().split('T')[0] : '';
+
         const studentHTML = `
-            <div data-student-id="${data.id}" class="grid-for-6">
+            <div data-student-id="${data.id}" class="grid-for-9-align">
                 <p style= margin-top:3px;margin-bottom:3px;>${data.ev_cislo}</p>
                 <p style= margin-top:3px;margin-bottom:3px;>${data.jmeno}</p>
                 <p style= margin-top:3px;margin-bottom:3px;>${data.prijmeni}</p>
                 <p style= margin-top:3px;margin-bottom:3px;>${data.dat_nar}</p>
-                <div class="form-group">
-                    <select name="license_category" id="license_category">
-                        <option value="A">A</option>
-                        <option value="B" selected>B</option>
-                        <option value="C">C</option>
-                        <option value="C+E">C+E</option>
-                        <option value="D">D</option>
-                        <option value="D+E">D+E</option>
-                    </select>
-                </div>
+                <p style= margin-top:3px;margin-bottom:3px;>${data.zacatek}</p>
+                <p style= margin-top:3px;margin-bottom:3px;>${data.konec}</p>
+                <p style= margin-top:3px;margin-bottom:3px;>${prvniDatum}</p>
+                <input class="input-box3" name="license_category" type="text" placeholder="Např. B, B+E, T" required title="Zadej skupiny ŘP oddělené čárkou (např. B, B+E)">
                 <div class="form-group">
                     <select name="exam_type" id="exam_type">
                         <option value="Řádná_zkouška" selected>Řádná zkouška</option>
@@ -206,13 +224,19 @@
                 </div>
             </div>
         `;
-        resultContent.insertAdjacentHTML('afterbegin', studentHTML); // Přidání na začátek
-            } catch (error) {
-                alert(error.message);
-                messageBox.style.color = 'red';
-                messageBox.style.marginTop = '20px';
-            }
+
+        // Najdeme `grid-for-9-align`, což jsou nadpisy sloupců
+        const columnHeaders = document.querySelector(".grid-for-9-align");
+
+        // Vložíme nový záznam ihned za nadpisy, ale před tlačítko
+        columnHeaders.insertAdjacentHTML('afterend', studentHTML);
+        
+        } catch (error) {
+            alert(error.message);
+            messageBox.style.color = 'red';
+            messageBox.style.marginTop = '20px';
         }
+    }
  
     </script>
 {% endblock %}

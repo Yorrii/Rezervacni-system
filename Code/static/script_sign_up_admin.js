@@ -3,7 +3,7 @@ function createEmptyForm() {
     form.className = 'exam-form';
 
     form.innerHTML = `
-        <div class="student-line-admin-grid-8 specification-for-grid-8 margin-top-10">
+        <div class="grid-for-9-sign_up specification-for-grid-8 margin-top-10">
             <div class="form-group">
                 <input type="text" name="evidence_number" id="evidence_number" placeholder="E. č." required>
             </div>
@@ -17,25 +17,22 @@ function createEmptyForm() {
                 <input type="date" name="birth_date" id="birth_date" required>
             </div>
             <div class="form-group">
-                <input type="text" name="adress" id="adress" placeholder="Adrasa" required>
+                <input type="text" name="adress" id="adress" placeholder="Adresa" required>
             </div>
             <div class="form-group">
                 <input type="text" name="drivers_license" id="drivers_license" placeholder="Číslo ř. p.">
             </div>
             <div class="form-group">
-                <select name="license_category" id="license_category">
-                    <option value="A">A</option>
-                    <option value="B" selected>B</option>
-                    <option value="C">C</option>
-                    <option value="C+E">C+E</option>
-                    <option value="D">D</option>
-                    <option value="D+E">D+E</option>
-                    <option value="T">T</option>
-                </select>
+                <input class="input-box3" type="text" name="license_category" id="license_category" placeholder="A, B, B+E" required title="Zadej skupiny ŘP oddělené čárkou (např. B, B+E)">
+            </div>
+            <div class="form-group">
+                <input type="date" name="first_try" id="first_try" placeholder="První pokus">
             </div>
             <div class="form-group">
                 <select name="type-of-teaching" id="type-of-teaching">
                     <option value="základní-výuka-a-výcvik" selected>Základní výuka a výcvik</option>
+                    <option value="opakovaná-výuka">Opakovaná výuka</option>
+                    <option value="opakovaný-výcvik">Opakovaný výcvik</option>
                     <option value="sdružená-výuka-a-výcvik">Sdružená výuka a výcvik</option>
                     <option value="rozšiřující-výuka-a-výcvik">Rozšiřující výuka a výcvik</option>
                     <option value="výuka-a-výcvik-podle-individuálního-plánu">Výuka a výcvik podle individuálního plánu</option>
@@ -103,6 +100,10 @@ function validateForms() {
             isValid = false;
             errorMessage += `Řádek ${index + 1}: Pole "Adresa" musí být vyplněno.\n`;
         }
+        if (!form.querySelector('#license_category').value.trim()) {
+            isValid = false;
+            errorMessage += `Řádek ${index + 1}: Pole "Druh řidičského průkazu" musí být vyplněno.\n`;
+        }
         // Číslo řidičského průkazu není povinné
     });
 
@@ -139,6 +140,7 @@ document.getElementById('submit-forms').addEventListener('click', function(event
             adress: form.querySelector('#adress').value,
             drivers_license: form.querySelector('#drivers_license').value || null,
             license_category: form.querySelector('#license_category').value,
+            first_try: form.querySelector('#first_try').value || null,
             type_of_teaching: form.querySelector('#type-of-teaching').value
         };
     });

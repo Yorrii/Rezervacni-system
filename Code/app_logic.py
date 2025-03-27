@@ -1,4 +1,5 @@
 import hashlib
+import os
 from docx import Document
 from docx.shared import Pt, Cm
 from docx.oxml import OxmlElement
@@ -172,9 +173,10 @@ def create_document(autoskola, datum, seznam_studentu, komisar):
     part2_right = part2.cell(0, 1)
 
     # Vytvoř nový odstavec v pravé buňce a nastav zarovnání doprava
+    adresaFormated = autoskola.adresa_u.split(', ')
     part2_right_paragraph = part2_right.add_paragraph()
     part2_right_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
-    part2_text = f"{autoskola.nazev}\n{autoskola.adresa_u}\nMost\n434 01"   
+    part2_text = f"{autoskola.nazev}\n{adresaFormated[0]}\n{adresaFormated[1]}\n{adresaFormated[2]}"   
     run = part2_right_paragraph.add_run(part2_text)
     run.bold = False
     run.font.name = 'Arial'
@@ -294,3 +296,65 @@ def create_document(autoskola, datum, seznam_studentu, komisar):
     run.font.name = 'Work Sans'
 
     return doc
+
+def create_document_end(studenti, autoskola):
+    document = Document()
+
+    sections = document.sections
+    for section in sections:
+        section.top_margin = Cm(2)
+        section.bottom_margin = Cm(2)
+        section.left_margin = Cm(2)
+        section.right_margin = Cm(2)
+
+    # Nadpis 1
+    nadpis = document.add_paragraph(f"{autoskola.nazev}")
+    nadpis.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    nadpis.runs[0].bold = True
+    nadpis.runs[0].font.size = Pt(20)
+
+    # Nadpis 2
+    nadpis = document.add_paragraph("SEZNAM ŽADATELŮ")
+    nadpis.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    nadpis.runs[0].bold = True
+    nadpis.runs[0].font.size = Pt(14)
+
+    document.add_paragraph()  # prázdný řádek
+
+    # Hlavička tabulky
+    table = document.add_table(rows=1, cols=7)
+    table.style = "Table Grid"
+    header = table.rows[0].cells
+    hlavicky = ["Evidenční číslo", "Jméno Příjmení", "Datum narození", "Adresa", "Číslo ŘP", "Skupina vozidel", "Zahájení/\nukončení kurzu"]
+    for i, text in enumerate(hlavicky):
+        p = header[i].paragraphs[0]
+        p.add_run(text).bold = True
+        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+
+    # Data studentů
+    for student in studenti:
+        row = table.add_row().cells
+        cele_jmeno = f"{student['jmeno']} {student['prijmeni']}"
+        datum_narozeni = student['narozeni'].strftime("\n%d.%m.%Y")
+        datum_zacatek = student['zacatek'].strftime("%d. %m. %Y")
+        datum_konec = student['konec'].strftime("%d. %m. %Y")
+
+        row[0].text = student['ev_cislo']
+        row[1].text = cele_jmeno
+        row[2].text = datum_narozeni
+        row[3].text = student['adresa']
+        row[4].text = student['cislo'] if student['cislo'] else '----------'
+        row[5].text = student['skupina']             # Skupina vozidel
+        row[6].text = f"{datum_zacatek}\n{datum_konec}"
+
+    slozka = "Ukonceni_vycviku"
+    os.makedirs(slozka, exist_ok=True)
+
+    # Název souboru = nazev_autoškoly_datum_konce.docx
+    nazev_autoskoly = autoskola.nazev.replace(" ", "_")  
+    datum_posledniho = max(s['konec'] for s in studenti)
+    datum_str = datum_posledniho.strftime("%Y-%m-%d")
+    nazev_souboru = f"{nazev_autoskoly}_{datum_str}.docx"
+    # Celá cesta
+    cesta = os.path.join(slozka, nazev_souboru)
+    document.save(cesta)

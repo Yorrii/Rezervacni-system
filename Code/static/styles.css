@@ -348,8 +348,25 @@ button:hover {
 /* Elementy .students-container inline */
 .students-container {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(9, 1fr);
     gap: 10px;
+    min-width: 1450px;
+    overflow-x: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    align-items: center;
+    margin-top: 30px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+}
+
+.students-container-10 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    min-width: 1450px;
+    overflow-x: auto;
     padding-top: 10px;
     padding-bottom: 10px;
     align-items: center;
@@ -367,11 +384,13 @@ button:hover {
     border-radius: 4px;
     background-color: #C6DAF2;
     width: 100%;
+    min-width: 1450px;
+    overflow-x: auto;
 }
 
 .students-container_button {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(9, 1fr);
     gap: 10px;
     align-items: center;
     padding-top: 10px;
@@ -380,6 +399,23 @@ button:hover {
     border-radius: 4px;
     background-color: #C6DAF2;
     width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+    min-width: 1450px;
+    overflow-x: auto;
+}
+
+.students-container_button-10 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 30px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+    min-width: 1450px;
+    overflow-x: auto;
 }
 
 /* .nazev zarovnaný na střed svého parent elementu */
@@ -459,15 +495,89 @@ input[type='time'] {
     text-align: center;
 }
 
-.student-line-admin-grid-8 {
+.student-line-admin-grid-9 {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     gap: 10px;
     align-items: center;
     padding: 0px;
     margin-top: 10px;
     width: 100%;
     font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-11 {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-11 > *{
+    text-align: center;
+}
+
+.student-line-admin-grid-11 input,
+.student-line-admin-grid-11 select,
+.student-line-admin-grid-11 button {
+    justify-self: center; 
+    align-self: center;   
+    width: fit-content;           
+    max-width: 200px;     
+    text-align: center;
+}
+
+.student-line-admin-grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-12 > *{
+    text-align: center;
+}
+
+.student-line-admin-grid-12 input,
+.student-line-admin-grid-12 select,
+.student-line-admin-grid-12 button {
+    justify-self: center; 
+    align-self: center;   
+    width: fit-content;           
+    max-width: 200px;     
+    text-align: center;
+}
+
+.grid-for-9-sign_up {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1fr 1fr 2fr 1fr 1fr 1fr 3fr;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.grid-for-9-sign_up input, .grid-for-9-sign_up select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.grid-for-9-sign_up > *{
+    text-align: center;
 }
 
 .student-line-admin-grid-8 input, .student-line-admin-grid-8 select {
@@ -478,6 +588,13 @@ input[type='time'] {
     border-radius: 4px;
     text-align: center;
     box-sizing: border-box;
+}
+
+.grid-repeat-for-9 {
+display: grid;
+grid-template-columns: repeat(9, 1fr);
+gap: 3px;
+text-align: center;
 }
 
 .student-line-admin-grid-8 > *{
@@ -669,6 +786,30 @@ input[type='time'] {
     box-sizing: border-box;
 }
 
+.grid-for-6-align {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr 3fr 2fr;
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-6-align > * {
+    text-align: center;
+    align-items: center;
+}
+
+.grid-for-6-align input, .grid-for-6-align select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
 
 .grid-for-7 {
     display: grid;
@@ -691,6 +832,58 @@ input[type='time'] {
     border-radius: 4px;
     text-align: center;
     box-sizing: border-box;
+}
+
+.grid-for-7-align {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr 1.5fr 3fr 2fr;
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-7-align > * {
+    text-align: center;
+    align-items: center;
+}
+
+.grid-for-7-align input, .grid-for-7-align select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.grid-for-7-end-of-teaching {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr 2fr 2fr 2fr;
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-7-end-of-teaching > * {
+    text-align: center;
+    align-items: center;
+}
+
+.grid-for-7-end-of-teaching input, .grid-for-7-end-of-teaching select {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16px;
+    width: 15ch;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+    align-items: center;
 }
 
 .grid-for-8 {
@@ -716,6 +909,34 @@ input[type='time'] {
     box-sizing: border-box;
 }
 
+.grid-for-8-end-of-teaching {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr 2fr 2fr 2fr 2fr;
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-8-end-of-teaching > * {
+    text-align: center;
+    align-items: center;
+}
+
+.grid-for-8-end-of-teaching input, .grid-for-8-end-of-teaching select {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16px;
+    width: 15ch;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+    align-items: center;
+}
+
 .grid-for-9 {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
@@ -739,11 +960,53 @@ input[type='time'] {
     box-sizing: border-box;
 }
 
+.grid-for-9-align {
+    display: grid;
+    grid-template-columns: 6.452% 9.677% 9.677% 9.677% 9.677% 9.677% 9.677% 9.677% 25%; /* Nastavení poměrů sloupců */
+    gap: 5px; /* Mezery mezi prvky */
+    align-items: center; /* Zarovnání obsahu na střed */
+    text-align: center; /* Standardně levé zarovnání */
+    font-family: 'Work Sans';
+}
+
+.grid-for-9-align input, .grid-for-9-align select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.grid-for-10 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-10 > * {
+    text-align: center;
+}
+
+.grid-for-10 input, .grid-for-10 select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
 .grid-for-2 {
     width: 100%;
     max-height: 400px;
     display: grid;
-    grid-template-columns: 60% 40%;
+    grid-template-columns: 45% 55%;
     gap: 3px;
     margin-top: 30px;
     align-items: center;
@@ -1049,4 +1312,12 @@ h1.error {
         text-align: left;
         padding: 10px;
     }
+}
+
+.left-change-button {
+    margin-top: 20px;
+    position: absolute;
+    right: 30px;
+    background-color: #C6DAF2;
+    color: #000;
 }

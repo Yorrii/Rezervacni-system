@@ -45,4 +45,18 @@
             </div>
         </div>
     </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("adresa").addEventListener("input", function () {
+                const adresaInput = this;
+                const regex = /^([\p{L}\s]+) (\d+), ([\p{L}\s]+),(\d{3} \d{2})$/u;
+                if (!regex.test(adresaInput.value)) {
+                    adresaInput.setCustomValidity("Adresa musí být ve formátu: Ulice a číslo popisné, Město, PSČ (např. Václavská 12, Praha, 110 00)");
+                } else {
+                    adresaInput.setCustomValidity("");
+                }
+            });
+        });
+    </script>
+        
 {% endblock %}

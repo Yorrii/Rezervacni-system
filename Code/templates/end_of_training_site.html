@@ -1,0 +1,33 @@
+<!-- end_of_train_site.html -->
+{% extends 'template.html' %}
+{% block title %}Ukončená výuka{% endblock %}
+{% block nav %}
+    {% if superadmin|default(false) %}
+        {% include 'nav_bar_superadmin.html' %}
+    {% elif admin|default(false) %}
+        {% include 'nav_bar_admin.html' %}
+    {% else %}
+        {% include 'nav_bar_commisar.html' %}
+    {% endif %}
+{% endblock %}
+{% block main %}
+<main class="term-main">
+    <div class="column-div" style="width: 90%;">
+        <div> <!-- div na kontejner -->
+            <h2>Dokumenty k ukončení výcviku</h2>
+            <div> <!-- div na linky -->
+                <ul>
+                    {% for soubor in soubory %}
+                        <li><a href="/api/get_document/{{ soubor }}">{{ soubor }}</a></li>
+                    {% else %}
+                        <li>Žádné dokumenty nenalezeny.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>        
+</main>
+<script>
+
+</script>
+{% endblock %}

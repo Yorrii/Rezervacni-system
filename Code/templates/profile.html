@@ -47,19 +47,21 @@
                 </form>
             </div>
             <div  class="smaller-box" style="width: 100%; overflow-y: scroll;"> <!-- Žáci -->
-                <div class="grid-for-5 vycentrovat-text specification-for-grid-5">
+                <div class="grid-for-6 vycentrovat-text specification-for-grid-6">
                     <div style="font-weight: bold;">Zahájení výcviku</div>
                     <div style="font-weight: bold;">Evidenční číslo</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Konec výcviku</div>
                     <div style="font-weight: bold;">Termín</div>
                 </div>
                 {% for zak in studenti %}
-                    <div class="grid-for-5 vycentrovat-text specification-for-grid-5 student-row-search">
+                    <div class="grid-for-6 vycentrovat-text specification-for-grid-6 student-row-search">
                         <div>{{zak['zacatek']}}</div>
                         <div class="searchable">{{zak['ev_cislo']}}</div>
                         <div class="searchable">{{zak['jmeno']}}</div>
                         <div class="searchable">{{zak['prijmeni']}}</div>
+                        <div>{{zak['konec']}}</div>
                         <div>{{zak['termin']}}</div>
                     </div>
                 {% endfor %}

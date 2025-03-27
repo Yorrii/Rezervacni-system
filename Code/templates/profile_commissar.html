@@ -77,19 +77,21 @@
                 {% endif %}
             </div>
             <div class="smaller-box vycentrovat-text specification-for-grid-5" style="width: 100%; overflow-y: scroll;"> <!-- Žáci -->
-                <div class="grid-for-5 vycentrovat-text">
+                <div class="grid-for-6 vycentrovat-text">
                     <div style="font-weight: bold;">Zahájení výcviku</div>
                     <div style="font-weight: bold;">Evidenční číslo</div>
                     <div style="font-weight: bold;">Jméno</div>
                     <div style="font-weight: bold;">Příjmení</div>
+                    <div style="font-weight: bold;">Konec výcviku</div>
                     <div style="font-weight: bold;">Termín</div>
                 </div>
                 {% for zak in zaci %}
-                    <div class="grid-for-5 vycentrovat-text specification-for-grid-5 student-row-search">
+                    <div class="grid-for-6 vycentrovat-text specification-for-grid-5 student-row-search">
                         <div>{{zak['zacatek']}}</div>
                         <div class="searchable">{{zak['ev']}}</div>
                         <div class="searchable">{{zak['jmeno']}}</div>
                         <div class="searchable">{{zak['prijmeni']}}</div>
+                        <div>{{zak['konec']}}</div>
                         <div>{{zak['termin']}}</div>
                     </div>
                 {% endfor %}
@@ -101,6 +103,21 @@
     </div>
 </main>
 <script>
+
+function validateAddress() {
+    const adressField = document.getElementById("adress");
+    const regex = /^([\p{L}\s]+) (\d+), ([\p{L}\s]+),(\d{3} \d{2})$/u;
+    
+    if (!regex.test(adressField.value)) {
+        adressField.setCustomValidity("Adresa musí být ve formátu: Ulice číslo popisné, Město, PSČ (např. Václavská 12, Praha, 110 00)");
+    } else {
+        adressField.setCustomValidity("");
+    }
+}
+
+document.getElementById("adress").addEventListener("input", validateAddress);
+
+
 function filterTable() {
     let input = document.getElementById("search").value.toLowerCase();
     let rows = document.querySelectorAll(".student-row-search");
@@ -127,6 +144,13 @@ submitButton.addEventListener('click', async () => {
     const emailField = document.getElementById('email');
     const adressField = document.getElementById('adress');
     const datovkaField = document.getElementById('datovka');
+
+    validateAddress();
+    if (!adressField.checkValidity()) {
+        event.preventDefault();
+        alert(adressField.validationMessage);
+        return;
+    }
 
     // Vytvoř prázdný objekt pro JSON
     const dataToSend = {};
