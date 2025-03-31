@@ -14,8 +14,8 @@
 <main class="term-main">
     <div class="column-div" style="width: 90%;">
         <div> <!-- div na kontejner -->
-            <h2>Dokumenty k ukončení výcviku</h2>
-            <div> <!-- div na linky -->
+            <h1 style="align-self: center;">Dokumenty k ukončení výcviku</h1>
+            <div class="end-of-training-box"> <!-- div na linky -->
                 <ul>
                     {% for soubor in soubory %}
                         <li><a href="/api/get_document/{{ soubor }}">{{ soubor }}</a></li>

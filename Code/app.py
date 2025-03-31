@@ -1408,6 +1408,8 @@ def dostan_studenta():
         zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=autoskola_id).order_by(desc(Zak.id)).first()
 
         if zak:
+            if not zak.konec:
+                return jsonify({"error": f"Žák nemá ukončený výcvik."}), 400
             zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, zaver='W').first()
             if zap_zak:
                 return jsonify({"error": "Žák je již na zapsaný na termínu."}), 400
@@ -1475,6 +1477,8 @@ def dostan_studenta_as():
 
     
         if zak:
+            if not zak.konec:
+                return jsonify({"error": f"Žák nemá ukončený výcvik."}), 400
             if zak.splnil:
                 return jsonify({"error": "Žák je již splnil zkoušku."}), 400
             zap_zak = Zapsany_zak.query.filter_by(id_zaka=zak.id, zaver='W').first()
@@ -1545,6 +1549,51 @@ def dostan_studenta_end():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@login_required
+@app.route('/api/get_student_end_as', methods=['POST'])
+def dostan_studenta_end_as():
+    """
+    API metoda sloužící pro nalezení žáka a kontrole jestli ještě není nikde jinde zapsaný. Metoda vrací žáka, aby ho připravila na zapis. 
+    K metodě mají přístup pouze komisaři a admini.
+    
+    Parametry:
+        request: Z FE obdržíme JSON s id autoškoly žáka, a Ev. Číslo žáka.
+    
+    Vrací:
+        JSON 400: pokud kombinace id autoškoly a ev. čísla nikoho nenajde nebo pokud už je na termínu
+        JSON 200: pokud vše proběhne v pořádku
+        JSON 500: internal error
+    """
+    try:
+        # Získání dat z požadavku
+        data = request.get_json()
+        evidencni_cislo = data.get('evidencniCislo')
+        # Validace vstupů
+        if not evidencni_cislo:
+            return jsonify({"error": "Chybí evidenční číslo"}), 400
+        
+        zak = Zak.query.filter_by(ev_cislo=evidencni_cislo, id_autoskoly=current_user.id).order_by(desc(Zak.id)).first()
+
+        if zak:
+            zak_info = {
+                'id': zak.id,
+                'ev_cislo': zak.ev_cislo,
+                'jmeno': zak.jmeno,
+                'prijmeni': zak.prijmeni,
+                'dat_nar': zak.narozeni,
+                'adresa': zak.adresa,
+                'zacatek': zak.zacatek,
+                'konec': zak.konec if zak.konec else None,
+                'prvni':zak.prvni if zak.prvni else None
+                }
+        else:
+            return jsonify({"error": "Žák nebyl nalezen"}), 400
+        return jsonify(zak_info), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @login_required
 @app.route('/api/end_of_training_as', methods=['POST'])
@@ -1984,7 +2033,9 @@ def add_drivers_as():
             zak = Zak.query.filter_by(id= student_id).first()
             license_category = student.get('license_category')
             exam_type = student.get('exam_type')
-            
+            if not zak.konec:
+                return jsonify({'error': f'Zak {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} nemá ukončený výcvik.'})
+
             if not zak or not license_category or not exam_type:
                 continue  # Přeskočit neplatné záznamy
 
@@ -2001,7 +2052,7 @@ def add_drivers_as():
                 typ_zkousky=license_category,
                 druh_zkousky=exam_type.replace('_', ' ')
             )
-            #TODO přidat záznam
+            zaznam = Zaznam(druh='přidání', kdy=datetime.now(), zprava=f'Autoškola zapsala studentku/studenta {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} na termín s id:{term_id}.', id_autoskoly=autoskola.id)
 
             db.session.add(new_entry)
             zapsani_studenti.append(student)
@@ -2067,8 +2118,11 @@ def enroll_by_admin():
 
             zak = Zak.query.filter_by(ev_cislo=evidence_number, jmeno=first_name, prijmeni=last_name, narozeni=birth_date).first()
             if zak:
-                zapis = Zapsany_zak(typ_zkousky=license_category, druh_zkousky=exam_type, id_terminu=session.get('term_id'), id_autoskoly=zak.id_autoskoly,id_zaka=zak.id)
-                db.session.add(zapis)
+                if not zak.konec:
+                    errors.append(f'Zak {evidence_number} {first_name} {last_name} nema ukonceny vycvik. Nelze jej zapsat.')
+                else:
+                    zapis = Zapsany_zak(typ_zkousky=license_category, druh_zkousky=exam_type, id_terminu=session.get('term_id'), id_autoskoly=zak.id_autoskoly,id_zaka=zak.id)
+                    db.session.add(zapis)
             else:
                 errors.append(f'Zaka {evidence_number} {first_name} {last_name} se nepodarilo nalezt, zkontrolujte si, ze jste informace zadali spravne')
             
@@ -2120,7 +2174,6 @@ def enroll_drivers():
             zapis.potvrzeni = 'Y'
             zapis.zacatek = time_start
             zapis.id_komisare = id_commissar
-            print('zak se zapsal na termín')
             upozorneni= Upozorneni(zprava= f'Student/ka {zak.ev_cislo} {zak.jmeno} {zak.prijmeni} byl/a zapsán/a na termín {termin.datum.strftime("%d.%m.%Y")} v {time_start}',
                                    id_autoskoly= zak.id_autoskoly, datum_vytvoreni=datetime.now())
             db.session.add(upozorneni)
@@ -2765,7 +2818,7 @@ def logout():
 @app.context_processor
 def inject_globals():
     return {
-        'version': '0.9.1'
+        'version': '0.9.9'
     }
 
 @app.before_request # tahle metoda se spustí před každým requestem, brání v prodloužení sessionu pro def get_notification():
@@ -2776,7 +2829,19 @@ def dont_extend_session():
 
 @loginManager.user_loader
 def load_user(user_id):
-    """#TODO"""
+    """
+    Callback funkce pro Flask-Login, která načte uživatele na základě jeho ID.
+
+    Tato funkce se používá Flask-Login rozšířením při každém požadavku k identifikaci 
+    aktuálně přihlášeného uživatele. Načítá uživatele z aplikační logiky pomocí jeho ID 
+    a volitelně nastaví, zda je uživatel administrátorem na základě session proměnné.
+
+    Args:
+        user_id (str): ID uživatele, které je uloženo v session.
+
+    Returns:
+        User: Instance třídy User s informací o ID a oprávnění správce.
+    """
     is_admin = session.get('isAdmin', False)
     return app_logic.User(user_id, is_admin)
 

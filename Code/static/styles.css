@@ -321,6 +321,7 @@ button:hover {
     /*justify-content: center;*/
     align-items: center;
     height: auto; /* Automaticky přizpůsobí výšku obsahu */
+    font-family: 'Work Sans';
     /*overflow: hidden;*/
 }
 
@@ -1320,4 +1321,28 @@ h1.error {
     right: 30px;
     background-color: #C6DAF2;
     color: #000;
+}
+
+.end-of-training-box {
+    background-color: #C6DAF2;
+    width: fit-content;
+    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 70%;
+    overflow-y: auto;
+    padding: 5px;
+    border-radius: 5px;
+    align-self: center;
+}
+
+.end-of-training-box ul {
+    font-family: 'Work Sans';
+    list-style-type: none;
+    padding: 0px;
+}
+
+.end-of-training-box ul > * {
+    margin-top: 2px;
+    margin-bottom: 2px;
 }

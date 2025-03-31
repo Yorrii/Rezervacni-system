@@ -213,7 +213,7 @@ async function fetchStudent() {
     list_ev.push(evidencniCislo);
 
     try {
-        const response = await fetch("/api/get_student", {
+        const response = await fetch("/api/get_student_end", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -279,8 +279,8 @@ async function sendAllStudentIds() {
         const endDate = dateInput.value;
         const skupiny = skupinyInput.value;
 
-        if (!endDate) {
-            alert(`Prosím vyplň datum konce výcviku pro žáka s ID ${studentId}.`);
+        if (!skupiny || !endDate) {
+            alert(`Prosím, vyplňte všechna potřebná pole.`);
             return;
         }
 

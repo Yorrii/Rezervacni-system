@@ -202,18 +202,25 @@ async function sendAllStudentIds() {
     const resultSection = document.getElementById("result");
     const studentDivs = resultSection.querySelectorAll('[data-student-id]');
 
-    // Mapování ID a hodnot z selectů
-    const studentsData = Array.from(studentDivs).map(div => {
-        const studentId = div.getAttribute('data-student-id');
-        const licenseCategory = div.querySelector('[name="license_category"]').value;
-        const examType = div.querySelector('[name="exam_type"]').value;
+    const studentsData = [];
 
-        return {
+    for (const div of studentDivs) {
+        const studentId = div.getAttribute('data-student-id');
+        const licenseCategory = div.querySelector('[name="license_category"]').value.trim();
+        const examType = div.querySelector('[name="exam_type"]').value.trim();
+
+        // ⚠️ Kontrola prázdných polí
+        if (!licenseCategory || !examType) {
+            alert(`Prosím, vyplňte všechny údaje pro studenty.`);
+            return;
+        }
+
+        studentsData.push({
             id: studentId,
             license_category: licenseCategory,
             exam_type: examType
-        };
-    });
+        });
+    }
 
     try {
         const response = await fetch('/api/add_drivers', {
@@ -229,7 +236,7 @@ async function sendAllStudentIds() {
         }
 
         alert('Data studentů byla úspěšně odeslána.');
-        window.location.reload()
+        window.location.reload();
     } catch (error) {
         alert(error.message);
     }
@@ -288,7 +295,7 @@ async function fetchStudent() {
     const resultContent = document.getElementById("result-content");
     resultSection.style.display = 'block';
 
-    const prvniDatum = data.prvni ? new Date(data.prvni).toISOString().split('T')[0] : '';
+    const prvniDatum = data.prvni ? new Date(data.prvni).toLocaleDateString('cs-CZ'): '';
 
     const studentHTML = `
         <div data-student-id="${data.id}" class="grid-for-9-align">

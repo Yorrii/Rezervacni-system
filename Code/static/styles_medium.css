@@ -404,6 +404,36 @@ label{
     width: 100%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
 }
 
+.students-container-10 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    max-width: 600px;
+    overflow-x: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    align-items: center;
+    margin-top: 30px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 80%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+}
+
+.students-container_button-10 {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 30px;
+    border-radius: 4px;
+    background-color: #C6DAF2;
+    width: 80%; /* Při zachování inline-block pro .students-container je šířka nastavena na 100% */
+    max-width: 600px;
+    overflow-x: auto;
+}
+
 .students-container_button {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -489,6 +519,9 @@ label{
     margin-top: 15px;
     border-radius: 4px;
     background-color: #C6DAF2;
+    max-width: 600px;
+    width: 80%;
+    overflow-x: auto;
 }
 
 .grid-for-2-select {
@@ -579,6 +612,34 @@ label{
     text-align: center;
 }
 
+.grid-for-8-end-of-teaching {
+    display: grid;
+    grid-template-columns: repeat(8, 15ch);
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-8-end-of-teaching > * {
+    text-align: center;
+    align-items: center;
+}
+
+.grid-for-8-end-of-teaching input, .grid-for-8-end-of-teaching select {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16px;
+    width: 15ch;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+    align-items: center;
+}
+
 .grid-for-9 {
     display: grid;
     grid-template-columns: 0.5fr 0.8fr 0.8fr 0.8fr 0.4fr repeat(4, 1fr);
@@ -602,6 +663,30 @@ label{
     box-sizing: border-box;
 }
 
+.grid-for-9-sign_up {
+    display: grid;
+    grid-template-columns: repeat(9, 15ch);
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.grid-for-9-sign_up input, .grid-for-9-sign_up select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.grid-for-9-sign_up > *{
+    text-align: center;
+}
+
 .student-line-admin-grid-9 {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
@@ -614,6 +699,98 @@ label{
 }
 
 .student-line-admin-grid-9 > *{
+    text-align: center;
+}
+
+.grid-for-9-align {
+    display: grid;
+    grid-template-columns: repeat(9, 15ch); /* Nastavení poměrů sloupců */
+    gap: 5px; /* Mezery mezi prvky */
+    align-items: center; /* Zarovnání obsahu na střed */
+    text-align: center; /* Standardně levé zarovnání */
+    font-family: 'Work Sans';
+}
+
+.grid-for-9-align input, .grid-for-9-align select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.grid-for-10 {
+    display: grid;
+    grid-template-columns: repeat(10, 15ch);
+    gap: 3px;
+    margin: 10px;
+    align-items: center;
+    font-family: 'Work Sans';
+}
+
+.grid-for-10 > * {
+    text-align: center;
+}
+
+.grid-for-10 input, .grid-for-10 select {
+    font-size: 16px;
+    height: 22px;
+    border-width: 1px;
+    font-family: 'Work Sans';
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.student-line-admin-grid-11 {
+    display: grid;
+    grid-template-columns: repeat(11, 15ch);
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-11 > *{
+    text-align: center;
+}
+
+.student-line-admin-grid-11 input,
+.student-line-admin-grid-11 select,
+.student-line-admin-grid-11 button {
+    justify-self: center; 
+    align-self: center;   
+    width: fit-content;           
+    max-width: 200px;     
+    text-align: center;
+}
+
+.student-line-admin-grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, 15ch);
+    gap: 10px;
+    align-items: center;
+    padding: 0px;
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Work Sans';
+}
+
+.student-line-admin-grid-12 > *{
+    text-align: center;
+}
+
+.student-line-admin-grid-12 input,
+.student-line-admin-grid-12 select,
+.student-line-admin-grid-12 button {
+    justify-self: center; 
+    align-self: center;   
+    width: fit-content;           
+    max-width: 200px;     
     text-align: center;
 }
 
@@ -644,13 +821,14 @@ label{
     font-family: 'Work Sans';
     margin-top: 10px;
     border-radius: 4px;
+    overflow-x: auto;
 }
 
-.specification-for-grid-8 {
+/*.specification-for-grid-8 {
     display: grid;
     grid-template-columns: 6% 12% 12% 15% 15% 15% 5% 20%;
     gap: 3px;
-}
+}*/
 
 .specification-for-grid-8 > *{
     width: 100%;
@@ -847,4 +1025,13 @@ label{
     display: flex;
     width: 30%;
     text-align: center;
+}
+
+.left-change-button {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    position: absolute;
+    right: 30px;
+    background-color: #C6DAF2;
+    color: #000;
 }
